@@ -1,36 +1,10 @@
 # Copilot Agent Rule
 
-## ロール定義
-- TODO
-
-## 技術スタック
-### フロントエンド
-- TypeScript
-- Nextjs
-- Vite
-- storybook
-### ユニットテスト
-- Vitest
-### フォーマッター
-- Prettier
-
-## 開発手法
-- テスト駆動型開発
 
 
 
-## ディレクトリ構造
-- 以下のようなディレクトリ構造とする（TODO）
-```
-- src 
-  ┣ app
-  ┣ component
-  ┣ feature
-  ┣ hooks
-  ┣ lib
-  ┣ type
-  ┣
-```
+
+
 
 
 
