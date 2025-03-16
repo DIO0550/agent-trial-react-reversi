@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/devcontainers/typescript-node:1-22-bullseye
+
+# 非rootユーザーを作成
+ARG USERNAME=node
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# ユーザーが既に存在する場合は、必要に応じてUIDとGIDを更新
+RUN if [ $(getent passwd $USERNAME) ]; then \
+        usermod --uid $USER_UID $USERNAME && \
+        groupmod --gid $USER_GID $(getent group $USERNAME | cut -d: -f1); \
+    fi
+
+# 作業ディレクトリの設定と権限付与
+WORKDIR /app
+RUN chown -R $USERNAME:$USERNAME /app
+
+# デフォルトユーザーを非rootユーザーに設定
+USER $USERNAME

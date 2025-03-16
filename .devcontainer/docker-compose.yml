@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/app
+    ports:
+      - "3000:3000"
+    # コンテナが終了しないようにする
+    command: sleep infinity
+    # 常駐プロセスとして実行
+    tty: true
