@@ -10,6 +10,7 @@
 - Nextjs
 - Vite
 - storybook
+- TailWind CSS
 
 ### ユニットテスト
 
