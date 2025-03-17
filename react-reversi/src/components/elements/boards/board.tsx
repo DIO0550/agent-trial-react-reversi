@@ -60,12 +60,17 @@ export const Board = ({ boardState, onCellClick }: Props) => {
         row.map((cell, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
-            className="bg-green-600 aspect-square flex items-center justify-center"
+            className={`bg-green-600 aspect-square flex items-center justify-center ${
+              onCellClick ? "cursor-pointer" : ""
+            }`}
             style={{ width: DEFAULT_CELL_SIZE, height: DEFAULT_CELL_SIZE }}
             data-testid={`cell-${rowIndex}-${colIndex}`}
             role="gridcell"
             aria-rowindex={rowIndex + 1}
             aria-colindex={colIndex + 1}
+            onClick={
+              onCellClick ? () => onCellClick(rowIndex, colIndex) : undefined
+            }
           >
             <div className="w-[90%] h-[90%]">
               <Disc
