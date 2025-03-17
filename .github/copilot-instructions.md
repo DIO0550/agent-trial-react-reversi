@@ -121,6 +121,8 @@
   |toBeTrue|受け取った boolean 値が True かどうか|
   |toBeFalse|受け取った boolean 値が False かどうか|
 
+- `fireEvent`は極力使わず、`userEvent`を利用すること。
+
 ## コミットルール
 
 - コミットは、以下のルールに従うこと。
