@@ -26,9 +26,8 @@ describe("Discコンポーネント", () => {
     const disc = screen.getByTestId("disc-none-can-place");
     expect(disc).toBeInTheDocument();
 
-    // スタイリングが適用されているか確認（点線のボーダー）
-    const style = window.getComputedStyle(disc);
-    expect(style.border).not.toBe("none");
+    // クラス名に border が含まれていることを確認
+    expect(disc.className).toContain("border");
   });
 
   it("クリックイベントが発火すること", () => {
@@ -40,14 +39,15 @@ describe("Discコンポーネント", () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
-  it("指定したサイズで表示されること", () => {
-    const testSize = 60;
-    render(<Disc color="white" size={testSize} />);
+  it("親要素のサイズに合わせたスタイルが適用されること", () => {
+    render(
+      <div style={{ width: "100px", height: "100px" }}>
+        <Disc color="white" />
+      </div>
+    );
     const disc = screen.getByTestId("disc-white");
-
-    const style = window.getComputedStyle(disc);
-    expect(style.width).toBe(`${testSize}px`);
-    expect(style.height).toBe(`${testSize}px`);
+    expect(disc.className).toContain("w-full");
+    expect(disc.className).toContain("h-full");
   });
 
   it("適切なアクセシビリティ属性が設定されること", () => {

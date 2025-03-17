@@ -22,11 +22,14 @@ const meta: Meta<typeof Disc> = {
       control: { type: "boolean" },
       description: "置くことが可能かどうか（ヒント表示用）",
     },
-    size: {
-      control: { type: "number", min: 20, max: 100, step: 5 },
-      description: "ディスクのサイズ（px）",
-    },
   },
+  decorators: [
+    (Story) => (
+      <div style={{ width: "40px", height: "40px" }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;
@@ -39,7 +42,6 @@ export const Black: Story = {
   args: {
     color: "black",
     canPlace: false,
-    size: 40,
   },
 };
 
@@ -50,7 +52,6 @@ export const White: Story = {
   args: {
     color: "white",
     canPlace: false,
-    size: 40,
   },
 };
 
@@ -61,7 +62,6 @@ export const None: Story = {
   args: {
     color: "none",
     canPlace: false,
-    size: 40,
   },
 };
 
@@ -72,7 +72,6 @@ export const CanPlace: Story = {
   args: {
     color: "none",
     canPlace: true,
-    size: 40,
   },
 };
 
@@ -83,7 +82,6 @@ export const Sizes: Story = {
   render: () => {
     const sizes: number[] = [20, 30, 40, 50, 60];
     const colors: DiscColor[] = ["black", "white", "none"];
-
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {colors.map((color) => (
@@ -93,7 +91,12 @@ export const Sizes: Story = {
           >
             <div style={{ width: "80px" }}>{color}:</div>
             {sizes.map((size) => (
-              <Disc key={`${color}-${size}`} color={color} size={size} />
+              <div
+                key={`${color}-${size}`}
+                style={{ width: `${size}px`, height: `${size}px` }}
+              >
+                <Disc color={color} />
+              </div>
             ))}
           </div>
         ))}
@@ -108,25 +111,39 @@ export const Sizes: Story = {
 export const AllStates: Story = {
   render: () => {
     const colors: DiscColor[] = ["black", "white", "none"];
-
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={{ width: "120px" }}>通常:</div>
           {colors.map((color) => (
-            <Disc key={`normal-${color}`} color={color} />
+            <div
+              key={`normal-${color}`}
+              style={{ width: "40px", height: "40px" }}
+            >
+              <Disc color={color} />
+            </div>
           ))}
         </div>
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={{ width: "120px" }}>配置可能:</div>
           {colors.map((color) => (
-            <Disc key={`canPlace-${color}`} color={color} canPlace={true} />
+            <div
+              key={`canPlace-${color}`}
+              style={{ width: "40px", height: "40px" }}
+            >
+              <Disc color={color} canPlace={true} />
+            </div>
           ))}
         </div>
         <div style={{ display: "flex", gap: "20px" }}>
           <div style={{ width: "120px" }}>クリック可能:</div>
           {colors.map((color) => (
-            <Disc key={`clickable-${color}`} color={color} onClick={() => {}} />
+            <div
+              key={`clickable-${color}`}
+              style={{ width: "40px", height: "40px" }}
+            >
+              <Disc color={color} onClick={() => {}} />
+            </div>
           ))}
         </div>
       </div>
