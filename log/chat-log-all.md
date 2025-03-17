@@ -91,11 +91,11 @@ disc の変更もコミットして、チャットログに保存してくださ
 
 1. `/app/react-reversi/src/components/elements/boards/board.tsx`
    - リバーシのボードを表示するコンポーネント
-   - 8×8のグリッドで石を配置できる機能を実装
+   - 8×8 のグリッドで石を配置できる機能を実装
    - 状態管理とイベントハンドリングをサポート
-   - アクセシビリティ対応（aria属性、role設定）
+   - アクセシビリティ対応（aria 属性、role 設定）
 2. `/app/react-reversi/src/components/elements/boards/board.stories.tsx`
-   - ボードコンポーネントのStorybook用ストーリーファイル
+   - ボードコンポーネントの Storybook 用ストーリーファイル
    - 初期状態、空のボード、ゲーム進行中、ゲーム終了などの状態表示
    - カスタムパターンでの表示サンプル
 3. `/app/react-reversi/src/components/elements/boards/board.test.tsx`
@@ -110,22 +110,22 @@ disc の変更もコミットして、チャットログに保存してくださ
 ### 型定義
 
 - `CellState` - ボードの各マスの状態を表す型（色と配置可能かどうか）
-- `BoardState` - 8×8のボード全体の状態を表す二次元配列型
+- `BoardState` - 8×8 のボード全体の状態を表す二次元配列型
 
 ### ユーティリティ関数
 
 - `createEmptyBoardState()` - 空のボード状態を作成する関数
 - `createInitialBoardState()` - リバーシの初期配置状態を作成する関数
 
-### Props設計
+### Props 設計
 
 - `boardState`: ボードの状態
 - `onCellClick`: セルがクリックされたときのイベントハンドラ（オプション）
 
 ### レンダリング
 
-- CSSグリッドを使用した8×8のマス目の表示
-- 各マスに石（Discコンポーネント）を配置
+- CSS グリッドを使用した 8×8 のマス目の表示
+- 各マスに石（Disc コンポーネント）を配置
 - 配置可能な場所の表示
 
 ### アクセシビリティ対応

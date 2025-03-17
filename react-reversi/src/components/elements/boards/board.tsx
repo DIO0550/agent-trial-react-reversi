@@ -38,7 +38,10 @@ const DEFAULT_CELL_SIZE = 64; // px
  */
 export const Board = ({ boardState, onCellClick }: Props) => {
   // ボードの状態が8×8でない場合はエラーを表示
-  if (boardState.length !== BOARD_SIZE || boardState.some(row => row.length !== BOARD_SIZE)) {
+  if (
+    boardState.length !== BOARD_SIZE ||
+    boardState.some((row) => row.length !== BOARD_SIZE)
+  ) {
     return <div className="text-red-500">Error: Board must be 8x8</div>;
   }
 
@@ -53,7 +56,7 @@ export const Board = ({ boardState, onCellClick }: Props) => {
       role="grid"
       aria-label="リバーシボード"
     >
-      {boardState.map((row, rowIndex) => 
+      {boardState.map((row, rowIndex) =>
         row.map((cell, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
@@ -68,7 +71,11 @@ export const Board = ({ boardState, onCellClick }: Props) => {
               <Disc
                 color={cell.color}
                 canPlace={cell.canPlace}
-                onClick={onCellClick ? () => onCellClick(rowIndex, colIndex) : undefined}
+                onClick={
+                  onCellClick
+                    ? () => onCellClick(rowIndex, colIndex)
+                    : undefined
+                }
               />
             </div>
           </div>
@@ -83,12 +90,16 @@ export const Board = ({ boardState, onCellClick }: Props) => {
  * すべてのセルが空の状態で初期化
  */
 export const createEmptyBoardState = (): BoardState => {
-  return Array(BOARD_SIZE).fill(null).map(() => 
-    Array(BOARD_SIZE).fill(null).map(() => ({
-      color: "none",
-      canPlace: false,
-    }))
-  );
+  return Array(BOARD_SIZE)
+    .fill(null)
+    .map(() =>
+      Array(BOARD_SIZE)
+        .fill(null)
+        .map(() => ({
+          color: "none",
+          canPlace: false,
+        }))
+    );
 };
 
 /**
@@ -97,13 +108,13 @@ export const createEmptyBoardState = (): BoardState => {
  */
 export const createInitialBoardState = (): BoardState => {
   const board = createEmptyBoardState();
-  
+
   // 中央に初期配置
   const center = BOARD_SIZE / 2;
   board[center - 1][center - 1] = { color: "white", canPlace: false };
   board[center - 1][center] = { color: "black", canPlace: false };
   board[center][center - 1] = { color: "black", canPlace: false };
   board[center][center] = { color: "white", canPlace: false };
-  
+
   return board;
 };
