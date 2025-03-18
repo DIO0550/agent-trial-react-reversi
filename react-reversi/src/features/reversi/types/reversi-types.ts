@@ -2,8 +2,8 @@
  * 石の色を表す列挙型
  */
 export enum DiscColor {
-  BLACK = 'BLACK',
-  WHITE = 'WHITE',
+  BLACK = "BLACK",
+  WHITE = "WHITE",
 }
 
 /**

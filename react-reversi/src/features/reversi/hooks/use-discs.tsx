@@ -1,25 +1,31 @@
-import { useState } from 'react';
-import { BoardPosition, BOARD_SIZE, DiscColor, DiscsState, Direction } from '../types/reversi-types';
+import { useState } from "react";
+import {
+  BoardPosition,
+  BOARD_SIZE,
+  DiscColor,
+  DiscsState,
+  Direction,
+} from "../types/reversi-types";
 
 /**
  * 全方向の変化量を定義
  */
 const DIRECTIONS: Direction[] = [
   { rowDelta: -1, colDelta: -1 }, // 左上
-  { rowDelta: -1, colDelta: 0 },  // 上
-  { rowDelta: -1, colDelta: 1 },  // 右上
-  { rowDelta: 0, colDelta: -1 },  // 左
-  { rowDelta: 0, colDelta: 1 },   // 右
-  { rowDelta: 1, colDelta: -1 },  // 左下
-  { rowDelta: 1, colDelta: 0 },   // 下
-  { rowDelta: 1, colDelta: 1 },   // 右下
+  { rowDelta: -1, colDelta: 0 }, // 上
+  { rowDelta: -1, colDelta: 1 }, // 右上
+  { rowDelta: 0, colDelta: -1 }, // 左
+  { rowDelta: 0, colDelta: 1 }, // 右
+  { rowDelta: 1, colDelta: -1 }, // 左下
+  { rowDelta: 1, colDelta: 0 }, // 下
+  { rowDelta: 1, colDelta: 1 }, // 右下
 ];
 
 /**
  * エラーメッセージ
  */
 const ERROR_MESSAGES = {
-  CANNOT_PLACE_DISC: 'この位置には石を置けません',
+  CANNOT_PLACE_DISC: "この位置には石を置けません",
 };
 
 /**
@@ -54,9 +60,9 @@ const getOppositeColor = (color: DiscColor): DiscColor => {
  */
 const isWithinBoard = (position: BoardPosition): boolean => {
   return (
-    position.row >= 0 && 
-    position.row < BOARD_SIZE && 
-    position.col >= 0 && 
+    position.row >= 0 &&
+    position.row < BOARD_SIZE &&
+    position.col >= 0 &&
     position.col < BOARD_SIZE
   );
 };
@@ -82,14 +88,14 @@ export const useDiscs = () => {
   ): BoardPosition[] => {
     const oppositeColor = getOppositeColor(color);
     const flippablePositions: BoardPosition[] = [];
-    
+
     let currentRow = position.row + direction.rowDelta;
     let currentCol = position.col + direction.colDelta;
     let currentPosition = { row: currentRow, col: currentCol };
-    
+
     // 隣が相手の色である場合は進み続ける
     while (
-      isWithinBoard(currentPosition) && 
+      isWithinBoard(currentPosition) &&
       currentDiscs[positionToKey(currentPosition)] === oppositeColor
     ) {
       flippablePositions.push(currentPosition);
@@ -97,16 +103,16 @@ export const useDiscs = () => {
       currentCol += direction.colDelta;
       currentPosition = { row: currentRow, col: currentCol };
     }
-    
+
     // 最後に自分の色があれば挟めると判断
     if (
-      isWithinBoard(currentPosition) && 
-      currentDiscs[positionToKey(currentPosition)] === color && 
+      isWithinBoard(currentPosition) &&
+      currentDiscs[positionToKey(currentPosition)] === color &&
       flippablePositions.length > 0
     ) {
       return flippablePositions;
     }
-    
+
     return [];
   };
 
@@ -124,7 +130,7 @@ export const useDiscs = () => {
     }
 
     // 全方向をチェックして、ひっくり返せる石を集める
-    return DIRECTIONS.flatMap(direction => 
+    return DIRECTIONS.flatMap((direction) =>
       findFlippableDiscsInDirection(position, color, direction, currentDiscs)
     );
   };
@@ -134,17 +140,17 @@ export const useDiscs = () => {
    */
   const getPlaceablePositions = (): BoardPosition[] => {
     const placeablePositions: BoardPosition[] = [];
-    
+
     // 全マスをチェック
     for (let row = 0; row < BOARD_SIZE; row++) {
       for (let col = 0; col < BOARD_SIZE; col++) {
         const position = { row, col };
-        
+
         // 既に石があるマスにはおけない
         if (discs[positionToKey(position)]) {
           continue;
         }
-        
+
         // ひっくり返せる石があるか確認
         const flippableDiscs = findFlippableDiscs(position, currentTurn, discs);
         if (flippableDiscs.length > 0) {
@@ -152,7 +158,7 @@ export const useDiscs = () => {
         }
       }
     }
-    
+
     return placeablePositions;
   };
 
@@ -171,20 +177,20 @@ export const useDiscs = () => {
     if (!canPlaceDisc(position)) {
       throw new Error(ERROR_MESSAGES.CANNOT_PLACE_DISC);
     }
-    
+
     const flippableDiscs = findFlippableDiscs(position, currentTurn, discs);
-    
+
     // 新しい盤面を作成
     const newDiscs = { ...discs };
-    
+
     // 置いた位置に石を追加
     newDiscs[positionToKey(position)] = currentTurn;
-    
+
     // ひっくり返す石を処理
-    flippableDiscs.forEach(flipPosition => {
+    flippableDiscs.forEach((flipPosition) => {
       newDiscs[positionToKey(flipPosition)] = currentTurn;
     });
-    
+
     // 盤面と手番を更新
     setDiscs(newDiscs);
     setCurrentTurn(getOppositeColor(currentTurn));
@@ -194,6 +200,6 @@ export const useDiscs = () => {
     discs,
     currentTurn,
     getPlaceablePositions,
-    placeDisc
+    placeDisc,
   };
 };
