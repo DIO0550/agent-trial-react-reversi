@@ -27,10 +27,10 @@ describe("StartMenuコンポーネント", () => {
 
     // 「普通」と「先行」が選択状態になっていることを確認
     expect(screen.getByText("普通").closest("button")).toHaveClass(
-      "border-blue-500",
+      "border-blue-500"
     );
     expect(screen.getByText("先行").closest("button")).toHaveClass(
-      "border-blue-500",
+      "border-blue-500"
     );
   });
 
@@ -43,10 +43,10 @@ describe("StartMenuコンポーネント", () => {
 
     // 「強い」が選択状態になり、「普通」の選択が解除されていることを確認
     expect(screen.getByText("強い").closest("button")).toHaveClass(
-      "border-blue-500",
+      "border-blue-500"
     );
     expect(screen.getByText("普通").closest("button")).not.toHaveClass(
-      "border-blue-500",
+      "border-blue-500"
     );
   });
 
@@ -59,10 +59,10 @@ describe("StartMenuコンポーネント", () => {
 
     // 「後攻」が選択状態になり、「先行」の選択が解除されていることを確認
     expect(screen.getByText("後攻").closest("button")).toHaveClass(
-      "border-blue-500",
+      "border-blue-500"
     );
     expect(screen.getByText("先行").closest("button")).not.toHaveClass(
-      "border-blue-500",
+      "border-blue-500"
     );
   });
 
