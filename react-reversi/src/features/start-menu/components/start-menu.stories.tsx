@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { StartMenu } from "./start-menu";
+import { StartMenuProps } from "../types/start-menu-types";
 
 /**
  * リバーシゲームのスタート画面メニューコンポーネント。
@@ -19,7 +20,7 @@ const meta: Meta<typeof StartMenu> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof StartMenu>;
+type Story = StoryObj<StartMenuProps>;
 
 /**
  * デフォルト状態のスタートメニュー
