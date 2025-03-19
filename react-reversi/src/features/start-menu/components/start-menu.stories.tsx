@@ -1,21 +1,21 @@
-import { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
-import { StartMenu } from "./start-menu";
-import { StartMenuProps } from "../types/start-menu-types";
+import { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import { StartMenu } from './start-menu';
+import { StartMenuProps } from '../types/start-menu-types';
 
 /**
  * リバーシゲームのスタート画面メニューコンポーネント。
  * CPUのレベルとプレイヤーの手番を選択できます。
  */
 const meta: Meta<typeof StartMenu> = {
-  title: "Features/StartMenu",
+  title: 'Features/StartMenu',
   component: StartMenu,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
-    onStart: { action: "started" },
+    onStart: { action: 'started' },
   },
 };
 

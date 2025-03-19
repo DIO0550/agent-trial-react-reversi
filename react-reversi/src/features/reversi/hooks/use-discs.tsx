@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   BoardPosition,
   BOARD_SIZE,
   DiscColor,
   DiscsState,
   Direction,
-} from "../types/reversi-types";
+} from '../types/reversi-types';
 
 /**
  * 全方向の変化量を定義
@@ -25,7 +25,7 @@ const DIRECTIONS: Direction[] = [
  * エラーメッセージ
  */
 const ERROR_MESSAGES = {
-  CANNOT_PLACE_DISC: "この位置には石を置けません",
+  CANNOT_PLACE_DISC: 'この位置には石を置けません',
 };
 
 /**
@@ -84,7 +84,7 @@ export const useDiscs = () => {
     position: BoardPosition,
     color: DiscColor,
     direction: Direction,
-    currentDiscs: DiscsState
+    currentDiscs: DiscsState,
   ): BoardPosition[] => {
     const oppositeColor = getOppositeColor(color);
     const flippablePositions: BoardPosition[] = [];
@@ -122,7 +122,7 @@ export const useDiscs = () => {
   const findFlippableDiscs = (
     position: BoardPosition,
     color: DiscColor,
-    currentDiscs: DiscsState
+    currentDiscs: DiscsState,
   ): BoardPosition[] => {
     // すでに石がある場合は置けない
     if (currentDiscs[positionToKey(position)]) {
@@ -131,7 +131,7 @@ export const useDiscs = () => {
 
     // 全方向をチェックして、ひっくり返せる石を集める
     return DIRECTIONS.flatMap((direction) =>
-      findFlippableDiscsInDirection(position, color, direction, currentDiscs)
+      findFlippableDiscsInDirection(position, color, direction, currentDiscs),
     );
   };
 

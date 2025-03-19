@@ -10,7 +10,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest",
-    "format": "prettier --write"
+    "format": "prettier --write ./src/**/*.{ts,tsx,js,jsx,json,css,scss}"
   },
   "dependencies": {
     "next": "15.2.2",

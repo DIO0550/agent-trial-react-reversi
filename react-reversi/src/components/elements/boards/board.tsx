@@ -1,4 +1,4 @@
-import { Disc, DiscColor } from "../discs/disc";
+import { Disc, DiscColor } from '../discs/disc';
 
 /**
  * ボードの1マスの状態を表す型
@@ -61,7 +61,7 @@ export const Board = ({ boardState, onCellClick }: Props) => {
           <div
             key={`${rowIndex}-${colIndex}`}
             className={`bg-green-600 aspect-square flex items-center justify-center ${
-              onCellClick ? "cursor-pointer" : ""
+              onCellClick ? 'cursor-pointer' : ''
             }`}
             style={{ width: DEFAULT_CELL_SIZE, height: DEFAULT_CELL_SIZE }}
             data-testid={`cell-${rowIndex}-${colIndex}`}
@@ -84,7 +84,7 @@ export const Board = ({ boardState, onCellClick }: Props) => {
               />
             </div>
           </div>
-        ))
+        )),
       )}
     </div>
   );
@@ -101,9 +101,9 @@ export const createEmptyBoardState = (): BoardState => {
       Array(BOARD_SIZE)
         .fill(null)
         .map(() => ({
-          color: "none",
+          color: 'none',
           canPlace: false,
-        }))
+        })),
     );
 };
 
@@ -116,10 +116,10 @@ export const createInitialBoardState = (): BoardState => {
 
   // 中央に初期配置
   const center = BOARD_SIZE / 2;
-  board[center - 1][center - 1] = { color: "white", canPlace: false };
-  board[center - 1][center] = { color: "black", canPlace: false };
-  board[center][center - 1] = { color: "black", canPlace: false };
-  board[center][center] = { color: "white", canPlace: false };
+  board[center - 1][center - 1] = { color: 'white', canPlace: false };
+  board[center - 1][center] = { color: 'black', canPlace: false };
+  board[center][center - 1] = { color: 'black', canPlace: false };
+  board[center][center] = { color: 'white', canPlace: false };
 
   return board;
 };

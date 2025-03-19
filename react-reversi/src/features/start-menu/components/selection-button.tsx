@@ -1,4 +1,4 @@
-import { SelectionOption } from "../types/start-menu-types";
+import { SelectionOption } from '../types/start-menu-types';
 
 type Props<T> = {
   /**
@@ -35,11 +35,11 @@ export const SelectionButton = <T extends string>({
     <button
       className={`
         py-2 px-4 rounded-md transition-all
-        ${fullWidth ? "flex-1" : ""}
+        ${fullWidth ? 'flex-1' : ''}
         ${
           isSelected
-            ? "border-2 border-blue-500 bg-blue-50"
-            : "border-2 border-gray-300 hover:bg-gray-100"
+            ? 'border-2 border-blue-500 bg-blue-50'
+            : 'border-2 border-gray-300 hover:bg-gray-100'
         }
       `}
       onClick={() => onClick(option.value)}

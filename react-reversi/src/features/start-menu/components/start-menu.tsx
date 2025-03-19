@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { SelectionGroup } from "./selection-group";
+import { useState } from 'react';
+import { SelectionGroup } from './selection-group';
 import {
   CpuLevel,
   PlayerColor,
   StartMenuProps,
-} from "../types/start-menu-types";
+} from '../types/start-menu-types';
 import {
   CPU_LEVEL_OPTIONS,
   DEFAULT_CPU_LEVEL,
   DEFAULT_PLAYER_COLOR,
   PLAYER_COLOR_OPTIONS,
-} from "../constants/start-menu-constants";
+} from '../constants/start-menu-constants';
 
 /**
  * リバーシゲームのスタート画面メニューコンポーネント

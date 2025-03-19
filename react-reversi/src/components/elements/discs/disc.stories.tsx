@@ -1,31 +1,31 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Disc, DiscColor } from "./disc";
+import type { Meta, StoryObj } from '@storybook/react';
+import { Disc, DiscColor } from './disc';
 
 /**
  * リバーシの石を表示するコンポーネント
  */
 const meta: Meta<typeof Disc> = {
-  title: "Elements/Disc",
+  title: 'Elements/Disc',
   component: Disc,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
     color: {
-      control: { type: "select" },
-      options: ["black", "white", "none"],
-      description: "ディスクの色",
+      control: { type: 'select' },
+      options: ['black', 'white', 'none'],
+      description: 'ディスクの色',
     },
-    onClick: { action: "clicked" },
+    onClick: { action: 'clicked' },
     canPlace: {
-      control: { type: "boolean" },
-      description: "置くことが可能かどうか（ヒント表示用）",
+      control: { type: 'boolean' },
+      description: '置くことが可能かどうか（ヒント表示用）',
     },
   },
   decorators: [
     (Story) => (
-      <div style={{ width: "40px", height: "40px" }}>
+      <div style={{ width: '40px', height: '40px' }}>
         <Story />
       </div>
     ),
@@ -40,7 +40,7 @@ type Story = StoryObj<typeof Disc>;
  */
 export const Black: Story = {
   args: {
-    color: "black",
+    color: 'black',
     canPlace: false,
   },
 };
@@ -50,7 +50,7 @@ export const Black: Story = {
  */
 export const White: Story = {
   args: {
-    color: "white",
+    color: 'white',
     canPlace: false,
   },
 };
@@ -60,7 +60,7 @@ export const White: Story = {
  */
 export const None: Story = {
   args: {
-    color: "none",
+    color: 'none',
     canPlace: false,
   },
 };
@@ -70,7 +70,7 @@ export const None: Story = {
  */
 export const CanPlace: Story = {
   args: {
-    color: "none",
+    color: 'none',
     canPlace: true,
   },
 };
@@ -81,15 +81,15 @@ export const CanPlace: Story = {
 export const Sizes: Story = {
   render: () => {
     const sizes: number[] = [20, 30, 40, 50, 60];
-    const colors: DiscColor[] = ["black", "white", "none"];
+    const colors: DiscColor[] = ['black', 'white', 'none'];
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {colors.map((color) => (
           <div
             key={color}
-            style={{ display: "flex", alignItems: "center", gap: "10px" }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
           >
-            <div style={{ width: "80px" }}>{color}:</div>
+            <div style={{ width: '80px' }}>{color}:</div>
             {sizes.map((size) => (
               <div
                 key={`${color}-${size}`}
@@ -110,37 +110,37 @@ export const Sizes: Story = {
  */
 export const AllStates: Story = {
   render: () => {
-    const colors: DiscColor[] = ["black", "white", "none"];
+    const colors: DiscColor[] = ['black', 'white', 'none'];
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-        <div style={{ display: "flex", gap: "20px" }}>
-          <div style={{ width: "120px" }}>通常:</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          <div style={{ width: '120px' }}>通常:</div>
           {colors.map((color) => (
             <div
               key={`normal-${color}`}
-              style={{ width: "40px", height: "40px" }}
+              style={{ width: '40px', height: '40px' }}
             >
               <Disc color={color} />
             </div>
           ))}
         </div>
-        <div style={{ display: "flex", gap: "20px" }}>
-          <div style={{ width: "120px" }}>配置可能:</div>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          <div style={{ width: '120px' }}>配置可能:</div>
           {colors.map((color) => (
             <div
               key={`canPlace-${color}`}
-              style={{ width: "40px", height: "40px" }}
+              style={{ width: '40px', height: '40px' }}
             >
               <Disc color={color} canPlace={true} />
             </div>
           ))}
         </div>
-        <div style={{ display: "flex", gap: "20px" }}>
-          <div style={{ width: "120px" }}>クリック可能:</div>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          <div style={{ width: '120px' }}>クリック可能:</div>
           {colors.map((color) => (
             <div
               key={`clickable-${color}`}
-              style={{ width: "40px", height: "40px" }}
+              style={{ width: '40px', height: '40px' }}
             >
               <Disc color={color} onClick={() => {}} />
             </div>

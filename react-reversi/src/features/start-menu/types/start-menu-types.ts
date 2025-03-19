@@ -1,12 +1,12 @@
 /**
  * CPUレベルの型
  */
-export type CpuLevel = "easy" | "normal" | "hard" | "strongest";
+export type CpuLevel = 'easy' | 'normal' | 'hard' | 'strongest';
 
 /**
  * プレイヤーの色（手番）の型
  */
-export type PlayerColor = "black" | "white";
+export type PlayerColor = 'black' | 'white';
 
 /**
  * スタートメニューの設定項目
