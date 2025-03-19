@@ -139,6 +139,8 @@
   |削除（Removal） |🗑️ [Remove]:|
   |WIP(Work In Progress) |🚧 [WIP]:|
 
+- コミットは変更したファイルのみ対象にすること。
+
 ## 関数命名規則
 
 - コンポーネントの Props に渡すもの: `handle~`
