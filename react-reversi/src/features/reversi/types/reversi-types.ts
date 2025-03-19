@@ -15,6 +15,14 @@ export type BoardPosition = {
 };
 
 /**
+ * 位置を表す型（CPU用）
+ */
+export type Point = {
+  row: number;
+  col: number;
+};
+
+/**
  * 盤面上の石の配置状態を表す型
  * キーは "行,列" の形式の文字列
  * 値は石の色
