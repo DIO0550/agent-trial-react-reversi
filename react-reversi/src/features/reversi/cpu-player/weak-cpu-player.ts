@@ -1,21 +1,12 @@
 import { Point } from '../types/reversi-types';
-import { CpuPlayer } from './types/cpu-player-types';
+import { CpuPlayer, getPlaceablePositions } from './types/cpu-player-types';
 
 /**
- * 利用可能な位置を取得する関数
+ * 配列からランダムに要素を1つ選択する関数
  */
-const getAvailablePositions = (board: number[][]): Point[] => {
-  const availablePositions: Point[] = [];
-
-  for (let row = 0; row < board.length; row++) {
-    for (let col = 0; col < board[row].length; col++) {
-      if (board[row][col] === 0) {
-        availablePositions.push({ row, col });
-      }
-    }
-  }
-
-  return availablePositions;
+const getRandomElement = <T>(array: T[]): T => {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
 };
 
 /**
@@ -29,13 +20,13 @@ export const createWeakCpuPlayer = (): CpuPlayer => {
     board: number[][],
     currentPlayer: number,
   ): Point => {
-    const availablePositions = getAvailablePositions(board);
+    const availablePositions = getPlaceablePositions(board, currentPlayer);
+
     if (availablePositions.length === 0) {
       throw new Error('No available positions');
     }
 
-    const randomIndex = Math.floor(Math.random() * availablePositions.length);
-    return availablePositions[randomIndex];
+    return getRandomElement(availablePositions);
   };
 
   return {

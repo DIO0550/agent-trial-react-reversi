@@ -1,5 +1,5 @@
 import { Point } from '../types/reversi-types';
-import { CpuPlayer } from './types/cpu-player-types';
+import { CpuPlayer, getPlaceablePositions } from './types/cpu-player-types';
 
 /**
  * マスの位置の種類を表す定数
@@ -63,21 +63,6 @@ const getPositionType = (position: Point, boardSize: number): PositionType => {
 };
 
 /**
- * 利用可能な位置を取得する関数
- */
-const getAvailablePositions = (board: number[][]): Point[] => {
-  const availablePositions: Point[] = [];
-  for (let row = 0; row < board.length; row++) {
-    for (let col = 0; col < board[row].length; col++) {
-      if (board[row][col] === 0) {
-        availablePositions.push({ row, col });
-      }
-    }
-  }
-  return availablePositions;
-};
-
-/**
  * 配列からランダムに要素を1つ選択する関数
  */
 const getRandomElement = <T>(array: T[]): T => {
@@ -96,7 +81,7 @@ export const createNormalCpuPlayer = (): CpuPlayer => {
     board: number[][],
     currentPlayer: number,
   ): Point => {
-    const availablePositions = getAvailablePositions(board);
+    const availablePositions = getPlaceablePositions(board, currentPlayer);
 
     if (availablePositions.length === 0) {
       throw new Error('No available positions');
