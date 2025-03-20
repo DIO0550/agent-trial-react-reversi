@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { WeakCpuPlayer } from './weak-cpu-player';
+import { createWeakCpuPlayer } from './weak-cpu-player';
 
-describe('WeakCpuPlayer', () => {
+describe('createWeakCpuPlayer', () => {
   it('置ける場所の中からランダムな位置を返すこと', () => {
     // Arrange
     const board = [
@@ -10,8 +10,7 @@ describe('WeakCpuPlayer', () => {
       [0, 0, 2],
     ];
     const currentPlayer = 1;
-    const weakCpuPlayer = new WeakCpuPlayer();
-
+    const weakCpuPlayer = createWeakCpuPlayer();
     // 乱数生成をモック化
     vi.spyOn(Math, 'random').mockReturnValue(0);
 
@@ -31,7 +30,7 @@ describe('WeakCpuPlayer', () => {
       [1, 1, 1],
     ];
     const currentPlayer = 2;
-    const weakCpuPlayer = new WeakCpuPlayer();
+    const weakCpuPlayer = createWeakCpuPlayer();
 
     // Act
     const result = weakCpuPlayer.calculateNextMove(board, currentPlayer);
