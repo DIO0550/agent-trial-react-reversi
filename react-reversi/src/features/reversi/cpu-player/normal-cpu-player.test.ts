@@ -24,7 +24,7 @@ describe('NormalCpuPlayer', () => {
 
   it('角が選択肢にある場合は角を優先的に選択する', () => {
     const board = [
-      [0, 1, 0],
+      [0, 2, 1],
       [1, 2, 0],
       [0, 0, 0],
     ];
@@ -32,7 +32,7 @@ describe('NormalCpuPlayer', () => {
     const cpuPlayer = createNormalCpuPlayer();
 
     // ランダム要素を排除するためにMath.randomをモック
-    vi.spyOn(Math, 'random').mockReturnValue(0.5);
+    vi.spyOn(Math, 'random').mockReturnValue(0);
 
     const result = cpuPlayer.calculateNextMove(board, currentPlayer);
 
