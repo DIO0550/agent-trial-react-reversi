@@ -1,5 +1,6 @@
 import { Point } from '../types/reversi-types';
-import { CpuPlayer, getPlaceablePositions } from './types/cpu-player-types';
+import { CpuPlayer } from './types/cpu-player-types';
+import { getPlaceablePositions } from '../utils/board-utils';
 
 /**
  * マスの位置の種類を表す定数
@@ -50,15 +51,12 @@ const isEdgePosition = (row: number, col: number, size: number): boolean => {
  */
 const getPositionType = (position: Point, boardSize: number): PositionType => {
   const { row, col } = position;
-
   if (isCornerPosition(row, col, boardSize)) {
     return POSITION_TYPE.CORNER;
   }
-
   if (isEdgePosition(row, col, boardSize)) {
     return POSITION_TYPE.EDGE;
   }
-
   return POSITION_TYPE.OTHER;
 };
 
@@ -82,7 +80,6 @@ export const createNormalCpuPlayer = (): CpuPlayer => {
     currentPlayer: number,
   ): Point => {
     const availablePositions = getPlaceablePositions(board, currentPlayer);
-
     if (availablePositions.length === 0) {
       throw new Error('No available positions');
     }
