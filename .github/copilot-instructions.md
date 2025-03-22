@@ -137,11 +137,18 @@
   |パフォーマンス（Performance） |🐎 [Performance]:|
   |テスト（Tests） |🚨 [Tests]:|
   |削除（Removal） |🗑️ [Remove]:|
+  |チャットログやドキュメントの更新(Doc)|📖 [Doc]:|
   |WIP(Work In Progress) |🚧 [WIP]:|
 
 - コミットは変更したファイルのみ対象にすること。
 
-## 関数命名規則
+## 関数
+
+### 引数
+
+- 同じ方が 2 つ以上ある場合は、`Options Objectパターン`でオブジェクトで引数を受け取ること
+
+### 命名規則
 
 - コンポーネントの Props に渡すもの: `handle~`
 

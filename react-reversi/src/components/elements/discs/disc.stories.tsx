@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Disc, DiscColor } from './disc';
+import { Disc } from './disc';
 
 /**
  * リバーシの石を表示するコンポーネント
@@ -72,81 +72,5 @@ export const CanPlace: Story = {
   args: {
     color: 'none',
     canPlace: true,
-  },
-};
-
-/**
- * 様々なサイズ
- */
-export const Sizes: Story = {
-  render: () => {
-    const sizes: number[] = [20, 30, 40, 50, 60];
-    const colors: DiscColor[] = ['black', 'white', 'none'];
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {colors.map((color) => (
-          <div
-            key={color}
-            style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-          >
-            <div style={{ width: '80px' }}>{color}:</div>
-            {sizes.map((size) => (
-              <div
-                key={`${color}-${size}`}
-                style={{ width: `${size}px`, height: `${size}px` }}
-              >
-                <Disc color={color} />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  },
-};
-
-/**
- * すべての状態
- */
-export const AllStates: Story = {
-  render: () => {
-    const colors: DiscColor[] = ['black', 'white', 'none'];
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          <div style={{ width: '120px' }}>通常:</div>
-          {colors.map((color) => (
-            <div
-              key={`normal-${color}`}
-              style={{ width: '40px', height: '40px' }}
-            >
-              <Disc color={color} />
-            </div>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          <div style={{ width: '120px' }}>配置可能:</div>
-          {colors.map((color) => (
-            <div
-              key={`canPlace-${color}`}
-              style={{ width: '40px', height: '40px' }}
-            >
-              <Disc color={color} canPlace={true} />
-            </div>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          <div style={{ width: '120px' }}>クリック可能:</div>
-          {colors.map((color) => (
-            <div
-              key={`clickable-${color}`}
-              style={{ width: '40px', height: '40px' }}
-            >
-              <Disc color={color} onClick={() => {}} />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
   },
 };
