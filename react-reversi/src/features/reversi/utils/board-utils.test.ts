@@ -6,7 +6,7 @@ import {
   getPlaceablePositions,
   DIRECTIONS,
 } from './board-utils';
-import { Direction, Point } from '../types/reversi-types';
+import { Direction, Point, DiscColor } from '../types/reversi-types';
 
 describe('board-utils関数', () => {
   // isWithinBoardのテスト
@@ -48,7 +48,13 @@ describe('board-utils関数', () => {
 
       // 右方向をテスト: (3,3)の黒から見て、(3,4)(3,5)の白をひっくり返せる
       const direction: Direction = { rowDelta: 0, colDelta: 1 };
-      const result = findFlippableDiscsInDirection(3, 3, 1, direction, board);
+      const result = findFlippableDiscsInDirection(
+        3,
+        3,
+        DiscColor.BLACK,
+        direction,
+        board,
+      );
 
       expect(result).toHaveLength(2);
       expect(result).toEqual([
@@ -72,7 +78,13 @@ describe('board-utils関数', () => {
 
       // 下方向をテスト: (2,2)から(5,2)までの石をひっくり返す
       const direction: Direction = { rowDelta: 1, colDelta: 0 };
-      const result = findFlippableDiscsInDirection(2, 2, 1, direction, board);
+      const result = findFlippableDiscsInDirection(
+        2,
+        2,
+        DiscColor.BLACK,
+        direction,
+        board,
+      );
 
       expect(result).toHaveLength(3);
       expect(result).toEqual([
@@ -96,7 +108,13 @@ describe('board-utils関数', () => {
 
       // 上方向をテスト (3,3)に黒(1)を置こうとしても置けない
       const direction: Direction = { rowDelta: -1, colDelta: 0 };
-      const result = findFlippableDiscsInDirection(3, 3, 1, direction, board);
+      const result = findFlippableDiscsInDirection(
+        3,
+        3,
+        DiscColor.BLACK,
+        direction,
+        board,
+      );
 
       expect(result).toHaveLength(0);
     });
@@ -115,7 +133,13 @@ describe('board-utils関数', () => {
 
       // 右方向をテスト (3,3)から(3,6)で自分の石がないため挟めない
       const direction: Direction = { rowDelta: 0, colDelta: 1 };
-      const result = findFlippableDiscsInDirection(3, 3, 1, direction, board);
+      const result = findFlippableDiscsInDirection(
+        3,
+        3,
+        DiscColor.BLACK,
+        direction,
+        board,
+      );
 
       // 最後に自分の石がないので、空の配列を返す
       expect(result).toHaveLength(0);
@@ -135,7 +159,13 @@ describe('board-utils関数', () => {
 
       // 左上方向をテスト (0,0)に白(2)を置こうとしても盤面外になる
       const direction: Direction = { rowDelta: -1, colDelta: -1 };
-      const result = findFlippableDiscsInDirection(0, 0, 2, direction, board);
+      const result = findFlippableDiscsInDirection(
+        0,
+        0,
+        DiscColor.WHITE,
+        direction,
+        board,
+      );
 
       expect(result).toHaveLength(0);
     });
@@ -157,7 +187,7 @@ describe('board-utils関数', () => {
       ];
 
       // (5,5)に黒(1)を置くと、左上方向の石をひっくり返せる
-      const result = findFlippableDiscs(5, 5, 1, board);
+      const result = findFlippableDiscs(5, 5, DiscColor.BLACK, board);
 
       // 実装では斜め方向のみが検出される
       expect(result).toHaveLength(1);
@@ -179,7 +209,7 @@ describe('board-utils関数', () => {
       ];
 
       // 既に石がある(3,3)に置こうとする
-      const result = findFlippableDiscs(3, 3, 2, board);
+      const result = findFlippableDiscs(3, 3, DiscColor.WHITE, board);
 
       expect(result).toHaveLength(0);
     });
@@ -197,7 +227,7 @@ describe('board-utils関数', () => {
       ];
 
       // 相手の石を挟めない場所
-      const result = findFlippableDiscs(0, 0, 1, board);
+      const result = findFlippableDiscs(0, 0, DiscColor.BLACK, board);
 
       expect(result).toHaveLength(0);
     });
@@ -215,7 +245,7 @@ describe('board-utils関数', () => {
       ];
 
       // 黒(1)が置ける位置を取得
-      const result = getPlaceablePositions(board, 1);
+      const result = getPlaceablePositions(board, DiscColor.BLACK);
 
       // 配列の要素数をチェック
       expect(result).toHaveLength(4);
@@ -245,7 +275,7 @@ describe('board-utils関数', () => {
       ];
 
       // 白(2)が置ける位置を取得
-      const result = getPlaceablePositions(board, 2);
+      const result = getPlaceablePositions(board, DiscColor.WHITE);
 
       expect(result).toHaveLength(0);
     });
@@ -264,7 +294,7 @@ describe('board-utils関数', () => {
       ];
 
       // 黒(1)が置ける位置を取得
-      const result = getPlaceablePositions(board, 1);
+      const result = getPlaceablePositions(board, DiscColor.BLACK);
 
       // それぞれの位置に置けるか確認
       expect(result.length).toBeGreaterThan(0);

@@ -1,4 +1,4 @@
-import { Board, Direction, Point } from '../types/reversi-types';
+import { Board, Direction, Point, DiscColor } from '../types/reversi-types';
 
 /**
  * 盤面内かどうかをチェックする関数
@@ -12,16 +12,31 @@ export const isWithinBoard = (
 };
 
 /**
+ * DiscColorを数値に変換する関数
+ */
+export const discColorToNumber = (color: DiscColor): number => {
+  return color === DiscColor.BLACK ? 1 : 2;
+};
+
+/**
+ * 数値をDiscColorに変換する関数
+ */
+export const numberToDiscColor = (num: number): DiscColor => {
+  return num === 1 ? DiscColor.BLACK : DiscColor.WHITE;
+};
+
+/**
  * 指定された位置から特定の方向にひっくり返せる石があるかチェックする関数
  */
 export const findFlippableDiscsInDirection = (
   row: number,
   col: number,
-  currentPlayer: number,
+  currentPlayer: DiscColor,
   direction: Direction,
   board: Board,
 ): Point[] => {
-  const oppositePlayer = currentPlayer === 1 ? 2 : 1;
+  const currentPlayerNum = discColorToNumber(currentPlayer);
+  const oppositePlayerNum = currentPlayerNum === 1 ? 2 : 1;
   const flippablePositions: Point[] = [];
   let currentRow = row + direction.rowDelta;
   let currentCol = col + direction.colDelta;
@@ -29,7 +44,7 @@ export const findFlippableDiscsInDirection = (
   // 隣が相手の色である場合は進み続ける
   while (
     isWithinBoard(currentRow, currentCol, board.length) &&
-    board[currentRow][currentCol] === oppositePlayer
+    board[currentRow][currentCol] === oppositePlayerNum
   ) {
     flippablePositions.push({ row: currentRow, col: currentCol });
     currentRow += direction.rowDelta;
@@ -39,7 +54,7 @@ export const findFlippableDiscsInDirection = (
   // 最後に自分の色があれば挟めると判断
   if (
     isWithinBoard(currentRow, currentCol, board.length) &&
-    board[currentRow][currentCol] === currentPlayer &&
+    board[currentRow][currentCol] === currentPlayerNum &&
     flippablePositions.length > 0
   ) {
     return flippablePositions;
@@ -54,7 +69,7 @@ export const findFlippableDiscsInDirection = (
 export const findFlippableDiscs = (
   row: number,
   col: number,
-  currentPlayer: number,
+  currentPlayer: DiscColor,
   board: Board,
 ): Point[] => {
   // すでに石がある場合は置けない
@@ -73,7 +88,7 @@ export const findFlippableDiscs = (
  */
 export const getPlaceablePositions = (
   board: Board,
-  currentPlayer: number,
+  currentPlayer: DiscColor,
 ): Point[] => {
   const placeablePositions: Point[] = [];
   const size = board.length;
