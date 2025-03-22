@@ -43,3 +43,9 @@ export type Direction = {
  * 盤面の大きさ
  */
 export const BOARD_SIZE = 8;
+
+/**
+ * 盤面の型定義
+ * 0: 空、1: 黒、2: 白
+ */
+export type Board = number[][];

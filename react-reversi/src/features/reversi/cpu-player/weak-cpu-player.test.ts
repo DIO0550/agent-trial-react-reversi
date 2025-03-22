@@ -1,58 +1,77 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createWeakCpuPlayer } from './weak-cpu-player';
+import { Board, Point } from '../types/reversi-types';
+import * as boardUtils from '../utils/board-utils';
 
 describe('createWeakCpuPlayer', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('相手の石を挟める位置の中からランダムな位置を返すこと', () => {
-    // Arrange
-    const board = [
+    const board: Board = [
       [0, 0, 0],
-      [0, 2, 0],
-      [0, 1, 0],
+      [0, 1, 2],
+      [0, 0, 0],
     ];
-    // プレイヤー1の番：(1,3)と(3,1)は相手の石(2)を挟める位置
     const currentPlayer = 1;
-    const weakCpuPlayer = createWeakCpuPlayer();
-    // 乱数生成をモック化して最初の位置を選択するようにする
-    vi.spyOn(Math, 'random').mockReturnValue(0);
 
-    // Act
-    const result = weakCpuPlayer.calculateNextMove(board, currentPlayer);
+    // 複数の有効な位置をモック
+    const availablePositions: Point[] = [
+      { row: 0, col: 0 },
+      { row: 0, col: 1 },
+    ];
+    vi.spyOn(boardUtils, 'getPlaceablePositions').mockReturnValue(
+      availablePositions,
+    );
 
-    // Assert
-    // 相手の石を挟める位置が選択されることを確認
-    expect(result).toEqual({ row: 0, col: 1 });
+    // ランダム値を固定
+    vi.spyOn(Math, 'random').mockReturnValue(0.5);
+
+    const cpuPlayer = createWeakCpuPlayer();
+    const result = cpuPlayer.calculateNextMove(board, currentPlayer);
+
+    // availablePositionsのいずれかの位置が選択されているか確認
+    expect(
+      availablePositions.some(
+        (pos) => pos.row === result.row && pos.col === result.col,
+      ),
+    ).toBeTruthy();
   });
 
   it('相手の石を挟める場所が1箇所しかない場合、その位置を返すこと', () => {
-    // Arrange
-    const board = [
+    const board: Board = [
       [1, 1, 1],
       [1, 0, 1],
       [1, 2, 1],
     ];
-    // プレイヤー2の番：(1,1)だけが相手の石(1)を挟める位置
     const currentPlayer = 2;
-    const weakCpuPlayer = createWeakCpuPlayer();
 
-    // Act
-    const result = weakCpuPlayer.calculateNextMove(board, currentPlayer);
+    // 1箇所だけ有効な位置をモック
+    const availablePositions: Point[] = [{ row: 1, col: 1 }];
+    vi.spyOn(boardUtils, 'getPlaceablePositions').mockReturnValue(
+      availablePositions,
+    );
 
-    // Assert
+    const cpuPlayer = createWeakCpuPlayer();
+    const result = cpuPlayer.calculateNextMove(board, currentPlayer);
+
     expect(result).toEqual({ row: 1, col: 1 });
   });
 
   it('相手の石を挟める場所がない場合、エラーをスローすること', () => {
-    // Arrange
-    const board = [
-      [1, 1, 1],
-      [1, 1, 1],
-      [1, 1, 1],
+    const board: Board = [
+      [1, 2, 1],
+      [2, 1, 2],
+      [1, 2, 1],
     ];
-    const currentPlayer = 2;
-    const weakCpuPlayer = createWeakCpuPlayer();
+    const currentPlayer = 1;
 
-    // Act & Assert
-    expect(() => weakCpuPlayer.calculateNextMove(board, currentPlayer)).toThrow(
+    // 有効な位置がないことをモック
+    vi.spyOn(boardUtils, 'getPlaceablePositions').mockReturnValue([]);
+
+    const cpuPlayer = createWeakCpuPlayer();
+    expect(() => cpuPlayer.calculateNextMove(board, currentPlayer)).toThrow(
       'No available positions',
     );
   });

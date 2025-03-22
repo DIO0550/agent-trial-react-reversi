@@ -1,10 +1,10 @@
-import { Point } from '../../types/reversi-types';
+import { Board, Point } from '../../types/reversi-types';
 
 /**
  * CPUプレイヤーのインターフェース
  */
 export type CpuPlayer = {
-  calculateNextMove: (board: number[][], currentPlayer: number) => Point;
+  calculateNextMove: (board: Board, currentPlayer: number) => Point;
 };
 
 /**

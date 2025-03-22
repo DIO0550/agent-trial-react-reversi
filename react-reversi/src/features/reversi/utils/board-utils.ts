@@ -1,4 +1,4 @@
-import { Direction, Point } from '../types/reversi-types';
+import { Board, Direction, Point } from '../types/reversi-types';
 
 /**
  * 盤面内かどうかをチェックする関数
@@ -19,7 +19,7 @@ export const findFlippableDiscsInDirection = (
   col: number,
   currentPlayer: number,
   direction: Direction,
-  board: number[][],
+  board: Board,
 ): Point[] => {
   const oppositePlayer = currentPlayer === 1 ? 2 : 1;
   const flippablePositions: Point[] = [];
@@ -55,7 +55,7 @@ export const findFlippableDiscs = (
   row: number,
   col: number,
   currentPlayer: number,
-  board: number[][],
+  board: Board,
 ): Point[] => {
   // すでに石がある場合は置けない
   if (board[row][col] !== 0) {
@@ -72,7 +72,7 @@ export const findFlippableDiscs = (
  * 盤面上で現在のプレイヤーが石を置ける位置をすべて取得する関数
  */
 export const getPlaceablePositions = (
-  board: number[][],
+  board: Board,
   currentPlayer: number,
 ): Point[] => {
   const placeablePositions: Point[] = [];
