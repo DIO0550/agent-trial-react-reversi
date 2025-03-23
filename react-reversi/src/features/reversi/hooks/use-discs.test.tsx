@@ -30,7 +30,7 @@ describe('useDiscsフック', () => {
   it('石を置ける場所を取得できる', () => {
     const { result } = renderHook(() => useDiscs());
 
-    const { getPlaceablePositions } = result.current;
+    const { placeablePositions: getPlaceablePositions } = result.current;
     const placeablePositions = getPlaceablePositions();
 
     // 初期状態での黒の置ける場所は4箇所

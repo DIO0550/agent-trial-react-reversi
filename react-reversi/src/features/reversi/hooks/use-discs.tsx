@@ -4,13 +4,8 @@ import {
   BOARD_SIZE,
   DiscColor,
   DiscsState,
-  Direction,
 } from '../types/reversi-types';
-import {
-  findFlippableDiscs,
-  getPlaceablePositions as utilGetPlaceablePositions,
-  DIRECTIONS,
-} from '../utils/board-utils';
+import { findFlippableDiscs, placeablePositions } from '../utils/board-utils';
 
 /**
  * エラーメッセージ
@@ -47,18 +42,6 @@ const getOppositeColor = (color: DiscColor): DiscColor => {
 };
 
 /**
- * 盤面内かどうかをチェックする関数
- */
-const isWithinBoard = (position: BoardPosition): boolean => {
-  return (
-    position.row >= 0 &&
-    position.row < BOARD_SIZE &&
-    position.col >= 0 &&
-    position.col < BOARD_SIZE
-  );
-};
-
-/**
  * リバーシの石を管理するためのカスタムフック
  * 石の配置状態や置ける場所の管理、石を置く処理を提供する
  */
@@ -88,9 +71,9 @@ export const useDiscs = () => {
   /**
    * 現在の手番で石を置ける位置をすべて取得
    */
-  const getPlaceablePositions = (): BoardPosition[] => {
+  const placeablePositions = (): BoardPosition[] => {
     const board = discsToBoard();
-    return utilGetPlaceablePositions(board, currentTurn);
+    return placeablePositions(board, currentTurn);
   };
 
   /**
@@ -140,7 +123,7 @@ export const useDiscs = () => {
   return {
     discs,
     currentTurn,
-    getPlaceablePositions,
+    placeablePositions,
     placeDisc,
   };
 };
