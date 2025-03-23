@@ -64,4 +64,24 @@ describe('Discコンポーネント', () => {
 
     expect(disc).toHaveAttribute('role', 'button');
   });
+
+  it('アニメーション中の場合、適切なクラスが適用されること', () => {
+    render(<Disc color="black" isFlipping={true} />);
+    const disc = screen.getByTestId('disc-black-flipping');
+    expect(disc.className).toContain('animate-flip-y');
+    expect(disc.className).toContain('perspective-500');
+  });
+
+  it('X軸方向のアニメーションが適用されること', () => {
+    render(<Disc color="white" isFlipping={true} flipAxis="x" />);
+    const disc = screen.getByTestId('disc-white-flipping');
+    expect(disc.className).toContain('animate-flip-x');
+    expect(disc.className).toContain('perspective-500');
+  });
+
+  it('アニメーション中のアクセシビリティ属性が適切に設定されること', () => {
+    render(<Disc color="black" isFlipping={true} />);
+    const disc = screen.getByTestId('disc-black-flipping');
+    expect(disc).toHaveAttribute('aria-label', 'black disc (flipping)');
+  });
 });

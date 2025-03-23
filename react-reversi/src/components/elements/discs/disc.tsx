@@ -13,12 +13,22 @@ type Props = {
   onClick?: () => void;
   /** 置くことが可能かどうか（ヒント表示用） */
   canPlace?: boolean;
+  /** 裏返しのアニメーション中かどうか */
+  isFlipping?: boolean;
+  /** アニメーションの方向（x軸、y軸）*/
+  flipAxis?: 'x' | 'y';
 };
 
 /**
  * リバーシの石コンポーネント
  */
-export const Disc = ({ color, onClick, canPlace = false }: Props) => {
+export const Disc = ({
+  color,
+  onClick,
+  canPlace = false,
+  isFlipping = false,
+  flipAxis = 'y',
+}: Props) => {
   // 色とcanPlaceに基づいたクラス名を決定
   const baseClasses =
     'w-full h-full rounded-full transition-all duration-300 ease-in-out';
@@ -35,12 +45,17 @@ export const Disc = ({ color, onClick, canPlace = false }: Props) => {
       : '';
   const shadowClasses = color !== 'none' ? 'shadow-md' : '';
 
+  // アニメーション用クラス
+  const flipClasses = isFlipping
+    ? `animate-flip-${flipAxis} perspective-500`
+    : '';
+
   return (
     <div
-      className={`${baseClasses} ${colorClasses} ${cursorClasses} ${borderClasses} ${shadowClasses}`}
+      className={`${baseClasses} ${colorClasses} ${cursorClasses} ${borderClasses} ${shadowClasses} ${flipClasses}`}
       onClick={onClick}
-      data-testid={`disc-${color}${canPlace ? '-can-place' : ''}`}
-      aria-label={`${color} disc${canPlace ? ' (can place here)' : ''}`}
+      data-testid={`disc-${color}${canPlace ? '-can-place' : ''}${isFlipping ? '-flipping' : ''}`}
+      aria-label={`${color} disc${canPlace ? ' (can place here)' : ''}${isFlipping ? ' (flipping)' : ''}`}
       role={onClick ? 'button' : 'presentation'}
     />
   );

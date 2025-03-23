@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { useEffect, useState } from 'react';
 import { Disc } from './disc';
 
 /**
@@ -21,6 +22,15 @@ const meta: Meta<typeof Disc> = {
     canPlace: {
       control: { type: 'boolean' },
       description: '置くことが可能かどうか（ヒント表示用）',
+    },
+    isFlipping: {
+      control: { type: 'boolean' },
+      description: '裏返しのアニメーション中かどうか',
+    },
+    flipAxis: {
+      control: { type: 'select' },
+      options: ['x', 'y'],
+      description: 'アニメーションの回転軸',
     },
   },
   decorators: [
@@ -73,4 +83,103 @@ export const CanPlace: Story = {
     color: 'none',
     canPlace: true,
   },
+};
+
+/**
+ * Y軸でひっくり返るアニメーション
+ */
+export const FlippingYAxis = () => {
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [color, setColor] = useState<'black' | 'white'>('black');
+
+  // クリックで裏返すアニメーションをトリガー
+  const handleFlip = () => {
+    setIsFlipping(true);
+
+    // アニメーションの途中（50%地点）で色を変更
+    setTimeout(() => {
+      setColor(color === 'black' ? 'white' : 'black');
+    }, 300);
+
+    // アニメーション終了時にフラグをリセット
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 600);
+  };
+
+  return (
+    <div
+      style={{ width: '60px', height: '60px', cursor: 'pointer' }}
+      onClick={handleFlip}
+    >
+      <Disc color={color} isFlipping={isFlipping} flipAxis="y" />
+    </div>
+  );
+};
+
+/**
+ * X軸でひっくり返るアニメーション
+ */
+export const FlippingXAxis = () => {
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [color, setColor] = useState<'black' | 'white'>('white');
+
+  // クリックで裏返すアニメーションをトリガー
+  const handleFlip = () => {
+    setIsFlipping(true);
+
+    // アニメーションの途中（50%地点）で色を変更
+    setTimeout(() => {
+      setColor(color === 'black' ? 'white' : 'black');
+    }, 300);
+
+    // アニメーション終了時にフラグをリセット
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 600);
+  };
+
+  return (
+    <div
+      style={{ width: '60px', height: '60px', cursor: 'pointer' }}
+      onClick={handleFlip}
+    >
+      <Disc color={color} isFlipping={isFlipping} flipAxis="x" />
+    </div>
+  );
+};
+
+/**
+ * 自動的にひっくり返るデモ
+ */
+export const AutoFlippingDemo = () => {
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [color, setColor] = useState<'black' | 'white'>('black');
+  const [flipAxis, setFlipAxis] = useState<'x' | 'y'>('y');
+
+  // 定期的に自動で裏返すためのエフェクト
+  useEffect(() => {
+    const flipInterval = setInterval(() => {
+      setIsFlipping(true);
+
+      // アニメーションの途中（50%地点）で色を変更
+      setTimeout(() => {
+        setColor((prev) => (prev === 'black' ? 'white' : 'black'));
+      }, 300);
+
+      // アニメーション終了時にフラグをリセットと軸を変更
+      setTimeout(() => {
+        setIsFlipping(false);
+        setFlipAxis((prev) => (prev === 'x' ? 'y' : 'x'));
+      }, 600);
+    }, 2000);
+
+    return () => clearInterval(flipInterval);
+  }, []);
+
+  return (
+    <div style={{ width: '60px', height: '60px' }}>
+      <Disc color={color} isFlipping={isFlipping} flipAxis={flipAxis} />
+    </div>
+  );
 };
