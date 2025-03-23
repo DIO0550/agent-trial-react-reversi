@@ -12,18 +12,18 @@ export const isWithinBoard = (
 };
 
 /**
- * DiscColorを数値に変換する関数
+ * 数値が有効なDiscColor値かチェックする関数
  */
-export const discColorToNumber = (color: DiscColor): number => {
-  return color === DiscColor.BLACK ? 1 : 2;
+export const isValidDiscColor = (value: number): boolean => {
+  return (
+    value === DiscColor.NONE ||
+    value === DiscColor.BLACK ||
+    value === DiscColor.WHITE
+  );
 };
 
-/**
- * 数値をDiscColorに変換する関数
- */
-export const numberToDiscColor = (num: number): DiscColor => {
-  return num === 1 ? DiscColor.BLACK : DiscColor.WHITE;
-};
+// 変換関数は不要になったため削除
+// discColorToNumberとnumberToDiscColor関数を削除
 
 /**
  * 指定された位置から特定の方向にひっくり返せる石があるかチェックする関数
@@ -35,8 +35,8 @@ export const findFlippableDiscsInDirection = (
   direction: Direction,
   board: Board,
 ): Point[] => {
-  const currentPlayerNum = discColorToNumber(currentPlayer);
-  const oppositePlayerNum = currentPlayerNum === 1 ? 2 : 1;
+  const oppositePlayer =
+    currentPlayer === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
   const flippablePositions: Point[] = [];
   let currentRow = row + direction.rowDelta;
   let currentCol = col + direction.colDelta;
@@ -44,7 +44,7 @@ export const findFlippableDiscsInDirection = (
   // 隣が相手の色である場合は進み続ける
   while (
     isWithinBoard(currentRow, currentCol, board.length) &&
-    board[currentRow][currentCol] === oppositePlayerNum
+    board[currentRow][currentCol] === oppositePlayer
   ) {
     flippablePositions.push({ row: currentRow, col: currentCol });
     currentRow += direction.rowDelta;
@@ -54,7 +54,7 @@ export const findFlippableDiscsInDirection = (
   // 最後に自分の色があれば挟めると判断
   if (
     isWithinBoard(currentRow, currentCol, board.length) &&
-    board[currentRow][currentCol] === currentPlayerNum &&
+    board[currentRow][currentCol] === currentPlayer &&
     flippablePositions.length > 0
   ) {
     return flippablePositions;
@@ -73,7 +73,7 @@ export const findFlippableDiscs = (
   board: Board,
 ): Point[] => {
   // すでに石がある場合は置けない
-  if (board[row][col] !== 0) {
+  if (board[row][col] !== DiscColor.NONE) {
     return [];
   }
 
@@ -96,7 +96,7 @@ export const getPlaceablePositions = (
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
       // 既に石があるマスにはおけない
-      if (board[row][col] !== 0) {
+      if (board[row][col] !== DiscColor.NONE) {
         continue;
       }
 

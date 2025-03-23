@@ -6,20 +6,11 @@ import {
   DiscsState,
   Direction,
 } from '../types/reversi-types';
-
-/**
- * 全方向の変化量を定義
- */
-const DIRECTIONS: Direction[] = [
-  { rowDelta: -1, colDelta: -1 }, // 左上
-  { rowDelta: -1, colDelta: 0 }, // 上
-  { rowDelta: -1, colDelta: 1 }, // 右上
-  { rowDelta: 0, colDelta: -1 }, // 左
-  { rowDelta: 0, colDelta: 1 }, // 右
-  { rowDelta: 1, colDelta: -1 }, // 左下
-  { rowDelta: 1, colDelta: 0 }, // 下
-  { rowDelta: 1, colDelta: 1 }, // 右下
-];
+import {
+  findFlippableDiscs,
+  getPlaceablePositions as utilGetPlaceablePositions,
+  DIRECTIONS,
+} from '../utils/board-utils';
 
 /**
  * エラーメッセージ
@@ -78,95 +69,39 @@ export const useDiscs = () => {
   const [currentTurn, setCurrentTurn] = useState<DiscColor>(DiscColor.BLACK);
 
   /**
-   * 指定された位置に指定された色の石を置いたとき、ある方向にひっくり返せる石があるかチェック
+   * DiscsStateをBoard型に変換する関数
    */
-  const findFlippableDiscsInDirection = (
-    position: BoardPosition,
-    color: DiscColor,
-    direction: Direction,
-    currentDiscs: DiscsState,
-  ): BoardPosition[] => {
-    const oppositeColor = getOppositeColor(color);
-    const flippablePositions: BoardPosition[] = [];
+  const discsToBoard = (): DiscColor[][] => {
+    const board: DiscColor[][] = Array(BOARD_SIZE)
+      .fill(null)
+      .map(() => Array(BOARD_SIZE).fill(DiscColor.NONE));
 
-    let currentRow = position.row + direction.rowDelta;
-    let currentCol = position.col + direction.colDelta;
-    let currentPosition = { row: currentRow, col: currentCol };
-
-    // 隣が相手の色である場合は進み続ける
-    while (
-      isWithinBoard(currentPosition) &&
-      currentDiscs[positionToKey(currentPosition)] === oppositeColor
-    ) {
-      flippablePositions.push(currentPosition);
-      currentRow += direction.rowDelta;
-      currentCol += direction.colDelta;
-      currentPosition = { row: currentRow, col: currentCol };
+    // DiscsStateの内容をBoardにコピー
+    for (const key in discs) {
+      const [row, col] = key.split(',').map(Number);
+      board[row][col] = discs[key];
     }
 
-    // 最後に自分の色があれば挟めると判断
-    if (
-      isWithinBoard(currentPosition) &&
-      currentDiscs[positionToKey(currentPosition)] === color &&
-      flippablePositions.length > 0
-    ) {
-      return flippablePositions;
-    }
-
-    return [];
-  };
-
-  /**
-   * 指定された位置に石を置いた場合にひっくり返せる石の位置を取得
-   */
-  const findFlippableDiscs = (
-    position: BoardPosition,
-    color: DiscColor,
-    currentDiscs: DiscsState,
-  ): BoardPosition[] => {
-    // すでに石がある場合は置けない
-    if (currentDiscs[positionToKey(position)]) {
-      return [];
-    }
-
-    // 全方向をチェックして、ひっくり返せる石を集める
-    return DIRECTIONS.flatMap((direction) =>
-      findFlippableDiscsInDirection(position, color, direction, currentDiscs),
-    );
+    return board;
   };
 
   /**
    * 現在の手番で石を置ける位置をすべて取得
    */
   const getPlaceablePositions = (): BoardPosition[] => {
-    const placeablePositions: BoardPosition[] = [];
-
-    // 全マスをチェック
-    for (let row = 0; row < BOARD_SIZE; row++) {
-      for (let col = 0; col < BOARD_SIZE; col++) {
-        const position = { row, col };
-
-        // 既に石があるマスにはおけない
-        if (discs[positionToKey(position)]) {
-          continue;
-        }
-
-        // ひっくり返せる石があるか確認
-        const flippableDiscs = findFlippableDiscs(position, currentTurn, discs);
-        if (flippableDiscs.length > 0) {
-          placeablePositions.push(position);
-        }
-      }
-    }
-
-    return placeablePositions;
+    const board = discsToBoard();
+    return utilGetPlaceablePositions(board, currentTurn);
   };
 
   /**
    * 特定の位置に石を置けるかどうかをチェック
    */
   const canPlaceDisc = (position: BoardPosition): boolean => {
-    return findFlippableDiscs(position, currentTurn, discs).length > 0;
+    const board = discsToBoard();
+    return (
+      findFlippableDiscs(position.row, position.col, currentTurn, board)
+        .length > 0
+    );
   };
 
   /**
@@ -178,7 +113,13 @@ export const useDiscs = () => {
       throw new Error(ERROR_MESSAGES.CANNOT_PLACE_DISC);
     }
 
-    const flippableDiscs = findFlippableDiscs(position, currentTurn, discs);
+    const board = discsToBoard();
+    const flippableDiscs = findFlippableDiscs(
+      position.row,
+      position.col,
+      currentTurn,
+      board,
+    );
 
     // 新しい盤面を作成
     const newDiscs = { ...discs };

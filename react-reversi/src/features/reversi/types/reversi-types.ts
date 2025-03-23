@@ -1,9 +1,11 @@
 /**
  * 石の色を表す列挙型
+ * 0: 空、1: 黒、2: 白
  */
 export enum DiscColor {
-  BLACK = 'BLACK',
-  WHITE = 'WHITE',
+  NONE = 0,
+  BLACK = 1,
+  WHITE = 2,
 }
 
 /**
@@ -46,6 +48,6 @@ export const BOARD_SIZE = 8;
 
 /**
  * 盤面の型定義
- * 0: 空、1: 黒、2: 白
+ * DiscColorの二次元配列
  */
-export type Board = number[][];
+export type Board = DiscColor[][];
