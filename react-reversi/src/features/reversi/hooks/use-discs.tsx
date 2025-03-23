@@ -5,7 +5,10 @@ import {
   DiscColor,
   DiscsState,
 } from '../types/reversi-types';
-import { findFlippableDiscs, placeablePositions } from '../utils/board-utils';
+import {
+  findFlippableDiscs,
+  getPlaceablePositions,
+} from '../utils/board-utils';
 
 /**
  * エラーメッセージ
@@ -73,7 +76,7 @@ export const useDiscs = () => {
    */
   const placeablePositions = (): BoardPosition[] => {
     const board = discsToBoard();
-    return placeablePositions(board, currentTurn);
+    return getPlaceablePositions(board, currentTurn);
   };
 
   /**

@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { useDiscs } from './use-discs';
-import { BoardPosition, DiscColor } from '../types/reversi-types';
+import { DiscColor } from '../types/reversi-types';
 
 describe('useDiscsフック', () => {
   it('初期状態では中央に4つの石が配置されている', () => {
