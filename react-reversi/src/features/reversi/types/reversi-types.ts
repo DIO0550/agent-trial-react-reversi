@@ -34,6 +34,26 @@ export type DiscsState = {
 };
 
 /**
+ * ひっくり返しアニメーション中の石の情報を表す型
+ */
+export type FlippingDiscInfo = {
+  /** 前の色 */
+  previousColor: DiscColor;
+  /** ひっくり返した後の色 */
+  targetColor: DiscColor;
+  /** ひっくり返す軸 */
+  flipAxis: 'x' | 'y';
+};
+
+/**
+ * ひっくり返しアニメーション中の石の状態を表す型
+ * キーは "行,列" の形式の文字列
+ */
+export type FlippingDiscsState = {
+  [key: string]: FlippingDiscInfo;
+};
+
+/**
  * 方向を表す型
  */
 export type Direction = {

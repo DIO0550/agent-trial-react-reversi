@@ -1,4 +1,5 @@
 import { Disc, DiscColor } from '../discs/disc';
+import { FlippingDiscsState } from '../../../features/reversi/types/reversi-types';
 
 /**
  * ボードの1マスの状態を表す型
@@ -24,6 +25,8 @@ type Props = {
   boardState: BoardState;
   /** セルクリック時のイベントハンドラ */
   onCellClick?: (row: number, col: number) => void;
+  /** ひっくり返しアニメーション中の石の状態 */
+  flippingDiscs?: FlippingDiscsState;
 };
 
 /**
@@ -36,7 +39,11 @@ const DEFAULT_CELL_SIZE = 64; // px
  * リバーシのボードコンポーネント
  * 8×8のグリッドで石を配置する
  */
-export const Board = ({ boardState, onCellClick }: Props) => {
+export const Board = ({
+  boardState,
+  onCellClick,
+  flippingDiscs = {},
+}: Props) => {
   // ボードの状態が8×8でない場合はエラーを表示
   if (
     boardState.length !== BOARD_SIZE ||
@@ -57,34 +64,42 @@ export const Board = ({ boardState, onCellClick }: Props) => {
       aria-label="リバーシボード"
     >
       {boardState.map((row, rowIndex) =>
-        row.map((cell, colIndex) => (
-          <div
-            key={`${rowIndex}-${colIndex}`}
-            className={`bg-green-600 aspect-square flex items-center justify-center ${
-              onCellClick ? 'cursor-pointer' : ''
-            }`}
-            style={{ width: DEFAULT_CELL_SIZE, height: DEFAULT_CELL_SIZE }}
-            data-testid={`cell-${rowIndex}-${colIndex}`}
-            role="gridcell"
-            aria-rowindex={rowIndex + 1}
-            aria-colindex={colIndex + 1}
-            onClick={
-              onCellClick ? () => onCellClick(rowIndex, colIndex) : undefined
-            }
-          >
-            <div className="w-[90%] h-[90%]">
-              <Disc
-                color={cell.color}
-                canPlace={cell.canPlace}
-                onClick={
-                  onCellClick
-                    ? () => onCellClick(rowIndex, colIndex)
-                    : undefined
-                }
-              />
+        row.map((cell, colIndex) => {
+          const cellKey = `${rowIndex},${colIndex}`;
+          const flippingInfo = flippingDiscs[cellKey];
+
+          return (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              className={`bg-green-600 aspect-square flex items-center justify-center ${
+                onCellClick ? 'cursor-pointer' : ''
+              }`}
+              style={{ width: DEFAULT_CELL_SIZE, height: DEFAULT_CELL_SIZE }}
+              data-testid={`cell-${rowIndex}-${colIndex}`}
+              role="gridcell"
+              aria-rowindex={rowIndex + 1}
+              aria-colindex={colIndex + 1}
+              onClick={
+                onCellClick ? () => onCellClick(rowIndex, colIndex) : undefined
+              }
+            >
+              <div className="w-[90%] h-[90%]">
+                <Disc
+                  color={cell.color}
+                  canPlace={cell.canPlace}
+                  onClick={
+                    onCellClick
+                      ? () => onCellClick(rowIndex, colIndex)
+                      : undefined
+                  }
+                  isFlipping={Boolean(flippingInfo)}
+                  flipAxis={flippingInfo?.flipAxis}
+                  previousColor={flippingInfo?.previousColor}
+                />
+              </div>
             </div>
-          </div>
-        )),
+          );
+        }),
       )}
     </div>
   );
@@ -113,13 +128,11 @@ export const createEmptyBoardState = (): BoardState => {
  */
 export const createInitialBoardState = (): BoardState => {
   const board = createEmptyBoardState();
-
   // 中央に初期配置
   const center = BOARD_SIZE / 2;
   board[center - 1][center - 1] = { color: 'white', canPlace: false };
   board[center - 1][center] = { color: 'black', canPlace: false };
   board[center][center - 1] = { color: 'black', canPlace: false };
   board[center][center] = { color: 'white', canPlace: false };
-
   return board;
 };

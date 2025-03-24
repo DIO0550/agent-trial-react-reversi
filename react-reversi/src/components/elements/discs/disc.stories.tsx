@@ -85,26 +85,45 @@ export const CanPlace: Story = {
   },
 };
 
+export const Flipping: Story = {
+  args: {
+    color: 'black',
+    isFlipping: true,
+    flipAxis: 'x',
+  },
+  decorators: [
+    (Story) => (
+      <div style={{ width: '40px', height: '40px', perspective: '1000px' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
 /**
  * Y軸でひっくり返るアニメーション
  */
 export const FlippingYAxis = () => {
   const [isFlipping, setIsFlipping] = useState(false);
   const [color, setColor] = useState<'black' | 'white'>('black');
+  const [previousColor, setPreviousColor] = useState<'black' | 'white'>(
+    'white',
+  );
 
   // クリックで裏返すアニメーションをトリガー
   const handleFlip = () => {
     setIsFlipping(true);
 
     // アニメーションの途中（50%地点）で色を変更
-    setTimeout(() => {
-      setColor(color === 'black' ? 'white' : 'black');
-    }, 300);
+    // setTimeout(() => {
+    //   setColor(color === 'black' ? 'white' : 'black');
+    //   setPreviousColor(color);
+    // }, 300);
 
-    // アニメーション終了時にフラグをリセット
-    setTimeout(() => {
-      setIsFlipping(false);
-    }, 600);
+    // // アニメーション終了時にフラグをリセット
+    // setTimeout(() => {
+    //   setIsFlipping(false);
+    // }, 600);
   };
 
   return (
@@ -112,7 +131,12 @@ export const FlippingYAxis = () => {
       style={{ width: '60px', height: '60px', cursor: 'pointer' }}
       onClick={handleFlip}
     >
-      <Disc color={color} isFlipping={isFlipping} flipAxis="y" />
+      <Disc
+        color={color}
+        isFlipping={isFlipping}
+        flipAxis="y"
+        previousColor={previousColor}
+      />
     </div>
   );
 };

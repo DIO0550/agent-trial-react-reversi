@@ -48,7 +48,10 @@ describe('useDiscsフック', () => {
   });
 
   it('石を指定の位置に置くことができる', () => {
-    const { result } = renderHook(() => useDiscs());
+    // テスト用にアニメーションをスキップするオプションを指定
+    const { result } = renderHook(() =>
+      useDiscs({ skipAnimationForTesting: true }),
+    );
 
     // (2,3)に黒を置く（初期状態では置ける場所の一つ）
     act(() => {
@@ -66,7 +69,9 @@ describe('useDiscsフック', () => {
   });
 
   it('置けない場所に石を置こうとするとエラーになる', () => {
-    const { result } = renderHook(() => useDiscs());
+    const { result } = renderHook(() =>
+      useDiscs({ skipAnimationForTesting: true }),
+    );
 
     // (0,0)は初期状態では置けない場所
     expect(() => {

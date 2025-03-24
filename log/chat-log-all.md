@@ -779,18 +779,21 @@ DiscColorの管理とBoardの石の管理が別々になると管理が大変な
 
 ## 実施内容
 
-リバーシゲームにおいて、石がひっくり返る際に3D回転を行うアニメーションを実装しました。従来は色が変わるだけでしたが、実際に石が裏返るような視覚効果を追加しました。
+リバーシゲームにおいて、石がひっくり返る際に 3D 回転を行うアニメーションを実装しました。従来は色が変わるだけでしたが、実際に石が裏返るような視覚効果を追加しました。
 
 1. **Disc（石）コンポーネントの拡張**
+
    - 両面の色（裏と表）を表現する機能を追加
-   - 3D回転アニメーション用のコンポーネント構造を実装
+   - 3D 回転アニメーション用のコンポーネント構造を実装
    - 前の色の情報を保持する `previousColor` プロパティを追加
 
-2. **TailwindCSSの設定拡張**
-   - 3D効果のためのユーティリティクラスを追加 (`backface-hidden`, `rotate-x-180`, `rotate-y-180`)
+2. **TailwindCSS の設定拡張**
+
+   - 3D 効果のためのユーティリティクラスを追加 (`backface-hidden`, `rotate-x-180`, `rotate-y-180`)
    - すでに存在していたアニメーション定義を活用
 
 3. **石の状態管理の拡張**
+
    - `useDiscs` フックにアニメーション管理機能を追加
    - 石をひっくり返す際のタイミング制御機構を実装
    - アニメーション中の状態を管理するロジックを追加
@@ -802,12 +805,12 @@ DiscColorの管理とBoardの石の管理が別々になると管理が大変な
 
 ## テストの実行
 
-実装後にテストを実行し、すべてのテスト（51件）が正常に通過することを確認しました。当初、アニメーション実装によりいくつかのテストが失敗していましたが、テスト環境で即時に色が変わるようにスキップオプションを実装することで解決しました。
+実装後にテストを実行し、すべてのテスト（51 件）が正常に通過することを確認しました。当初、アニメーション実装によりいくつかのテストが失敗していましたが、テスト環境で即時に色が変わるようにスキップオプションを実装することで解決しました。
 
 ## 修正したファイル
 
-1. `/app/react-reversi/src/components/elements/discs/disc.tsx` - 3D回転アニメーション実装
-2. `/app/react-reversi/tailwind.config.js` - 3Dアニメーション用のユーティリティクラス追加
+1. `/app/react-reversi/src/components/elements/discs/disc.tsx` - 3D 回転アニメーション実装
+2. `/app/react-reversi/tailwind.config.js` - 3D アニメーション用のユーティリティクラス追加
 3. `/app/react-reversi/src/features/reversi/hooks/use-discs.tsx` - アニメーション制御ロジック実装
 4. `/app/react-reversi/src/features/reversi/types/reversi-types.ts` - アニメーション用の型定義追加
 5. `/app/react-reversi/src/features/reversi/hooks/use-discs.test.tsx` - アニメーション対応テスト修正
