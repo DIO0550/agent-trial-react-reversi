@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
+
 /**
  * ディスク(石)の色を表す型
  */
 export type DiscColor = 'black' | 'white' | 'none';
+
 /**
  * ディスク(石)コンポーネントのProps
  */
@@ -19,6 +22,12 @@ type Props = {
   /** ひっくり返る前の色 (アニメーション用) */
   previousColor?: DiscColor;
 };
+
+/**
+ * アニメーションの状態を表す型
+ */
+type AnimationStage = 'not-flipping' | 'first-half' | 'second-half';
+
 /**
  * リバーシの石コンポーネント
  */
@@ -30,6 +39,40 @@ export const Disc = ({
   flipAxis = 'y',
   previousColor,
 }: Props) => {
+  // アニメーションの状態を管理
+  const [animationStage, setAnimationStage] =
+    useState<AnimationStage>('not-flipping');
+  const [displayedColor, setDisplayedColor] = useState<DiscColor>(color);
+
+  // isFlippingの変更を検知して、アニメーションを開始
+  useEffect(() => {
+    if (isFlipping && previousColor) {
+      // アニメーション開始時は前の色を表示
+      setDisplayedColor(previousColor);
+      setAnimationStage('first-half');
+
+      // 最初の半回転（90度）が終わったら色を変更
+      const firstHalfTimer = setTimeout(() => {
+        setDisplayedColor(color);
+        setAnimationStage('second-half');
+      }, 250);
+
+      // アニメーション終了時に状態をリセット
+      const endTimer = setTimeout(() => {
+        setAnimationStage('not-flipping');
+      }, 500);
+
+      return () => {
+        clearTimeout(firstHalfTimer);
+        clearTimeout(endTimer);
+      };
+    } else if (!isFlipping) {
+      // アニメーションがなければ現在の色を表示
+      setDisplayedColor(color);
+      setAnimationStage('not-flipping');
+    }
+  }, [isFlipping, color, previousColor]);
+
   // 色とcanPlaceに基づいたクラス名を決定
   const baseClasses = 'w-full h-full rounded-full';
   const cursorClasses = onClick ? 'cursor-pointer' : 'cursor-default';
@@ -52,45 +95,43 @@ export const Disc = ({
     );
   }
 
-  // アニメーションのためのクラス
-  const animationClasses = isFlipping
-    ? `animate-flip-${flipAxis} perspective-500`
-    : '';
+  // アニメーションステージに応じたクラスを決定
+  const getAnimationClass = () => {
+    if (animationStage === 'first-half') {
+      return flipAxis === 'y' ? 'animate-flip-half-y' : 'animate-flip-half-x';
+    }
+    if (animationStage === 'second-half') {
+      return flipAxis === 'y'
+        ? 'animate-flip-second-half-y'
+        : 'animate-flip-second-half-x';
+    }
+    return '';
+  };
 
-  // FlipCardを参考にした3D反転アニメーション用のクラス
+  // 3D反転アニメーション用のクラス
   const containerClasses = 'relative w-full h-full perspective';
-  const rotateAxis = flipAxis === 'x' ? 'rotate-x' : 'rotate-y';
-  const cardClasses = `relative w-full h-full transition-transform duration-500 transform-gpu preserve-3d ${
-    isFlipping ? `${rotateAxis}-180` : ''
+  const animationClass = getAnimationClass();
+  const discClasses = `w-full h-full rounded-full shadow-md ${
+    displayedColor === 'black' ? 'bg-black' : 'bg-white'
   }`;
 
-  // 表と裏のディスク用クラス
-  const frontColor = previousColor && isFlipping ? previousColor : color;
-  const backColor = color;
-
-  const frontClasses = `absolute w-full h-full backface-hidden rounded-full shadow-md ${
-    frontColor === 'black' ? 'bg-black' : 'bg-white'
-  }`;
-  const backClasses = `absolute w-full h-full backface-hidden rounded-full shadow-md ${rotateAxis}-180 ${
-    backColor === 'black' ? 'bg-black' : 'bg-white'
-  }`;
-
-  // テスト用のクラス（テストに合わせるため）
-  const testClasses = isFlipping
-    ? `animate-flip-${flipAxis} perspective-500`
-    : '';
+  // テスト用のクラス
+  const testRotateClass =
+    animationStage !== 'not-flipping' ? `animate-flip-${flipAxis}` : '';
 
   return (
     <div
-      className={`${containerClasses} ${testClasses}`}
+      className={containerClasses}
       onClick={onClick}
       data-testid={`disc-${color}${isFlipping ? '-flipping' : ''}`}
       aria-label={`${color} disc${isFlipping ? ' (flipping)' : ''}`}
       role={onClick ? 'button' : 'presentation'}
+      style={{ perspective: '1000px' }}
     >
-      <div className={cardClasses}>
-        <div className={frontClasses} />
-        <div className={backClasses} />
+      <div
+        className={`relative w-full h-full transition-transform ${animationClass} ${testRotateClass} transform-gpu preserve-3d`}
+      >
+        <div className={discClasses} />
       </div>
     </div>
   );
