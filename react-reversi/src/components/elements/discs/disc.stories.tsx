@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useEffect, useState } from 'react';
-import { Disc } from './disc';
+import { Disc, DiscColor } from './disc';
 
 /**
  * リバーシの石を表示するコンポーネント
@@ -31,6 +31,11 @@ const meta: Meta<typeof Disc> = {
       control: { type: 'select' },
       options: ['x', 'y'],
       description: 'アニメーションの回転軸',
+    },
+    previousColor: {
+      control: { type: 'select' },
+      options: ['black', 'white', 'none'],
+      description: 'ひっくり返る前の色（アニメーション用）',
     },
   },
   decorators: [
@@ -85,15 +90,19 @@ export const CanPlace: Story = {
   },
 };
 
+/**
+ * 静的なひっくり返しアニメーション表示
+ */
 export const Flipping: Story = {
   args: {
     color: 'black',
+    previousColor: 'white',
     isFlipping: true,
-    flipAxis: 'x',
+    flipAxis: 'y',
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '40px', height: '40px', perspective: '1000px' }}>
+      <div style={{ width: '40px', height: '40px' }}>
         <Story />
       </div>
     ),
@@ -105,25 +114,25 @@ export const Flipping: Story = {
  */
 export const FlippingYAxis = () => {
   const [isFlipping, setIsFlipping] = useState(false);
-  const [color, setColor] = useState<'black' | 'white'>('black');
-  const [previousColor, setPreviousColor] = useState<'black' | 'white'>(
-    'white',
-  );
+  const [color, setColor] = useState<DiscColor>('black');
+  const [previousColor, setPreviousColor] = useState<DiscColor>('white');
 
   // クリックで裏返すアニメーションをトリガー
   const handleFlip = () => {
+    if (isFlipping) return;
+
+    setPreviousColor(color);
     setIsFlipping(true);
 
     // アニメーションの途中（50%地点）で色を変更
-    // setTimeout(() => {
-    //   setColor(color === 'black' ? 'white' : 'black');
-    //   setPreviousColor(color);
-    // }, 300);
+    setTimeout(() => {
+      setColor(color === 'black' ? 'white' : 'black');
+    }, 250);
 
-    // // アニメーション終了時にフラグをリセット
-    // setTimeout(() => {
-    //   setIsFlipping(false);
-    // }, 600);
+    // アニメーション終了時にフラグをリセット
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 500);
   };
 
   return (
@@ -146,21 +155,25 @@ export const FlippingYAxis = () => {
  */
 export const FlippingXAxis = () => {
   const [isFlipping, setIsFlipping] = useState(false);
-  const [color, setColor] = useState<'black' | 'white'>('white');
+  const [color, setColor] = useState<DiscColor>('white');
+  const [previousColor, setPreviousColor] = useState<DiscColor>('black');
 
   // クリックで裏返すアニメーションをトリガー
   const handleFlip = () => {
+    if (isFlipping) return;
+
+    setPreviousColor(color);
     setIsFlipping(true);
 
     // アニメーションの途中（50%地点）で色を変更
     setTimeout(() => {
       setColor(color === 'black' ? 'white' : 'black');
-    }, 300);
+    }, 250);
 
     // アニメーション終了時にフラグをリセット
     setTimeout(() => {
       setIsFlipping(false);
-    }, 600);
+    }, 500);
   };
 
   return (
@@ -168,7 +181,12 @@ export const FlippingXAxis = () => {
       style={{ width: '60px', height: '60px', cursor: 'pointer' }}
       onClick={handleFlip}
     >
-      <Disc color={color} isFlipping={isFlipping} flipAxis="x" />
+      <Disc
+        color={color}
+        isFlipping={isFlipping}
+        flipAxis="x"
+        previousColor={previousColor}
+      />
     </div>
   );
 };
@@ -178,32 +196,41 @@ export const FlippingXAxis = () => {
  */
 export const AutoFlippingDemo = () => {
   const [isFlipping, setIsFlipping] = useState(false);
-  const [color, setColor] = useState<'black' | 'white'>('black');
+  const [color, setColor] = useState<DiscColor>('black');
+  const [previousColor, setPreviousColor] = useState<DiscColor>('white');
   const [flipAxis, setFlipAxis] = useState<'x' | 'y'>('y');
 
   // 定期的に自動で裏返すためのエフェクト
   useEffect(() => {
     const flipInterval = setInterval(() => {
+      if (isFlipping) return;
+
+      setPreviousColor(color);
       setIsFlipping(true);
 
       // アニメーションの途中（50%地点）で色を変更
       setTimeout(() => {
         setColor((prev) => (prev === 'black' ? 'white' : 'black'));
-      }, 300);
+      }, 250);
 
       // アニメーション終了時にフラグをリセットと軸を変更
       setTimeout(() => {
         setIsFlipping(false);
         setFlipAxis((prev) => (prev === 'x' ? 'y' : 'x'));
-      }, 600);
+      }, 500);
     }, 2000);
 
     return () => clearInterval(flipInterval);
-  }, []);
+  }, [isFlipping, color]);
 
   return (
     <div style={{ width: '60px', height: '60px' }}>
-      <Disc color={color} isFlipping={isFlipping} flipAxis={flipAxis} />
+      <Disc
+        color={color}
+        isFlipping={isFlipping}
+        flipAxis={flipAxis}
+        previousColor={previousColor}
+      />
     </div>
   );
 };
