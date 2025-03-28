@@ -30,4 +30,5 @@ export const CPU_LEVEL_OPTIONS: SelectionOption<CpuLevel>[] = [
 export const PLAYER_COLOR_OPTIONS: SelectionOption<PlayerColor>[] = [
   { value: 'black', label: '先行' },
   { value: 'white', label: '後攻' },
+  { value: 'random', label: 'ランダム' },
 ];

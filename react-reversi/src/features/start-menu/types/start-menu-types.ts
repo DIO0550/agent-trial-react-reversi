@@ -6,7 +6,7 @@ export type CpuLevel = 'easy' | 'normal' | 'hard' | 'strongest';
 /**
  * プレイヤーの色（手番）の型
  */
-export type PlayerColor = 'black' | 'white';
+export type PlayerColor = 'black' | 'white' | 'random';
 
 /**
  * スタートメニューの設定項目

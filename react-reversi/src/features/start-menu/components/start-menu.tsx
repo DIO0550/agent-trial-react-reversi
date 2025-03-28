@@ -26,8 +26,19 @@ export const StartMenu = ({ onStart }: StartMenuProps) => {
 
   /**
    * スタートボタンのクリックハンドラ
+   * ランダムが選択された場合は、黒か白をランダムに決定する
    */
   const handleStartClick = () => {
+    // ランダムの場合は黒か白をランダムに決定
+    if (playerColor === 'random') {
+      const randomColor = Math.random() < 0.5 ? 'black' : 'white';
+      onStart({
+        cpuLevel,
+        playerColor: randomColor as PlayerColor,
+      });
+      return;
+    }
+
     onStart({
       cpuLevel,
       playerColor,
