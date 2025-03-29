@@ -1,17 +1,64 @@
 'use client';
-
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Board, BoardState } from '../../../components/elements/boards/board';
 import { useDiscs } from '../../../features/reversi/hooks/use-discs';
 import {
   BoardPosition,
   DiscColor,
 } from '../../../features/reversi/types/reversi-types';
+import {
+  CpuLevel,
+  PlayerColor,
+} from '../../../features/start-menu/types/start-menu-types';
+import { createNormalCpuPlayer } from '../../../features/reversi/cpu-player/normal-cpu-player';
+import { createStrongCpuPlayer } from '../../../features/reversi/cpu-player/strong-cpu-player';
 
 export default function ReversiGamePage() {
+  const searchParams = useSearchParams();
+
+  // URLパラメータからCPUレベルとプレイヤーの色を取得
+  const cpuLevel = (searchParams.get('cpuLevel') as CpuLevel) || 'normal';
+  const playerColor =
+    (searchParams.get('playerColor') as PlayerColor) || 'black';
+
   // useDiscsフックを使用して、ゲームの状態と石の配置を管理
-  const { discs, currentTurn, flippingDiscs, placeablePositions, placeDisc } =
-    useDiscs();
+  const {
+    discs,
+    currentTurn,
+    flippingDiscs,
+    placeablePositions,
+    placeDisc,
+    isAnimating,
+  } = useDiscs();
+
+  // 現在のプレイヤーがCPUかどうか判定
+  const isCpuTurn =
+    currentTurn ===
+    (playerColor === 'black' ? DiscColor.WHITE : DiscColor.BLACK);
+
+  // CPUプレイヤーの初期化
+  const [cpuPlayer] = useState(() => {
+    switch (cpuLevel) {
+      case 'easy':
+        // 弱いCPUは適当な位置に配置する（ランダム選択）
+        return {
+          calculateNextMove: (board: number[][], currentPlayer: number) => {
+            const positions = placeablePositions();
+            const randomIndex = Math.floor(Math.random() * positions.length);
+            return positions[randomIndex];
+          },
+        };
+      case 'hard':
+        return createStrongCpuPlayer();
+      case 'strongest':
+        // 最強CPUも一旦strongCPUを使用
+        return createStrongCpuPlayer();
+      case 'normal':
+      default:
+        return createNormalCpuPlayer();
+    }
+  });
 
   // 盤面の状態をBoardコンポーネントに渡す形式に変換する関数
   const convertToBoardState = useCallback(() => {
@@ -50,6 +97,53 @@ export default function ReversiGamePage() {
     },
     [placeDisc],
   );
+
+  // CPUの思考ロジックを実行
+  useEffect(() => {
+    // アニメーション中またはCPUの番でない場合は何もしない
+    if (isAnimating || !isCpuTurn) return;
+
+    // 配置可能な位置を取得
+    const positions = placeablePositions();
+
+    // 置ける場所がない場合は何もしない
+    if (positions.length === 0) return;
+
+    // CPUの思考時間を再現するため少し遅延させる
+    const timer = setTimeout(() => {
+      try {
+        // CPUの手を計算
+        const board = Array(8)
+          .fill(0)
+          .map(() => Array(8).fill(0));
+        // DiscColorをnumber型に変換して board に設定
+        Object.entries(discs).forEach(([key, color]) => {
+          const [row, col] = key.split(',').map(Number);
+          board[row][col] = color === DiscColor.BLACK ? 1 : 2;
+        });
+
+        // CPUプレイヤーに次の手を計算させる
+        const cpuPlayerNumber = playerColor === 'black' ? 2 : 1;
+        const nextMove = cpuPlayer.calculateNextMove(board, cpuPlayerNumber);
+
+        // 計算された位置に石を置く
+        placeDisc(nextMove);
+      } catch (error) {
+        console.error('CPU error:', error);
+      }
+    }, 1000); // 1秒後にCPUが打つ
+
+    return () => clearTimeout(timer);
+  }, [
+    currentTurn,
+    isAnimating,
+    isCpuTurn,
+    discs,
+    placeablePositions,
+    placeDisc,
+    cpuPlayer,
+    playerColor,
+  ]);
 
   // 現在の盤面状態を取得
   const boardState = convertToBoardState();
