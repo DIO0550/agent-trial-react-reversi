@@ -47,20 +47,6 @@ const isEdgePosition = (row: number, col: number, size: number): boolean => {
 };
 
 /**
- * 位置の種類を判定する関数
- */
-const getPositionType = (position: Point, boardSize: number): PositionType => {
-  const { row, col } = position;
-  if (isCornerPosition(row, col, boardSize)) {
-    return POSITION_TYPE.CORNER;
-  }
-  if (isEdgePosition(row, col, boardSize)) {
-    return POSITION_TYPE.EDGE;
-  }
-  return POSITION_TYPE.OTHER;
-};
-
-/**
  * 配列からランダムに要素を1つ選択する関数
  */
 const getRandomElement = <T>(array: T[]): T => {

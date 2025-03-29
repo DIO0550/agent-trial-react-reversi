@@ -67,6 +67,12 @@ export type Direction = {
 export const BOARD_SIZE = 8;
 
 /**
+ * 盤面の最小サイズ
+ * 4x4以上でなければならない
+ */
+export const MIN_BOARD_SIZE = 4;
+
+/**
  * 盤面の型定義
  * DiscColorの二次元配列
  */

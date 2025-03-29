@@ -1,4 +1,4 @@
-import { Disc, DiscColor } from '../discs/disc';
+import { FlipDisc, DiscColor } from '../discs/flip-disc';
 import { FlippingDiscsState } from '../../../features/reversi/types/reversi-types';
 
 /**
@@ -84,7 +84,7 @@ export const Board = ({
               }
             >
               <div className="w-[90%] h-[90%]">
-                <Disc
+                <FlipDisc
                   color={cell.color}
                   canPlace={cell.canPlace}
                   onClick={

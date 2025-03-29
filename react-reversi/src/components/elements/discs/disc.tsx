@@ -1,138 +1,49 @@
-import { useEffect, useState } from 'react';
+import { DiscColor } from '@/features/reversi/types/reversi-types';
 
-/**
- * ディスク(石)の色を表す型
- */
-export type DiscColor = 'black' | 'white' | 'none';
+const baseClasses = 'w-full h-full rounded-full';
 
 /**
  * ディスク(石)コンポーネントのProps
  */
 type Props = {
   /** ディスクの色 */
-  color: DiscColor;
-  /** クリック時のイベントハンドラ */
-  onClick?: () => void;
+  color: Exclude<DiscColor, DiscColor.NONE>;
   /** 置くことが可能かどうか（ヒント表示用） */
   canPlace?: boolean;
-  /** 裏返しのアニメーション中かどうか */
-  isFlipping?: boolean;
-  /** アニメーションの方向（x軸、y軸）*/
-  flipAxis?: 'x' | 'y';
-  /** ひっくり返る前の色 (アニメーション用) */
-  previousColor?: DiscColor;
+
+  // X軸の回転角度
+  rotateX?: number;
+  /** Y軸の回転角度 */
+  rotateY?: number;
 };
 
-/**
- * アニメーションの状態を表す型
- */
-type AnimationStage = 'not-flipping' | 'first-half' | 'second-half';
+export const Disk = ({ color, canPlace, rotateX = 0, rotateY = 0 }: Props) => {
+  const discClasses = `w-full h-full rounded-full shadow-md absolute backface-hidden  ${
+    color === DiscColor.BLACK ? 'bg-black' : 'bg-white'
+  }`;
 
-/**
- * リバーシの石コンポーネント
- */
-export const Disc = ({
-  color,
-  onClick,
-  canPlace = false,
-  isFlipping = false,
-  flipAxis = 'y',
-  previousColor,
-}: Props) => {
-  // アニメーションの状態を管理
-  const [animationStage, setAnimationStage] =
-    useState<AnimationStage>('not-flipping');
-  const [displayedColor, setDisplayedColor] = useState<DiscColor>(color);
-
-  // isFlippingの変更を検知して、アニメーションを開始
-  useEffect(() => {
-    if (isFlipping && previousColor) {
-      // アニメーション開始時は前の色を表示
-      setDisplayedColor(previousColor);
-      setAnimationStage('first-half');
-
-      // 最初の半回転（90度）が終わったら色を変更
-      const firstHalfTimer = setTimeout(() => {
-        setDisplayedColor(color);
-        setAnimationStage('second-half');
-      }, 250);
-
-      // アニメーション終了時に状態をリセット
-      const endTimer = setTimeout(() => {
-        setAnimationStage('not-flipping');
-      }, 500);
-
-      return () => {
-        clearTimeout(firstHalfTimer);
-        clearTimeout(endTimer);
-      };
-    } else if (!isFlipping) {
-      // アニメーションがなければ現在の色を表示
-      setDisplayedColor(color);
-      setAnimationStage('not-flipping');
-    }
-  }, [isFlipping, color, previousColor]);
-
-  // 色とcanPlaceに基づいたクラス名を決定
-  const baseClasses = 'w-full h-full rounded-full';
-  const cursorClasses = onClick ? 'cursor-pointer' : 'cursor-default';
-  const borderClasses =
-    canPlace && color === 'none'
-      ? 'border-2 border-dashed border-gray-600'
-      : '';
-  const shadowClasses = color !== 'none' ? 'shadow-md' : '';
-
-  // ディスクが空の場合（色がnoneの場合）
-  if (color === 'none') {
+  if (canPlace) {
     return (
       <div
-        className={`${baseClasses} ${cursorClasses} ${borderClasses} bg-transparent`}
-        onClick={onClick}
-        data-testid={`disc-none${canPlace ? '-can-place' : ''}`}
-        aria-label={`empty disc${canPlace ? ' (can place here)' : ''}`}
-        role={onClick ? 'button' : 'presentation'}
+        className={`${baseClasses} border-2 border-dashed border-gray-600 ${discClasses}`}
+        data-testid="disc-can-place"
+        aria-label="empty disc (can place here)"
+        role="presentation"
       />
     );
   }
 
-  // アニメーションステージに応じたクラスを決定
-  const getAnimationClass = () => {
-    if (animationStage === 'first-half') {
-      return flipAxis === 'y' ? 'animate-flip-half-y' : 'animate-flip-half-x';
-    }
-    if (animationStage === 'second-half') {
-      return flipAxis === 'y'
-        ? 'animate-flip-second-half-y'
-        : 'animate-flip-second-half-x';
-    }
-    return '';
-  };
-
-  // 3D反転アニメーション用のクラス
-  const containerClasses = 'relative w-full h-full perspective';
-  const animationClass = getAnimationClass();
-  const discClasses = `w-full h-full rounded-full shadow-md ${
-    displayedColor === 'black' ? 'bg-black' : 'bg-white'
-  }`;
-
-  // テスト用のクラス
-  const testRotateClass =
-    animationStage !== 'not-flipping' ? `animate-flip-${flipAxis}` : '';
+  const rotateXClass = `${rotateX < 0 ? '-rotate-x-' + String(rotateX * -1) : 'rotate-x-' + String(rotateX)}`;
+  const rotateYClass = `${rotateY < 0 ? '-rotate-y-' + String(rotateY * -1) : 'rotate-y-' + String(rotateY)}`;
+  const transformClasses = `transform-style-3d ${rotateXClass} ${rotateYClass}`;
 
   return (
     <div
-      className={containerClasses}
-      onClick={onClick}
-      data-testid={`disc-${color}${isFlipping ? '-flipping' : ''}`}
-      aria-label={`${color} disc${isFlipping ? ' (flipping)' : ''}`}
-      role={onClick ? 'button' : 'presentation'}
-      style={{ perspective: '1000px' }}
-    >
-      <div
-        className={`relative w-full h-full transition-transform ${animationClass} ${testRotateClass} transform-gpu preserve-3d`}
-      >
-        <div className={discClasses} />
-      </div>
-    </div>
+      className={`transition-transform duration-1000 ${discClasses} ${transformClasses}`}
+      style={{
+        transformStyle: 'preserve-3d',
+        transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+      }}
+    />
   );
 };
