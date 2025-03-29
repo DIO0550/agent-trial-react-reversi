@@ -2,11 +2,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Board, BoardState } from '../../../components/elements/boards/board';
+import { ScoreDisplay } from '../../../components/elements/scores/score-display';
 import { useDiscs } from '../../../features/reversi/hooks/use-discs';
-import {
-  BoardPosition,
-  DiscColor,
-} from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/types/reversi-types';
 import {
   CpuLevel,
   PlayerColor,
@@ -16,11 +14,16 @@ import { createStrongCpuPlayer } from '../../../features/reversi/cpu-player/stro
 
 export default function ReversiGamePage() {
   const searchParams = useSearchParams();
-
   // URLパラメータからCPUレベルとプレイヤーの色を取得
   const cpuLevel = (searchParams.get('cpuLevel') as CpuLevel) || 'normal';
   const playerColor =
     (searchParams.get('playerColor') as PlayerColor) || 'black';
+
+  // プレイヤーとCPUの色を設定
+  const playerDiscColor =
+    playerColor === 'black' ? DiscColor.BLACK : DiscColor.WHITE;
+  const cpuDiscColor =
+    playerColor === 'black' ? DiscColor.WHITE : DiscColor.BLACK;
 
   // useDiscsフックを使用して、ゲームの状態と石の配置を管理
   const {
@@ -33,9 +36,7 @@ export default function ReversiGamePage() {
   } = useDiscs();
 
   // 現在のプレイヤーがCPUかどうか判定
-  const isCpuTurn =
-    currentTurn ===
-    (playerColor === 'black' ? DiscColor.WHITE : DiscColor.BLACK);
+  const isCpuTurn = currentTurn === cpuDiscColor;
 
   // CPUプレイヤーの初期化
   const [cpuPlayer] = useState(() => {
@@ -43,7 +44,7 @@ export default function ReversiGamePage() {
       case 'easy':
         // 弱いCPUは適当な位置に配置する（ランダム選択）
         return {
-          calculateNextMove: (board: number[][], currentPlayer: number) => {
+          calculateNextMove: () => {
             const positions = placeablePositions();
             const randomIndex = Math.floor(Math.random() * positions.length);
             return positions[randomIndex];
@@ -90,7 +91,7 @@ export default function ReversiGamePage() {
     (row: number, col: number) => {
       try {
         placeDisc({ row, col });
-      } catch (error) {
+      } catch {
         // エラーが発生した場合は何もしない
         // （石が置けない場所でのクリックなど）
       }
@@ -157,46 +158,43 @@ export default function ReversiGamePage() {
         <div className="flex items-center gap-2">
           <span>現在の手番：</span>
           <span
-            className={`inline-block w-6 h-6 rounded-full ${currentTurn === DiscColor.BLACK ? 'bg-black' : 'bg-white border border-gray-300'}`}
+            className={`inline-block w-6 h-6 rounded-full ${
+              currentTurn === DiscColor.BLACK
+                ? 'bg-black'
+                : 'bg-white border border-gray-300'
+            }`}
           ></span>
           <span>{currentTurn === DiscColor.BLACK ? '黒' : '白'}</span>
         </div>
       </div>
 
-      {/* ボード */}
-      <div className="mb-8">
+      {/* ゲームボードと情報 */}
+      <div className="relative mb-8">
+        {/* ボード */}
         <Board
           boardState={boardState}
           onCellClick={handleCellClick}
           flippingDiscs={flippingDiscs}
         />
-      </div>
 
-      {/* ゲーム情報 */}
-      <div className="text-lg mb-4">
-        <div className="flex gap-8">
-          <div className="flex items-center gap-2">
-            <span className="inline-block w-4 h-4 rounded-full bg-black"></span>
-            <span>
-              黒:{' '}
-              {
-                Object.values(discs).filter(
-                  (color) => color === DiscColor.BLACK,
-                ).length
-              }
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="inline-block w-4 h-4 rounded-full bg-white border border-gray-300"></span>
-            <span>
-              白:{' '}
-              {
-                Object.values(discs).filter(
-                  (color) => color === DiscColor.WHITE,
-                ).length
-              }
-            </span>
-          </div>
+        {/* プレイヤーのスコア */}
+        <div className="absolute bottom-4 left-4">
+          <ScoreDisplay
+            playerColor={playerDiscColor}
+            cpuColor={cpuDiscColor}
+            discs={discs}
+            position="player"
+          />
+        </div>
+
+        {/* CPUのスコア */}
+        <div className="absolute top-4 right-4">
+          <ScoreDisplay
+            playerColor={playerDiscColor}
+            cpuColor={cpuDiscColor}
+            discs={discs}
+            position="cpu"
+          />
         </div>
       </div>
     </div>
