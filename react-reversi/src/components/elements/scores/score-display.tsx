@@ -51,12 +51,6 @@ export const ScoreDisplay = ({
   const displayColor = position === 'player' ? playerColor : cpuColor;
   const displayCount = position === 'player' ? playerCount : cpuCount;
 
-  // 表示位置に応じたスタイルを適用
-  const positionStyles = {
-    player: 'bottom-4 left-4',
-    cpu: 'top-4 right-4',
-  };
-
   // 石の色に応じたスタイルを適用
   const colorStyles = {
     [DiscColor.BLACK]: 'bg-black text-white',
@@ -66,7 +60,7 @@ export const ScoreDisplay = ({
 
   return (
     <div
-      className={`absolute ${positionStyles[position]} flex items-center justify-center p-2 rounded-full shadow-md`}
+      className={`flex items-center justify-center p-2 rounded-full shadow-md`}
       data-testid={`score-${position}`}
     >
       <div

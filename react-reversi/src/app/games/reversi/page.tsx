@@ -94,8 +94,18 @@ export default function ReversiGamePage() {
         </div>
       </div>
 
-      {/* ゲームボードと情報 */}
+      {/* ゲームボードとスコア表示のコンテナ - 相対位置にして内部のスコア配置の基準にする */}
       <div className="relative mb-8">
+        {/* CPUのスコア - ボードの上部右側に表示 */}
+        <div className="absolute -top-16 right-0">
+          <ScoreDisplay
+            playerColor={playerDiscColor}
+            cpuColor={cpuDiscColor}
+            discs={discs}
+            position="cpu"
+          />
+        </div>
+
         {/* ボード */}
         <Board
           boardState={boardState}
@@ -103,23 +113,13 @@ export default function ReversiGamePage() {
           flippingDiscs={{}} // 空のオブジェクトを渡して初期化
         />
 
-        {/* プレイヤーのスコア */}
-        <div className="absolute bottom-4 left-4">
+        {/* プレイヤーのスコア - ボードの下部左側に表示 */}
+        <div className="absolute -bottom-16 left-0">
           <ScoreDisplay
             playerColor={playerDiscColor}
             cpuColor={cpuDiscColor}
             discs={discs}
             position="player"
-          />
-        </div>
-
-        {/* CPUのスコア */}
-        <div className="absolute top-4 right-4">
-          <ScoreDisplay
-            playerColor={playerDiscColor}
-            cpuColor={cpuDiscColor}
-            discs={discs}
-            position="cpu"
           />
         </div>
       </div>
