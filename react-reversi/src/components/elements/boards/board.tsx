@@ -93,8 +93,10 @@ export const Board = ({
                       : undefined
                   }
                   isFlipping={Boolean(flippingInfo)}
-                  flipAxis={flippingInfo?.flipAxis}
-                  previousColor={flippingInfo?.previousColor}
+                  blackRotateX={0}
+                  blackRotateY={0}
+                  whiteRotateX={0}
+                  whiteRotateY={0}
                 />
               </div>
             </div>
