@@ -9,6 +9,27 @@ export enum DiscColor {
 }
 
 /**
+ * 石の回転状態（角度）を表す型
+ */
+export type RotationState = {
+  /** X軸の回転角度（度） */
+  xDeg: number;
+  /** Y軸の回転角度（度） */
+  yDeg: number;
+};
+
+/**
+ * 1マスの状態を表す型
+ * 石の色と回転状態を一緒に管理する
+ */
+export type CellState = {
+  /** 石の色 */
+  discColor: DiscColor;
+  /** 回転状態（角度） */
+  rotationState: RotationState;
+};
+
+/**
  * 盤面上の位置を表す型
  */
 export type BoardPosition = {
