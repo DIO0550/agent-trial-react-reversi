@@ -3,18 +3,13 @@ import {
   DiscColor,
 } from '../../../features/reversi/types/reversi-types';
 
-// ディスクの状態を表す型（古い形式も考慮）
-type DiscsState = {
-  [key: string]: DiscColor;
-};
-
 type Props = {
   /** プレイヤーの石の色 */
   playerColor: DiscColor;
   /** CPUの石の色 */
   cpuColor: DiscColor;
-  /** すべての石の配置状態（Board型またはDiscsState型） */
-  discs: Board | DiscsState;
+  /** すべての石の配置状態（Board型） */
+  discs: Board;
   /** 表示位置 'player' または 'cpu' */
   position: 'player' | 'cpu';
 };
@@ -31,17 +26,10 @@ export const ScoreDisplay = ({
 }: Props) => {
   // 石の数をカウント
   const countDiscs = (color: DiscColor): number => {
-    // Board型（二次元配列）かどうかをチェック
-    if (Array.isArray(discs)) {
-      // Board型の場合（二次元配列）
-      return discs.reduce((total, row) => {
-        return total + row.filter((discColor) => discColor === color).length;
-      }, 0);
-    } else {
-      // DiscsState型の場合（オブジェクト）
-      return Object.values(discs).filter((discColor) => discColor === color)
-        .length;
-    }
+    // Board型（二次元配列）の石をカウント
+    return discs.reduce((total, row) => {
+      return total + row.filter((cell) => cell.discColor === color).length;
+    }, 0);
   };
 
   const playerCount = countDiscs(playerColor);

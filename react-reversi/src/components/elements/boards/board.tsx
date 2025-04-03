@@ -1,5 +1,4 @@
 import { FlipDisc, DiscColor } from '../discs/flip-disc';
-import { FlippingDiscsState } from '../../../features/reversi/types/reversi-types';
 
 /**
  * ボードの1マスの状態を表す型
@@ -26,7 +25,7 @@ type Props = {
   /** セルクリック時のイベントハンドラ */
   onCellClick?: (row: number, col: number) => void;
   /** ひっくり返しアニメーション中の石の状態 */
-  flippingDiscs?: FlippingDiscsState;
+  flippingDiscs?: Record<string, unknown>;
 };
 
 /**
