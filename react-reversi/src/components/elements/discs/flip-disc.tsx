@@ -39,7 +39,7 @@ export const FlipDisc = ({
   const baseClasses = 'w-full h-full rounded-full ';
   const cursorClasses = onClick ? 'cursor-pointer' : 'cursor-default';
   const borderClasses =
-    canPlace && color === 'none'
+    canPlace && color === DiscColor.NONE
       ? 'border-2 border-dashed border-gray-600'
       : '';
 

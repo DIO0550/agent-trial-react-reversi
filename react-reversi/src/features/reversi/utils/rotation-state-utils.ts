@@ -1,9 +1,4 @@
 /**
- * 回転軸を表す型
- */
-export type FlipAxis = 'x' | 'y';
-
-/**
  * 石の回転状態（角度）を表す型
  */
 export type RotationState = {
@@ -51,34 +46,6 @@ export const RotationState = {
       default:
         return { xDeg: 90, yDeg: 0 };
     }
-  },
-
-  /**
-   * 指定された軸で回転させた状態を計算する
-   * @param currentRotation 現在の回転状態
-   * @param flipAxis 回転軸
-   * @param degree 回転角度（デフォルト180度）
-   * @returns 回転後の状態
-   */
-  calculateAxisRotation: (
-    currentRotation: RotationState,
-    flipAxis: FlipAxis,
-    degree: number = 180,
-  ): RotationState => {
-    // 新しい回転状態のオブジェクトを作成（現在の状態をコピー）
-    const newRotation: RotationState = {
-      xDeg: currentRotation.xDeg,
-      yDeg: currentRotation.yDeg,
-    };
-
-    // 指定された軸に基づいて回転角度を更新（剰余計算なし）
-    if (flipAxis === 'x') {
-      newRotation.xDeg = currentRotation.xDeg + degree;
-    } else {
-      newRotation.yDeg = currentRotation.yDeg + degree;
-    }
-
-    return newRotation;
   },
 
   /**

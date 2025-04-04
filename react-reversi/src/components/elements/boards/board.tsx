@@ -1,27 +1,16 @@
-import { FlipDisc, DiscColor } from '../discs/flip-disc';
-
-/**
- * ボードの1マスの状態を表す型
- */
-export type CellState = {
-  /** 石の色 */
-  color: DiscColor;
-  /** 配置可能かどうか */
-  canPlace: boolean;
-};
-
-/**
- * ボード全体の状態を表す型
- * 8×8の二次元配列
- */
-export type BoardState = CellState[][];
+import { FlipDisc } from '../discs/flip-disc';
+import {
+  Board as ReversiBoard,
+  DiscColor,
+  BOARD_SIZE,
+} from '@/features/reversi/types/reversi-types';
 
 /**
  * ボードコンポーネントのProps
  */
 type Props = {
   /** ボードの状態 */
-  boardState: BoardState;
+  boardState: ReversiBoard;
   /** セルクリック時のイベントハンドラ */
   onCellClick?: (row: number, col: number) => void;
   /** ひっくり返しアニメーション中の石の状態 */
@@ -31,7 +20,6 @@ type Props = {
 /**
  * ボードの大きさの定数
  */
-const BOARD_SIZE = 8;
 const DEFAULT_CELL_SIZE = 64; // px
 
 /**
@@ -84,18 +72,18 @@ export const Board = ({
             >
               <div className="w-[90%] h-[90%]">
                 <FlipDisc
-                  color={cell.color}
-                  canPlace={cell.canPlace}
+                  color={cell.discColor}
+                  canPlace={false} // canPlaceは一旦無視して常にfalseを渡す
                   onClick={
                     onCellClick
                       ? () => onCellClick(rowIndex, colIndex)
                       : undefined
                   }
                   isFlipping={Boolean(flippingInfo)}
-                  blackRotateX={0}
-                  blackRotateY={0}
-                  whiteRotateX={0}
-                  whiteRotateY={0}
+                  blackRotateX={cell.rotationState.xDeg}
+                  blackRotateY={cell.rotationState.yDeg}
+                  whiteRotateX={cell.rotationState.xDeg}
+                  whiteRotateY={cell.rotationState.yDeg}
                 />
               </div>
             </div>
@@ -104,36 +92,4 @@ export const Board = ({
       )}
     </div>
   );
-};
-
-/**
- * 新しいボードの状態を作成する関数
- * すべてのセルが空の状態で初期化
- */
-export const createEmptyBoardState = (): BoardState => {
-  return Array(BOARD_SIZE)
-    .fill(null)
-    .map(() =>
-      Array(BOARD_SIZE)
-        .fill(null)
-        .map(() => ({
-          color: 'none',
-          canPlace: false,
-        })),
-    );
-};
-
-/**
- * 初期配置のボードの状態を作成する関数
- * 中央に黒と白を配置
- */
-export const createInitialBoardState = (): BoardState => {
-  const board = createEmptyBoardState();
-  // 中央に初期配置
-  const center = BOARD_SIZE / 2;
-  board[center - 1][center - 1] = { color: 'white', canPlace: false };
-  board[center - 1][center] = { color: 'black', canPlace: false };
-  board[center][center - 1] = { color: 'black', canPlace: false };
-  board[center][center] = { color: 'white', canPlace: false };
-  return board;
 };

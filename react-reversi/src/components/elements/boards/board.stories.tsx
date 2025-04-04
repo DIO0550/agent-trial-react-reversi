@@ -1,11 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import {
-  Board,
-  BoardState,
-  createInitialBoardState,
-  createEmptyBoardState,
-} from './board';
+import { Board } from './board';
+import { createEmptyBoardState, createInitialBoardState } from './board';
+import { DiscColor } from '@/features/reversi/types/reversi-types';
 
 /**
  * リバーシのボードを表示するコンポーネント
@@ -53,21 +50,72 @@ export const InProgress: Story = {
     boardState: (() => {
       const boardState = createInitialBoardState();
       // 追加の石を配置
-      boardState[2][3] = { color: 'black', canPlace: false };
-      boardState[2][4] = { color: 'black', canPlace: false };
-      boardState[3][2] = { color: 'black', canPlace: false };
-      boardState[4][2] = { color: 'black', canPlace: false };
+      boardState[2][3] = {
+        discColor: DiscColor.BLACK,
+        rotationState: {
+          blackRotateX: 0,
+          blackRotateY: 0,
+          whiteRotateX: 0,
+          whiteRotateY: 0,
+        },
+      };
+      boardState[2][4] = {
+        discColor: DiscColor.BLACK,
+        rotationState: {
+          blackRotateX: 0,
+          blackRotateY: 0,
+          whiteRotateX: 0,
+          whiteRotateY: 0,
+        },
+      };
+      boardState[3][2] = {
+        discColor: DiscColor.BLACK,
+        rotationState: {
+          blackRotateX: 0,
+          blackRotateY: 0,
+          whiteRotateX: 0,
+          whiteRotateY: 0,
+        },
+      };
+      boardState[4][2] = {
+        discColor: DiscColor.BLACK,
+        rotationState: {
+          blackRotateX: 0,
+          blackRotateY: 0,
+          whiteRotateX: 0,
+          whiteRotateY: 0,
+        },
+      };
 
-      boardState[1][3] = { color: 'white', canPlace: false };
-      boardState[3][5] = { color: 'white', canPlace: false };
-      boardState[5][3] = { color: 'white', canPlace: false };
+      boardState[1][3] = {
+        discColor: DiscColor.WHITE,
+        rotationState: {
+          blackRotateX: 0,
+          blackRotateY: 0,
+          whiteRotateX: 0,
+          whiteRotateY: 0,
+        },
+      };
+      boardState[3][5] = {
+        discColor: DiscColor.WHITE,
+        rotationState: {
+          blackRotateX: 0,
+          blackRotateY: 0,
+          whiteRotateX: 0,
+          whiteRotateY: 0,
+        },
+      };
+      boardState[5][3] = {
+        discColor: DiscColor.WHITE,
+        rotationState: {
+          blackRotateX: 0,
+          blackRotateY: 0,
+          whiteRotateX: 0,
+          whiteRotateY: 0,
+        },
+      };
 
-      // 配置可能な場所を表示
-      boardState[1][2] = { color: 'none', canPlace: true };
-      boardState[2][1] = { color: 'none', canPlace: true };
-      boardState[4][5] = { color: 'none', canPlace: true };
-      boardState[5][4] = { color: 'none', canPlace: true };
-
+      // 配置可能な場所は無視（あとでcanPlace対応時に実装）
       return boardState;
     })(),
     onCellClick: fn(),
@@ -86,19 +134,41 @@ export const GameOver: Story = {
       // ボードをほぼ黒で埋める
       for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-          boardState[i][j] = { color: 'black', canPlace: false };
+          boardState[i][j] = {
+            discColor: DiscColor.BLACK,
+            rotationState: {
+              blackRotateX: 0,
+              blackRotateY: 0,
+              whiteRotateX: 0,
+              whiteRotateY: 0,
+            },
+          };
         }
       }
 
       // 一部を白にする
-      boardState[0][0] = { color: 'white', canPlace: false };
-      boardState[0][7] = { color: 'white', canPlace: false };
-      boardState[7][0] = { color: 'white', canPlace: false };
-      boardState[7][7] = { color: 'white', canPlace: false };
-      boardState[2][2] = { color: 'white', canPlace: false };
-      boardState[2][5] = { color: 'white', canPlace: false };
-      boardState[5][2] = { color: 'white', canPlace: false };
-      boardState[5][5] = { color: 'white', canPlace: false };
+      const whitePositions = [
+        [0, 0],
+        [0, 7],
+        [7, 0],
+        [7, 7],
+        [2, 2],
+        [2, 5],
+        [5, 2],
+        [5, 5],
+      ];
+
+      whitePositions.forEach(([row, col]) => {
+        boardState[row][col] = {
+          discColor: DiscColor.WHITE,
+          rotationState: {
+            blackRotateX: 0,
+            blackRotateY: 0,
+            whiteRotateX: 0,
+            whiteRotateY: 0,
+          },
+        };
+      });
 
       return boardState;
     })(),
@@ -111,33 +181,32 @@ export const GameOver: Story = {
  */
 export const BoardBuilder: Story = {
   render: () => {
-    const customBoard: BoardState = createEmptyBoardState();
+    const customBoard = createEmptyBoardState();
 
     // 5つの異なるパターンを作成
     const patterns = [
-      { row: 1, col: 1, color: 'black' },
-      { row: 1, col: 6, color: 'white' },
-      { row: 6, col: 1, color: 'white' },
-      { row: 6, col: 6, color: 'black' },
-      { row: 3, col: 3, color: 'black' },
-      { row: 3, col: 4, color: 'white' },
-      { row: 4, col: 3, color: 'white' },
-      { row: 4, col: 4, color: 'black' },
+      { row: 1, col: 1, discColor: DiscColor.BLACK },
+      { row: 1, col: 6, discColor: DiscColor.WHITE },
+      { row: 6, col: 1, discColor: DiscColor.WHITE },
+      { row: 6, col: 6, discColor: DiscColor.BLACK },
+      { row: 3, col: 3, discColor: DiscColor.BLACK },
+      { row: 3, col: 4, discColor: DiscColor.WHITE },
+      { row: 4, col: 3, discColor: DiscColor.WHITE },
+      { row: 4, col: 4, discColor: DiscColor.BLACK },
     ];
 
     // パターンを適用
-    patterns.forEach((p) => {
-      customBoard[p.row][p.col] = {
-        color: p.color as 'black' | 'white',
-        canPlace: false,
+    patterns.forEach(({ row, col, discColor }) => {
+      customBoard[row][col] = {
+        discColor,
+        rotationState: {
+          blackRotateX: 0,
+          blackRotateY: 0,
+          whiteRotateX: 0,
+          whiteRotateY: 0,
+        },
       };
     });
-
-    // 配置可能な場所を示す
-    customBoard[2][2] = { color: 'none', canPlace: true };
-    customBoard[2][5] = { color: 'none', canPlace: true };
-    customBoard[5][2] = { color: 'none', canPlace: true };
-    customBoard[5][5] = { color: 'none', canPlace: true };
 
     return (
       <div className="flex flex-col gap-6">

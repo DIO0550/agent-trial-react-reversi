@@ -1,11 +1,15 @@
 'use client';
 import { useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Board, BoardState } from '../../../components/elements/boards/board';
+import { Board } from '../../../components/elements/boards/board';
 import { ScoreDisplay } from '../../../components/elements/scores/score-display';
 import { useDiscs } from '../../../features/reversi/hooks/use-discs';
 import { useCpuPlayer } from '../../../features/reversi/hooks/use-cpu-player';
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import {
+  DiscColor,
+  Board as ReversiBoard,
+  BOARD_SIZE,
+} from '../../../features/reversi/types/reversi-types';
 import {
   CpuLevel,
   PlayerColor,
@@ -33,31 +37,35 @@ export default function ReversiGamePage() {
 
   // 盤面の状態をBoardコンポーネントに渡す形式に変換する関数
   const convertToBoardState = useCallback(() => {
-    const boardState: BoardState = Array(8)
+    const boardState: ReversiBoard = Array(BOARD_SIZE)
       .fill(null)
       .map(() =>
-        Array(8)
+        Array(BOARD_SIZE)
           .fill(null)
-          .map(() => ({ color: DiscColor.NONE, canPlace: false })),
+          .map(() => ({
+            discColor: DiscColor.NONE,
+            rotationState: {
+              blackRotateX: 0,
+              blackRotateY: 0,
+              whiteRotateX: 0,
+              whiteRotateY: 0,
+            },
+          })),
       );
 
     // 二次元配列からボード状態に変換
     discs.forEach((row, rowIndex) => {
       row.forEach((color, colIndex) => {
         if (color !== DiscColor.NONE) {
-          boardState[rowIndex][colIndex].color = color;
+          boardState[rowIndex][colIndex].discColor = color;
         }
       });
     });
 
-    // 置ける場所を設定
-    const placeable = placeablePositions();
-    placeable.forEach(({ row, col }) => {
-      boardState[row][col].canPlace = true;
-    });
+    // 置ける場所は一旦無視（後でcanPlace対応時に実装）
 
     return boardState;
-  }, [discs, placeablePositions]);
+  }, [discs]);
 
   // セルがクリックされた時のハンドラ
   const handleCellClick = useCallback(
