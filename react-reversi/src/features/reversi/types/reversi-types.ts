@@ -1,5 +1,6 @@
 // 回転関連の型と関数を新しいファイルからインポート
 import { FlipDirection, RotationState } from '../utils/rotation-state-utils';
+import { CanPlace } from '../utils/can-place';
 
 /**
  * 石の色を表す列挙型
@@ -20,6 +21,8 @@ export type CellState = {
   discColor: DiscColor;
   /** 回転状態（角度） */
   rotationState: RotationState;
+  /** このマスに石を置けるかどうか */
+  canPlace: CanPlace;
 };
 
 /**
