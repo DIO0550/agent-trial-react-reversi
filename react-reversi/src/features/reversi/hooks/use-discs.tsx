@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   DiscColor,
   BOARD_SIZE,
   BoardPosition,
   Direction,
   Board,
+  CellState,
 } from '../types/reversi-types';
 import { RotationState, FlipDirection } from '../utils/rotation-state-utils';
 import { CanPlace } from '../utils/can-place';
@@ -26,24 +27,51 @@ const DIRECTIONS: Direction[] = [
   { rowDelta: -1, colDelta: -1 }, // 左上
 ];
 
+// 石の裏返しアニメーションの間隔（ミリ秒）
+const FLIP_ANIMATION_INTERVAL = 150;
+
 /**
  * 初期盤面を作成する
- * @returns 石の配置情報を持つ二次元配列
+ * @returns 盤面データ
  */
-const createInitialDiscs = (): DiscColor[][] => {
+const createInitialBoard = (): Board => {
   // 8x8の空の盤面を作成
-  const discs: DiscColor[][] = Array(BOARD_SIZE)
+  const board: Board = Array(BOARD_SIZE)
     .fill(null)
-    .map(() => Array(BOARD_SIZE).fill(DiscColor.NONE));
+    .map(() =>
+      Array(BOARD_SIZE)
+        .fill(null)
+        .map(() => ({
+          discColor: DiscColor.NONE,
+          rotationState: RotationState.createInitial(),
+          canPlace: CanPlace.createEmpty(),
+        })),
+    );
 
   // 中央に4つの石を配置
   const middle = Math.floor(BOARD_SIZE / 2) - 1;
-  discs[middle][middle] = DiscColor.WHITE;
-  discs[middle][middle + 1] = DiscColor.BLACK;
-  discs[middle + 1][middle] = DiscColor.BLACK;
-  discs[middle + 1][middle + 1] = DiscColor.WHITE;
+  board[middle][middle] = {
+    ...board[middle][middle],
+    discColor: DiscColor.WHITE,
+    rotationState: RotationState.fromDiscColor(DiscColor.WHITE),
+  };
+  board[middle][middle + 1] = {
+    ...board[middle][middle + 1],
+    discColor: DiscColor.BLACK,
+    rotationState: RotationState.fromDiscColor(DiscColor.BLACK),
+  };
+  board[middle + 1][middle] = {
+    ...board[middle + 1][middle],
+    discColor: DiscColor.BLACK,
+    rotationState: RotationState.fromDiscColor(DiscColor.BLACK),
+  };
+  board[middle + 1][middle + 1] = {
+    ...board[middle + 1][middle + 1],
+    discColor: DiscColor.WHITE,
+    rotationState: RotationState.fromDiscColor(DiscColor.WHITE),
+  };
 
-  return discs;
+  return board;
 };
 
 /**
@@ -51,14 +79,19 @@ const createInitialDiscs = (): DiscColor[][] => {
  */
 export const useDiscs = () => {
   // 盤面の状態
-  const [discs, setDiscs] = useState<DiscColor[][]>(createInitialDiscs);
+  const [board, setBoard] = useState<Board>(createInitialBoard);
   // 現在のターン
   const [currentTurn, setCurrentTurn] = useState<DiscColor>(DiscColor.BLACK);
   // 裏返し処理中かどうか
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   // 裏返すキューの管理
-  const { flippingDiscs, enqueueFlipDiscs, clearFlipQueue, completeFlipping } =
-    useFlipDiscQueue();
+  const {
+    flippingDiscs,
+    enqueueFlipDiscs,
+    clearFlipQueue,
+    completeFlipping,
+    dequeueFlipDisc,
+  } = useFlipDiscQueue();
 
   /**
    * 盤面の位置が有効かどうかを確認
@@ -95,7 +128,7 @@ export const useDiscs = () => {
       // 相手の石が続く間、位置を記録
       while (
         isValidPosition(currentRow, currentCol) &&
-        discs[currentRow][currentCol] === opponentColor
+        board[currentRow][currentCol].discColor === opponentColor
       ) {
         // 反転方向を計算
         const flipDirection = getFlipDirection(direction);
@@ -112,7 +145,7 @@ export const useDiscs = () => {
       // 最後に自分の石があれば反転可能
       if (
         isValidPosition(currentRow, currentCol) &&
-        discs[currentRow][currentCol] === turnColor &&
+        board[currentRow][currentCol].discColor === turnColor &&
         flippableDiscs.length > 0
       ) {
         return flippableDiscs;
@@ -120,7 +153,7 @@ export const useDiscs = () => {
 
       return [];
     },
-    [discs, isValidPosition],
+    [board, isValidPosition],
   );
 
   /**
@@ -150,7 +183,7 @@ export const useDiscs = () => {
       for (let col = 0; col < BOARD_SIZE; col++) {
         // 空のセルで、かつ石を反転させられる場所を探す
         if (
-          discs[row][col] === DiscColor.NONE &&
+          board[row][col].discColor === DiscColor.NONE &&
           getAllFlippableDiscs(row, col, currentTurn).length > 0
         ) {
           positions.push({ row, col });
@@ -159,7 +192,7 @@ export const useDiscs = () => {
     }
 
     return positions;
-  }, [discs, currentTurn, getAllFlippableDiscs]);
+  }, [board, currentTurn, getAllFlippableDiscs]);
 
   /**
    * キューに登録された石の裏返しが全て終わったか確認
@@ -178,25 +211,66 @@ export const useDiscs = () => {
 
   /**
    * 石の裏返しが完了したときに呼び出される処理
-   * @param position 裏返しが完了した石の位置
+   * @param flipDiscPosition 裏返す石の情報（位置と回転方向）
    */
   const handleFlipComplete = useCallback(
-    (position: BoardPosition) => {
+    (flipDiscPosition: FlipDiscPosition) => {
+      const { position, direction } = flipDiscPosition;
+      const { row, col } = position;
+
+      // 現在の回転状態を取得
+      const currentRotationState = board[row][col].rotationState;
+
+      // 指定された方向に基づいて新しい回転状態を計算
+      const newRotationState = RotationState.calculateDirectionalRotation(
+        currentRotationState,
+        direction,
+      );
+
       // 石の色を反転させる
-      setDiscs((prev) => {
-        const newDiscs = prev.map((row) => [...row]);
+      setBoard((prev) => {
+        const newBoard = prev.map((rowArr) => [...rowArr]);
         // 現在のターンと逆の色を設定
         const flippedColor =
           currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
-        newDiscs[position.row][position.col] = flippedColor;
-        return newDiscs;
+
+        newBoard[row][col] = {
+          ...newBoard[row][col],
+          discColor: flippedColor,
+          rotationState: newRotationState,
+        };
+
+        return newBoard;
       });
 
       completeFlipping(position);
       checkFlippingComplete();
     },
-    [completeFlipping, checkFlippingComplete, currentTurn],
+    [completeFlipping, checkFlippingComplete, currentTurn, board],
   );
+
+  /**
+   * flippingDiscsを監視して、自動的に石を裏返す
+   */
+  useEffect(() => {
+    // 裏返し処理中でない場合は何もしない
+    if (!isFlipping || flippingDiscs.length === 0) {
+      return;
+    }
+
+    // 一定間隔で石を裏返す
+    const timeoutId = setTimeout(() => {
+      const nextDisc = dequeueFlipDisc();
+      if (nextDisc) {
+        handleFlipComplete(nextDisc);
+      }
+    }, FLIP_ANIMATION_INTERVAL);
+
+    // クリーンアップ関数
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [flippingDiscs, isFlipping, dequeueFlipDisc, handleFlipComplete]);
 
   /**
    * 盤面に石を置く
@@ -213,7 +287,7 @@ export const useDiscs = () => {
       const { row, col } = position;
 
       // 空のセルかチェック
-      if (discs[row][col] !== DiscColor.NONE) {
+      if (board[row][col].discColor !== DiscColor.NONE) {
         throw new Error('この位置には既に石が置かれています');
       }
 
@@ -225,14 +299,16 @@ export const useDiscs = () => {
         throw new Error('この位置には石を置けません');
       }
 
-      // 盤面をコピー
-      const newDiscs = discs.map((row) => [...row]);
-
       // 新しい石を置く
-      newDiscs[row][col] = currentTurn;
-
-      // 盤面を更新
-      setDiscs(newDiscs);
+      setBoard((prev) => {
+        const newBoard = prev.map((rowArr) => [...rowArr]);
+        newBoard[row][col] = {
+          ...newBoard[row][col],
+          discColor: currentTurn,
+          rotationState: RotationState.fromDiscColor(currentTurn),
+        };
+        return newBoard;
+      });
 
       // 裏返し処理を開始
       setIsFlipping(true);
@@ -240,7 +316,7 @@ export const useDiscs = () => {
       // 裏返す石をキューに登録
       enqueueFlipDiscs(flippableDiscs);
     },
-    [discs, currentTurn, isFlipping, getAllFlippableDiscs, enqueueFlipDiscs],
+    [board, currentTurn, isFlipping, getAllFlippableDiscs, enqueueFlipDiscs],
   );
 
   /**
@@ -248,34 +324,13 @@ export const useDiscs = () => {
    * @returns Board型の盤面状態
    */
   const convertToBoardState = useCallback((): Board => {
-    const boardState: Board = Array(BOARD_SIZE)
-      .fill(null)
-      .map(() =>
-        Array(BOARD_SIZE)
-          .fill(null)
-          .map(() => ({
-            discColor: DiscColor.NONE,
-            rotationState: {
-              xDeg: 0,
-              yDeg: 0,
-            },
-            canPlace: CanPlace.createEmpty(),
-          })),
-      );
-
-    // 石の配置を反映
-    discs.forEach((row, rowIndex) => {
-      row.forEach((color, colIndex) => {
-        if (color !== DiscColor.NONE) {
-          boardState[rowIndex][colIndex].discColor = color;
-          boardState[rowIndex][colIndex].rotationState =
-            RotationState.fromDiscColor(color);
-        }
-      });
-    });
-
-    return boardState;
-  }, [discs]);
+    return board.map((row) =>
+      row.map((cell) => ({
+        ...cell,
+        canPlace: CanPlace.createEmpty(),
+      })),
+    );
+  }, [board]);
 
   /**
    * 指定したセルが置ける位置かどうかを判定
@@ -286,15 +341,15 @@ export const useDiscs = () => {
   const isPlaceablePosition = useCallback(
     (row: number, col: number): boolean => {
       return (
-        discs[row][col] === DiscColor.NONE &&
+        board[row][col].discColor === DiscColor.NONE &&
         getAllFlippableDiscs(row, col, currentTurn).length > 0
       );
     },
-    [discs, currentTurn, getAllFlippableDiscs],
+    [board, currentTurn, getAllFlippableDiscs],
   );
 
   return {
-    discs,
+    board,
     currentTurn,
     placeDisc,
     placeablePositions,
