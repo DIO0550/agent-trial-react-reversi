@@ -35,6 +35,20 @@ export const useFlipDiscQueue = () => {
   }, []);
 
   /**
+   * キューから先頭の要素を取り出す
+   * @returns キューの先頭要素。キューが空の場合はundefined
+   */
+  const dequeueFlipDisc = useCallback((): FlipDiscPosition | undefined => {
+    if (flippingDiscs.length === 0) {
+      return undefined;
+    }
+
+    const [nextDisc, ...remainingDiscs] = flippingDiscs;
+    setFlippingDiscs(remainingDiscs);
+    return nextDisc;
+  }, [flippingDiscs]);
+
+  /**
    * キューをクリアする
    */
   const clearFlipQueue = useCallback(() => {
@@ -61,6 +75,7 @@ export const useFlipDiscQueue = () => {
     flippingDiscs,
     enqueueFlipDisc,
     enqueueFlipDiscs,
+    dequeueFlipDisc,
     clearFlipQueue,
     completeFlipping,
   };
