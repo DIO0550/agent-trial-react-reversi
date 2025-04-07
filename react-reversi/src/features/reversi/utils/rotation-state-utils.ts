@@ -2,10 +2,20 @@
  * 石の回転状態（角度）を表す型
  */
 export type RotationState = {
-  /** X軸の回転角度（度） */
-  xDeg: number;
-  /** Y軸の回転角度（度） */
-  yDeg: number;
+  /** 黒石の回転角度 */
+  black: {
+    /** X軸の回転角度（度） */
+    xDeg: number;
+    /** Y軸の回転角度（度） */
+    yDeg: number;
+  };
+  /** 白石の回転角度 */
+  white: {
+    /** X軸の回転角度（度） */
+    xDeg: number;
+    /** Y軸の回転角度（度） */
+    yDeg: number;
+  };
 };
 
 /**
@@ -18,33 +28,56 @@ export enum FlipDirection {
   BOTTOM_TO_TOP = 'bottomToTop', // 下から上
 }
 
+// reversi-types.tsからDiscColorをインポート
+import { DiscColor } from '../types/reversi-types';
+
 /**
  * RotationStateのコンパニオンオブジェクト
  * DiscColorに基づいたRotationStateを提供する
  */
 export const RotationState = {
   /**
-   * 初期状態の回転角度を返す
-   */
-  createInitial: (): RotationState => ({
-    xDeg: 0,
-    yDeg: 0,
-  }),
-
-  /**
    * DiscColorに基づいた回転状態を返す
    * @param discColor 石の色
    * @returns 対応するRotationState
    */
-  fromDiscColor: (discColor: number): RotationState => {
+  fromDiscColor: (discColor: DiscColor): RotationState => {
+    // DiscColorに基づいた回転状態を返す
     switch (discColor) {
-      case 1: // BLACK
-        return { xDeg: 0, yDeg: 0 };
-      case 2: // WHITE
-        return { xDeg: 180, yDeg: 0 };
-      case 0: // NONE
+      case DiscColor.BLACK:
+        return {
+          black: {
+            xDeg: 0,
+            yDeg: 0,
+          },
+          white: {
+            xDeg: 180,
+            yDeg: 0,
+          },
+        };
+      case DiscColor.WHITE:
+        return {
+          black: {
+            xDeg: 180,
+            yDeg: 0,
+          },
+          white: {
+            xDeg: 360,
+            yDeg: 0,
+          },
+        };
+      case DiscColor.NONE:
       default:
-        return { xDeg: 90, yDeg: 0 };
+        return {
+          black: {
+            xDeg: 90,
+            yDeg: 0,
+          },
+          white: {
+            xDeg: 90,
+            yDeg: 0,
+          },
+        };
     }
   },
 
@@ -60,27 +93,37 @@ export const RotationState = {
   ): RotationState => {
     // 現在の回転状態をコピー
     const newRotation: RotationState = {
-      xDeg: currentRotation.xDeg,
-      yDeg: currentRotation.yDeg,
+      black: {
+        xDeg: currentRotation.black.xDeg,
+        yDeg: currentRotation.black.yDeg,
+      },
+      white: {
+        xDeg: currentRotation.white.xDeg,
+        yDeg: currentRotation.white.yDeg,
+      },
     };
 
-    // 方向に基づいて回転角度を更新（剰余計算なし）
+    // 方向に基づいて黒石と白石の両方の回転角度を同じように更新
     switch (direction) {
       case FlipDirection.LEFT_TO_RIGHT:
         // Y軸周りに180度回転
-        newRotation.yDeg = currentRotation.yDeg + 180;
+        newRotation.black.yDeg += 180;
+        newRotation.white.yDeg += 180;
         break;
       case FlipDirection.RIGHT_TO_LEFT:
         // Y軸周りに-180度回転
-        newRotation.yDeg = currentRotation.yDeg - 180;
+        newRotation.black.yDeg -= 180;
+        newRotation.white.yDeg -= 180;
         break;
       case FlipDirection.TOP_TO_BOTTOM:
         // X軸周りに180度回転
-        newRotation.xDeg = currentRotation.xDeg + 180;
+        newRotation.black.xDeg += 180;
+        newRotation.white.xDeg += 180;
         break;
       case FlipDirection.BOTTOM_TO_TOP:
         // X軸周りに-180度回転
-        newRotation.xDeg = currentRotation.xDeg - 180;
+        newRotation.black.xDeg -= 180;
+        newRotation.white.xDeg -= 180;
         break;
       default:
         throw new Error('Invalid flip direction');
@@ -94,20 +137,41 @@ export const RotationState = {
    * @param fromColor 元の色
    * @param toColor 裏返し後の色
    * @returns 回転状態
-   * @deprecated 代わりに calculateAxisRotation(RotationState, FlipAxis) を使用してください
+   * @deprecated 代わりに calculateDirectionalRotation を使用してください
    */
   calculateColorBasedRotation: (
-    fromColor: number,
-    toColor: number,
+    fromColor: DiscColor,
+    toColor: DiscColor,
   ): RotationState => {
-    if (fromColor === 1 && toColor === 2) {
+    const defaultRotationState: RotationState = {
+      black: {
+        xDeg: 0,
+        yDeg: 0,
+      },
+      white: {
+        xDeg: 180,
+        yDeg: 0,
+      },
+    };
+
+    if (fromColor === DiscColor.BLACK && toColor === DiscColor.WHITE) {
       // BLACK to WHITE
-      return { xDeg: 180, yDeg: 0 };
+      return defaultRotationState;
     }
-    if (fromColor === 2 && toColor === 1) {
+    if (fromColor === DiscColor.WHITE && toColor === DiscColor.BLACK) {
       // WHITE to BLACK
-      return { xDeg: 0, yDeg: 0 };
+      return defaultRotationState;
     }
-    return { xDeg: 90, yDeg: 0 };
+
+    return {
+      black: {
+        xDeg: 90,
+        yDeg: 0,
+      },
+      white: {
+        xDeg: 90,
+        yDeg: 0,
+      },
+    };
   },
 };

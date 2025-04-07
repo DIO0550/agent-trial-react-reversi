@@ -78,10 +78,10 @@ export const Board = ({ boardState, onCellClick, onFlipComplete }: Props) => {
                       ? () => onFlipComplete(rowIndex, colIndex)
                       : undefined
                   }
-                  blackRotateX={cell.rotationState.blackRotateX}
-                  blackRotateY={cell.rotationState.blackRotateY}
-                  whiteRotateX={cell.rotationState.whiteRotateX}
-                  whiteRotateY={cell.rotationState.whiteRotateY}
+                  blackRotateX={cell.rotationState.black.xDeg}
+                  blackRotateY={cell.rotationState.black.yDeg}
+                  whiteRotateX={cell.rotationState.white.xDeg}
+                  whiteRotateY={cell.rotationState.white.yDeg}
                 />
               </div>
             </div>
