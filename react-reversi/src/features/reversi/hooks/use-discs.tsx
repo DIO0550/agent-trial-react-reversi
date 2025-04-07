@@ -195,10 +195,9 @@ export const useDiscs = () => {
   }, [board, currentTurn, getAllFlippableDiscs]);
 
   /**
-   * キューに登録された石の裏返しが全て終わったか確認
-   * 終わっていれば次のターンに移行する
+   * キューに登録された石の裏返しが全て終わったか判定して次のターンへ移行する
    */
-  const checkFlippingComplete = useCallback(() => {
+  const processFlippingCompletion = useCallback(() => {
     if (flippingDiscs.length === 0 && isFlipping) {
       setIsFlipping(false);
 
@@ -210,10 +209,10 @@ export const useDiscs = () => {
   }, [flippingDiscs.length, isFlipping, currentTurn]);
 
   /**
-   * 石の裏返しが完了したときに呼び出される処理
+   * 石の裏返し処理を行う関数
    * @param flipDiscPosition 裏返す石の情報（位置と回転方向）
    */
-  const handleFlipComplete = useCallback(
+  const handleFlipDisk = useCallback(
     (flipDiscPosition: FlipDiscPosition) => {
       const { position, direction } = flipDiscPosition;
       const { row, col } = position;
@@ -244,9 +243,8 @@ export const useDiscs = () => {
       });
 
       completeFlipping(position);
-      checkFlippingComplete();
     },
-    [completeFlipping, checkFlippingComplete, currentTurn, board],
+    [completeFlipping, currentTurn, board],
   );
 
   /**
@@ -262,7 +260,7 @@ export const useDiscs = () => {
     const timeoutId = setTimeout(() => {
       const nextDisc = dequeueFlipDisc();
       if (nextDisc) {
-        handleFlipComplete(nextDisc);
+        handleFlipDisk(nextDisc);
       }
     }, FLIP_ANIMATION_INTERVAL);
 
@@ -270,7 +268,7 @@ export const useDiscs = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [flippingDiscs, isFlipping, dequeueFlipDisc, handleFlipComplete]);
+  }, [flippingDiscs, isFlipping, dequeueFlipDisc, handleFlipDisk]);
 
   /**
    * 盤面に石を置く
@@ -320,19 +318,6 @@ export const useDiscs = () => {
   );
 
   /**
-   * 盤面の状態をBoardコンポーネントに渡す形式に変換する関数
-   * @returns Board型の盤面状態
-   */
-  const convertToBoardState = useCallback((): Board => {
-    return board.map((row) =>
-      row.map((cell) => ({
-        ...cell,
-        canPlace: CanPlace.createEmpty(),
-      })),
-    );
-  }, [board]);
-
-  /**
    * 指定したセルが置ける位置かどうかを判定
    * @param row 行番号
    * @param col 列番号
@@ -348,15 +333,25 @@ export const useDiscs = () => {
     [board, currentTurn, getAllFlippableDiscs],
   );
 
+  /**
+   * 石が反転し終えた時の通知を受け取る関数
+   * キューの中身が0なら裏返しが完了した扱いにする
+   */
+  const notifyFlipCompleted = useCallback(() => {
+    if (flippingDiscs.length === 0) {
+      processFlippingCompletion();
+    }
+  }, [flippingDiscs.length, processFlippingCompletion]);
+
   return {
     board,
     currentTurn,
     placeDisc,
     placeablePositions,
     isPlaceablePosition,
-    convertToBoardState,
     flippingDiscs,
-    handleFlipComplete,
+    handleFlipDisk,
     isFlipping,
+    notifyFlipCompleted,
   };
 };
