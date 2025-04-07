@@ -13,8 +13,8 @@ type Props = {
   boardState: ReversiBoard;
   /** セルクリック時のイベントハンドラ */
   onCellClick?: (row: number, col: number) => void;
-  /** ひっくり返しアニメーション中の石の状態 */
-  flippingDiscs?: Record<string, unknown>;
+  /** フリップ完了時のコールバック関数 */
+  onFlipComplete?: (row: number, col: number) => void;
 };
 
 /**
@@ -26,11 +26,7 @@ const DEFAULT_CELL_SIZE = 64; // px
  * リバーシのボードコンポーネント
  * 8×8のグリッドで石を配置する
  */
-export const Board = ({
-  boardState,
-  onCellClick,
-  flippingDiscs = {},
-}: Props) => {
+export const Board = ({ boardState, onCellClick, onFlipComplete }: Props) => {
   // ボードの状態が8×8でない場合はエラーを表示
   if (
     boardState.length !== BOARD_SIZE ||
@@ -52,9 +48,6 @@ export const Board = ({
     >
       {boardState.map((row, rowIndex) =>
         row.map((cell, colIndex) => {
-          const cellKey = `${rowIndex},${colIndex}`;
-          const flippingInfo = flippingDiscs[cellKey];
-
           return (
             <div
               key={`${rowIndex}-${colIndex}`}
@@ -79,11 +72,16 @@ export const Board = ({
                       ? () => onCellClick(rowIndex, colIndex)
                       : undefined
                   }
-                  isFlipping={Boolean(flippingInfo)}
-                  blackRotateX={cell.rotationState.xDeg}
-                  blackRotateY={cell.rotationState.yDeg}
-                  whiteRotateX={cell.rotationState.xDeg}
-                  whiteRotateY={cell.rotationState.yDeg}
+                  isFlipping={false} // isFlippingはフリップ中の状態を親コンポーネントから受け取る想定
+                  onFlipComplete={
+                    onFlipComplete
+                      ? () => onFlipComplete(rowIndex, colIndex)
+                      : undefined
+                  }
+                  blackRotateX={cell.rotationState.blackRotateX}
+                  blackRotateY={cell.rotationState.blackRotateY}
+                  whiteRotateX={cell.rotationState.whiteRotateX}
+                  whiteRotateY={cell.rotationState.whiteRotateY}
                 />
               </div>
             </div>
