@@ -37,6 +37,23 @@ import { DiscColor } from '../types/reversi-types';
  */
 export const RotationState = {
   /**
+   * 初期状態の回転状態を返す
+   * @returns 初期回転状態
+   */
+  createInitial: (): RotationState => {
+    return {
+      black: {
+        xDeg: 0,
+        yDeg: 0,
+      },
+      white: {
+        xDeg: 0,
+        yDeg: 0,
+      },
+    };
+  },
+
+  /**
    * DiscColorに基づいた回転状態を返す
    * @param discColor 石の色
    * @returns 対応するRotationState

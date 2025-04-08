@@ -5,9 +5,8 @@ import {
   BoardPosition,
   Direction,
   Board,
-  CellState,
 } from '../types/reversi-types';
-import { RotationState, FlipDirection } from '../utils/rotation-state-utils';
+import { RotationState } from '../utils/rotation-state-utils';
 import { CanPlace } from '../utils/can-place';
 import {
   FlipDiscPosition,
@@ -85,13 +84,8 @@ export const useDiscs = () => {
   // 裏返し処理中かどうか
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   // 裏返すキューの管理
-  const {
-    flippingDiscs,
-    enqueueFlipDiscs,
-    clearFlipQueue,
-    completeFlipping,
-    dequeueFlipDisc,
-  } = useFlipDiscQueue();
+  const { flippingDiscs, enqueueFlipDiscs, completeFlipping, dequeueFlipDisc } =
+    useFlipDiscQueue();
 
   /**
    * 盤面の位置が有効かどうかを確認
