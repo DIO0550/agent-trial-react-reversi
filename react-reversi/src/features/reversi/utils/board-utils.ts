@@ -1,4 +1,9 @@
-import { Board, Direction, Point, DiscColor } from '../types/reversi-types';
+import {
+  Board,
+  Direction,
+  BoardPosition,
+  DiscColor,
+} from '../types/reversi-types';
 
 /**
  * 盤面内かどうかをチェックする関数
@@ -34,17 +39,17 @@ export const findFlippableDiscsInDirection = (
   currentPlayer: DiscColor,
   direction: Direction,
   board: Board,
-): Point[] => {
+): BoardPosition[] => {
   const oppositePlayer =
     currentPlayer === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
-  const flippablePositions: Point[] = [];
+  const flippablePositions: BoardPosition[] = [];
   let currentRow = row + direction.rowDelta;
   let currentCol = col + direction.colDelta;
 
   // 隣が相手の色である場合は進み続ける
   while (
     isWithinBoard(currentRow, currentCol, board.length) &&
-    board[currentRow][currentCol] === oppositePlayer
+    board[currentRow][currentCol].discColor === oppositePlayer
   ) {
     flippablePositions.push({ row: currentRow, col: currentCol });
     currentRow += direction.rowDelta;
@@ -54,7 +59,7 @@ export const findFlippableDiscsInDirection = (
   // 最後に自分の色があれば挟めると判断
   if (
     isWithinBoard(currentRow, currentCol, board.length) &&
-    board[currentRow][currentCol] === currentPlayer &&
+    board[currentRow][currentCol].discColor === currentPlayer &&
     flippablePositions.length > 0
   ) {
     return flippablePositions;
@@ -71,9 +76,9 @@ export const findFlippableDiscs = (
   col: number,
   currentPlayer: DiscColor,
   board: Board,
-): Point[] => {
+): BoardPosition[] => {
   // すでに石がある場合は置けない
-  if (board[row][col] !== DiscColor.NONE) {
+  if (board[row][col].discColor !== DiscColor.NONE) {
     return [];
   }
 
@@ -89,14 +94,14 @@ export const findFlippableDiscs = (
 export const getPlaceablePositions = (
   board: Board,
   currentPlayer: DiscColor,
-): Point[] => {
-  const placeablePositions: Point[] = [];
+): BoardPosition[] => {
+  const placeablePositions: BoardPosition[] = [];
   const size = board.length;
 
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
       // 既に石があるマスにはおけない
-      if (board[row][col] !== DiscColor.NONE) {
+      if (board[row][col].discColor !== DiscColor.NONE) {
         continue;
       }
 
