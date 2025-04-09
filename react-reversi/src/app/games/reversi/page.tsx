@@ -5,11 +5,7 @@ import { Board } from '../../../components/elements/boards/board';
 import { ScoreDisplay } from '../../../components/elements/scores/score-display';
 import { useDiscs } from '../../../features/reversi/hooks/use-discs';
 import { useCpuPlayer } from '../../../features/reversi/hooks/use-cpu-player';
-import {
-  DiscColor,
-  Board as ReversiBoard,
-  BOARD_SIZE,
-} from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/types/reversi-types';
 import {
   CpuLevel,
   PlayerColor,
@@ -23,13 +19,19 @@ export default function ReversiGamePage() {
     (searchParams.get('playerColor') as PlayerColor) || 'black';
 
   // useDiscsフックを使用して、ゲームの状態と石の配置を管理
-  const { discs, currentTurn, placeablePositions, placeDisc } = useDiscs();
+  const {
+    board,
+    currentTurn,
+    placeablePositions,
+    placeDisc,
+    notifyFlipCompleted,
+  } = useDiscs();
 
   // useCpuPlayerフックを使用して、CPU思考処理を管理
   const { playerDiscColor, cpuDiscColor } = useCpuPlayer(
     cpuLevel,
     playerColor,
-    discs,
+    board,
     currentTurn,
     placeablePositions,
     placeDisc,
@@ -37,35 +39,9 @@ export default function ReversiGamePage() {
 
   // 盤面の状態をBoardコンポーネントに渡す形式に変換する関数
   const convertToBoardState = useCallback(() => {
-    const boardState: ReversiBoard = Array(BOARD_SIZE)
-      .fill(null)
-      .map(() =>
-        Array(BOARD_SIZE)
-          .fill(null)
-          .map(() => ({
-            discColor: DiscColor.NONE,
-            rotationState: {
-              blackRotateX: 0,
-              blackRotateY: 0,
-              whiteRotateX: 0,
-              whiteRotateY: 0,
-            },
-          })),
-      );
-
-    // 二次元配列からボード状態に変換
-    discs.forEach((row, rowIndex) => {
-      row.forEach((color, colIndex) => {
-        if (color !== DiscColor.NONE) {
-          boardState[rowIndex][colIndex].discColor = color;
-        }
-      });
-    });
-
-    // 置ける場所は一旦無視（後でcanPlace対応時に実装）
-
-    return boardState;
-  }, [discs]);
+    // board型はすでにBoardコンポーネントに必要な形式なので、そのまま返す
+    return board;
+  }, [board]);
 
   // セルがクリックされた時のハンドラ
   const handleCellClick = useCallback(
@@ -79,6 +55,11 @@ export default function ReversiGamePage() {
     },
     [placeDisc],
   );
+
+  // フリップアニメーション完了時のハンドラ
+  const handleFlipComplete = useCallback(() => {
+    notifyFlipCompleted();
+  }, [notifyFlipCompleted]);
 
   // 現在の盤面状態を取得
   const boardState = convertToBoardState();
@@ -109,7 +90,7 @@ export default function ReversiGamePage() {
           <ScoreDisplay
             playerColor={playerDiscColor}
             cpuColor={cpuDiscColor}
-            discs={discs}
+            discs={board}
             position="cpu"
           />
         </div>
@@ -118,7 +99,7 @@ export default function ReversiGamePage() {
         <Board
           boardState={boardState}
           onCellClick={handleCellClick}
-          flippingDiscs={{}} // 空のオブジェクトを渡して初期化
+          onFlipComplete={handleFlipComplete}
         />
 
         {/* プレイヤーのスコア - ボードの下部左側に表示 */}
@@ -126,7 +107,7 @@ export default function ReversiGamePage() {
           <ScoreDisplay
             playerColor={playerDiscColor}
             cpuColor={cpuDiscColor}
-            discs={discs}
+            discs={board}
             position="player"
           />
         </div>
