@@ -1,6 +1,5 @@
 import { Disk } from './disc';
 import { DiscColor } from '@/features/reversi/types/reversi-types';
-import { useEffect } from 'react';
 
 /**
  * ディスク(石)コンポーネントのProps
@@ -12,8 +11,6 @@ type Props = {
   onClick?: () => void;
   /** 置くことが可能かどうか（ヒント表示用） */
   canPlace?: boolean;
-  /** 裏返しのアニメーション中かどうか */
-  isFlipping?: boolean;
   /** アニメーション完了時のコールバック関数 */
   onFlipComplete?: () => void;
   /** X軸の回転角度 */
@@ -27,35 +24,18 @@ type Props = {
 };
 
 /**
- * アニメーションにかかる時間（ミリ秒）
- */
-const FLIP_ANIMATION_DURATION = 500;
-
-/**
  * リバーシの石コンポーネント
  */
 export const FlipDisc = ({
   color,
   onClick,
   canPlace = false,
-  isFlipping = false,
   onFlipComplete,
   blackRotateX,
   blackRotateY,
   whiteRotateX,
   whiteRotateY,
 }: Props) => {
-  // アニメーション完了時のコールバック
-  useEffect(() => {
-    if (isFlipping && onFlipComplete) {
-      const timer = setTimeout(() => {
-        onFlipComplete();
-      }, FLIP_ANIMATION_DURATION);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isFlipping, onFlipComplete]);
-
   // 色とcanPlaceに基づいたクラス名を決定
   const baseClasses = 'w-full h-full rounded-full ';
   const cursorClasses = onClick ? 'cursor-pointer' : 'cursor-default';
@@ -85,14 +65,20 @@ export const FlipDisc = ({
   const containerClasses =
     'relative w-full h-full perspective-1000 preserve-3d';
 
+  // トランジション完了時のハンドラー
+  const handleTransitionEnd = () => {
+    onFlipComplete?.();
+  };
+
   return (
     <div
       className={containerClasses}
       onClick={onClick}
-      data-testid={`disc-${color}${isFlipping ? '-flipping' : ''}`}
-      aria-label={`${color} disc${isFlipping ? ' (flipping)' : ''}`}
+      data-testid={`disc-${color}`}
+      aria-label={`${color} disc`}
       role={onClick ? 'button' : 'presentation'}
       style={{ perspective: '1000px' }}
+      onTransitionEnd={handleTransitionEnd}
     >
       <Disk
         color={DiscColor.BLACK}
