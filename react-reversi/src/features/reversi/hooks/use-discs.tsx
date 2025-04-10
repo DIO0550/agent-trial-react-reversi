@@ -189,18 +189,60 @@ export const useDiscs = () => {
   }, [board, currentTurn, getAllFlippableDiscs]);
 
   /**
+   * 盤面上の各マスに石が置けるかどうかの状態を更新する
+   * @param turnColor 評価するターンの色
+   */
+  const updatePlaceableState = useCallback(
+    (turnColor: DiscColor) => {
+      setBoard((prev) => {
+        const newBoard = prev.map((rowArr) => [...rowArr]);
+
+        // 全マスを確認して、石が置けるかどうかを判定
+        for (let row = 0; row < BOARD_SIZE; row++) {
+          for (let col = 0; col < BOARD_SIZE; col++) {
+            // 空のセルかつ、石を裏返せる位置かどうかを確認
+            const canPlaceHere =
+              newBoard[row][col].discColor === DiscColor.NONE &&
+              getAllFlippableDiscs(row, col, turnColor).length > 0;
+
+            // canPlace状態を更新（現在のターンの色に応じて適切なメソッドを使用）
+            const currentCanPlace = newBoard[row][col].canPlace;
+            const updatedCanPlace =
+              turnColor === DiscColor.BLACK
+                ? CanPlace.setBlackCanPlace(currentCanPlace, canPlaceHere)
+                : CanPlace.setWhiteCanPlace(currentCanPlace, canPlaceHere);
+
+            newBoard[row][col] = {
+              ...newBoard[row][col],
+              canPlace: updatedCanPlace,
+            };
+          }
+        }
+
+        return newBoard;
+      });
+    },
+    [getAllFlippableDiscs],
+  );
+
+  /**
    * キューに登録された石の裏返しが全て終わったか判定して次のターンへ移行する
    */
   const processFlippingCompletion = useCallback(() => {
     if (flippingDiscs.length === 0 && isFlipping) {
       setIsFlipping(false);
 
+      // 次のターンを計算
+      const nextTurn =
+        currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+
       // 手番を切り替え
-      setCurrentTurn(
-        currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK,
-      );
+      setCurrentTurn(nextTurn);
+
+      // 次のターンの色に基づいて置ける位置を更新
+      updatePlaceableState(nextTurn);
     }
-  }, [flippingDiscs.length, isFlipping, currentTurn]);
+  }, [flippingDiscs.length, isFlipping, currentTurn, updatePlaceableState]);
 
   /**
    * 石の裏返し処理を行う関数
@@ -263,6 +305,14 @@ export const useDiscs = () => {
       clearTimeout(timeoutId);
     };
   }, [flippingDiscs, isFlipping, dequeueFlipDisc, handleFlipDisk]);
+
+  /**
+   * 初期盤面設定時に石が置ける位置を初期化
+   */
+  useEffect(() => {
+    // コンポーネントのマウント時に初期の置ける位置を設定
+    updatePlaceableState(DiscColor.BLACK);
+  }, [updatePlaceableState]);
 
   /**
    * 盤面に石を置く
@@ -347,5 +397,6 @@ export const useDiscs = () => {
     handleFlipDisk,
     isFlipping,
     notifyFlipCompleted,
+    updatePlaceableState,
   };
 };
