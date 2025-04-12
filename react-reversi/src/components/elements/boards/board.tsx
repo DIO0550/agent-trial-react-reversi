@@ -4,6 +4,7 @@ import {
   DiscColor,
   BOARD_SIZE,
 } from '@/features/reversi/types/reversi-types';
+import { CanPlace } from '@/features/reversi/utils/can-place';
 
 /**
  * ボードコンポーネントのProps
@@ -11,6 +12,8 @@ import {
 type Props = {
   /** ボードの状態 */
   boardState: ReversiBoard;
+  /** 現在のターン (黒または白) */
+  currentTurn: DiscColor;
   /** セルクリック時のイベントハンドラ */
   onCellClick?: (row: number, col: number) => void;
   /** フリップ完了時のコールバック関数 */
@@ -26,7 +29,12 @@ const DEFAULT_CELL_SIZE = 64; // px
  * リバーシのボードコンポーネント
  * 8×8のグリッドで石を配置する
  */
-export const Board = ({ boardState, onCellClick, onFlipComplete }: Props) => {
+export const Board = ({
+  boardState,
+  currentTurn,
+  onCellClick,
+  onFlipComplete,
+}: Props) => {
   // ボードの状態が8×8でない場合はエラーを表示
   if (
     boardState.length !== BOARD_SIZE ||
@@ -48,6 +56,12 @@ export const Board = ({ boardState, onCellClick, onFlipComplete }: Props) => {
     >
       {boardState.map((row, rowIndex) =>
         row.map((cell, colIndex) => {
+          // 現在のターンに基づいて石が置けるかを判定
+          const canPlace = CanPlace.getCurrentTurnCanPlace(
+            cell.canPlace,
+            currentTurn === DiscColor.BLACK,
+          );
+
           return (
             <div
               key={`${rowIndex}-${colIndex}`}
@@ -66,13 +80,12 @@ export const Board = ({ boardState, onCellClick, onFlipComplete }: Props) => {
               <div className="w-[90%] h-[90%]">
                 <FlipDisc
                   color={cell.discColor}
-                  canPlace={false} // canPlaceは一旦無視して常にfalseを渡す
+                  canPlace={canPlace}
                   onClick={
                     onCellClick
                       ? () => onCellClick(rowIndex, colIndex)
                       : undefined
                   }
-                  isFlipping={false} // isFlippingはフリップ中の状態を親コンポーネントから受け取る想定
                   onFlipComplete={
                     onFlipComplete
                       ? () => onFlipComplete(rowIndex, colIndex)
