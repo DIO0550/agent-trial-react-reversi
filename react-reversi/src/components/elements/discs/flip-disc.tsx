@@ -1,4 +1,5 @@
 import { Disk } from './disc';
+import { PlaceableDisc } from './placeable-disc';
 import { DiscColor } from '@/features/reversi/types/reversi-types';
 
 /**
@@ -39,26 +40,23 @@ export const FlipDisc = ({
   // 色とcanPlaceに基づいたクラス名を決定
   const baseClasses = 'w-full h-full rounded-full ';
   const cursorClasses = onClick ? 'cursor-pointer' : 'cursor-default';
-  const borderClasses =
-    canPlace && color === DiscColor.NONE
-      ? 'border-2 border-dashed border-gray-600'
-      : '';
+
+  // ディスクが空で、置くことが可能な場合
+  if (color === DiscColor.NONE && canPlace) {
+    return <PlaceableDisc onClick={onClick} />;
+  }
 
   // ディスクが空の場合（色がnoneの場合）
   if (color === DiscColor.NONE) {
     return (
       <div
-        className={`${baseClasses} ${cursorClasses} ${borderClasses} bg-transparent`}
+        className={`${baseClasses} ${cursorClasses} bg-transparent`}
         onClick={onClick}
-        data-testid={`disc-none${canPlace ? '-can-place' : ''}`}
-        aria-label={`empty disc${canPlace ? ' (can place here)' : ''}`}
+        data-testid="disc-none"
+        aria-label="empty disc"
         role={onClick ? 'button' : 'presentation'}
       />
     );
-  }
-
-  if (canPlace) {
-    return <Disk color={DiscColor.BLACK} canPlace />;
   }
 
   // 3D反転アニメーション用のクラス

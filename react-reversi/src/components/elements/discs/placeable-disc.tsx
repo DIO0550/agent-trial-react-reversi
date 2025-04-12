@@ -1,18 +1,27 @@
 // filepath: /app/react-reversi/src/components/elements/discs/placeable-disc.tsx
+
 /**
- * 石を置ける場所を表示するコンポーネント
- * 点線の丸で置ける場所を示します
+ * 配置可能なディスクを表示するコンポーネントのProps
  */
-export const PlaceableDisc = () => {
+type Props = {
+  /** クリック時のイベントハンドラ */
+  onClick?: () => void;
+};
+
+/**
+ * 配置可能な場所を示すディスクコンポーネント
+ */
+export const PlaceableDisc = ({ onClick }: Props) => {
   const baseClasses = 'w-full h-full rounded-full';
-  const placeableClasses = 'border-2 border-dashed border-gray-600';
+  const cursorClasses = onClick ? 'cursor-pointer' : 'cursor-default';
 
   return (
     <div
-      className={`${baseClasses} ${placeableClasses}`}
-      data-testid="placeable-disc"
-      aria-label="配置可能な位置"
-      role="presentation"
+      className={`${baseClasses} ${cursorClasses} bg-black/20 border-2 border-dashed border-gray-600`}
+      onClick={onClick}
+      data-testid="disc-placeable"
+      aria-label="placeable disc position"
+      role={onClick ? 'button' : 'presentation'}
     />
   );
 };
