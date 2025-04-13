@@ -98,6 +98,7 @@ export default function ReversiGamePage() {
         {/* ボード */}
         <Board
           boardState={boardState}
+          currentTurn={currentTurn}
           onCellClick={handleCellClick}
           onFlipComplete={handleFlipComplete}
         />
