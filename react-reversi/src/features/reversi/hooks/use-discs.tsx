@@ -312,7 +312,8 @@ export const useDiscs = () => {
   useEffect(() => {
     // コンポーネントのマウント時に初期の置ける位置を設定
     updatePlaceableState(DiscColor.BLACK);
-  }, [updatePlaceableState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 依存配列を空にすることでマウント時のみ実行される
 
   /**
    * 盤面に石を置く
