@@ -265,9 +265,12 @@ export const useDiscs = () => {
       // 石の色を反転させる
       setBoard((prev) => {
         const newBoard = prev.map((rowArr) => [...rowArr]);
-        // 現在のターンと逆の色を設定
+        // 現在のマスの色と逆の色を設定
+        const currentDiscColor = newBoard[row][col].discColor;
         const flippedColor =
-          currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+          currentDiscColor === DiscColor.BLACK
+            ? DiscColor.WHITE
+            : DiscColor.BLACK;
 
         newBoard[row][col] = {
           ...newBoard[row][col],
@@ -280,7 +283,7 @@ export const useDiscs = () => {
 
       completeFlipping(position);
     },
-    [completeFlipping, currentTurn, board],
+    [completeFlipping, board],
   );
 
   /**
