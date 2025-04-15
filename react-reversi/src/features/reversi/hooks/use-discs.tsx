@@ -8,6 +8,7 @@ import {
 } from '../types/reversi-types';
 import { RotationState } from '../utils/rotation-state-utils';
 import { CanPlace } from '../utils/can-place';
+import { GameState } from '../utils/game-state';
 import {
   FlipDiscPosition,
   getFlipDirection,
@@ -81,6 +82,10 @@ export const useDiscs = () => {
   const [board, setBoard] = useState<Board>(createInitialBoard);
   // 現在のターン
   const [currentTurn, setCurrentTurn] = useState<DiscColor>(DiscColor.BLACK);
+  // ゲームの状態
+  const [gameState, setGameState] = useState<GameState>(
+    GameState.createInitial,
+  );
   // 裏返し処理中かどうか
   const [isFlipping, setIsFlipping] = useState<boolean>(false);
   // 裏返すキューの管理
@@ -402,5 +407,6 @@ export const useDiscs = () => {
     isFlipping,
     notifyFlipCompleted,
     updatePlaceableState,
+    gameState,
   };
 };
