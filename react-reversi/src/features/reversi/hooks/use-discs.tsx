@@ -237,17 +237,47 @@ export const useDiscs = () => {
     if (flippingDiscs.length === 0 && isFlipping) {
       setIsFlipping(false);
 
-      // 次のターンを計算
-      const nextTurn =
+      // 反対の色を計算
+      const oppositeColor =
         currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
 
-      // 手番を切り替え
-      setCurrentTurn(nextTurn);
+      // 反対の色のプレイヤーが石を置ける位置があるかチェック
+      let hasPlaceablePositions = false;
+      for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+          if (
+            board[row][col].discColor === DiscColor.NONE &&
+            getAllFlippableDiscs(row, col, oppositeColor).length > 0
+          ) {
+            hasPlaceablePositions = true;
+            break;
+          }
+        }
+        if (hasPlaceablePositions) break;
+      }
 
-      // 次のターンの色に基づいて置ける位置を更新
+      // 次のターンを計算（置ける場所がなければ現在のターンを継続）
+      const nextTurn = hasPlaceablePositions ? oppositeColor : currentTurn;
+
+      // パスが発生した場合はログを出力
+      if (!hasPlaceablePositions) {
+        console.log(
+          `${oppositeColor === DiscColor.BLACK ? '黒' : '白'}の手番はパスされました`,
+        );
+      }
+
+      // ターンを設定し、置ける位置を更新
+      setCurrentTurn(nextTurn);
       updatePlaceableState(nextTurn);
     }
-  }, [flippingDiscs.length, isFlipping, currentTurn, updatePlaceableState]);
+  }, [
+    flippingDiscs.length,
+    isFlipping,
+    currentTurn,
+    board,
+    getAllFlippableDiscs,
+    updatePlaceableState,
+  ]);
 
   /**
    * 石の裏返し処理を行う関数
