@@ -234,42 +234,86 @@ export const useDiscs = () => {
    * キューに登録された石の裏返しが全て終わったか判定して次のターンへ移行する
    */
   const processFlippingCompletion = useCallback(() => {
-    if (flippingDiscs.length === 0 && isFlipping) {
-      setIsFlipping(false);
+    // フリッピング中でないか、ディスクが残っている場合は処理しない
+    if (!isFlipping || flippingDiscs.length > 0) {
+      return;
+    }
 
-      // 反対の色を計算
-      const oppositeColor =
-        currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+    setIsFlipping(false);
 
-      // 反対の色のプレイヤーが石を置ける位置があるかチェック
-      let hasPlaceablePositions = false;
-      for (let row = 0; row < BOARD_SIZE; row++) {
-        for (let col = 0; col < BOARD_SIZE; col++) {
+    // 反対の色を計算
+    const oppositeColor =
+      currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+
+    // 両方のプレイヤーが石を置ける位置があるかチェック
+    let currentPlayerCanPlace = false;
+    let oppositePlayerCanPlace = false;
+
+    // 盤面の全セルをチェック
+    for (let row = 0; row < BOARD_SIZE; row++) {
+      for (let col = 0; col < BOARD_SIZE; col++) {
+        if (board[row][col].discColor === DiscColor.NONE) {
+          // 現在のプレイヤーが置ける場所をチェック
           if (
-            board[row][col].discColor === DiscColor.NONE &&
+            !currentPlayerCanPlace &&
+            getAllFlippableDiscs(row, col, currentTurn).length > 0
+          ) {
+            currentPlayerCanPlace = true;
+          }
+          // 相手プレイヤーが置ける場所をチェック
+          if (
+            !oppositePlayerCanPlace &&
             getAllFlippableDiscs(row, col, oppositeColor).length > 0
           ) {
-            hasPlaceablePositions = true;
+            oppositePlayerCanPlace = true;
+          }
+          // 両方のプレイヤーが置ける場所があれば早期リターン
+          if (currentPlayerCanPlace && oppositePlayerCanPlace) {
             break;
           }
         }
-        if (hasPlaceablePositions) break;
       }
-
-      // 次のターンを計算（置ける場所がなければ現在のターンを継続）
-      const nextTurn = hasPlaceablePositions ? oppositeColor : currentTurn;
-
-      // パスが発生した場合はログを出力
-      if (!hasPlaceablePositions) {
-        console.log(
-          `${oppositeColor === DiscColor.BLACK ? '黒' : '白'}の手番はパスされました`,
-        );
+      if (currentPlayerCanPlace && oppositePlayerCanPlace) {
+        break;
       }
-
-      // ターンを設定し、置ける位置を更新
-      setCurrentTurn(nextTurn);
-      updatePlaceableState(nextTurn);
     }
+
+    // ゲーム終了判定（どちらのプレイヤーも置ける場所がない）
+    if (!currentPlayerCanPlace && !oppositePlayerCanPlace) {
+      // ゲーム終了処理
+      console.log('ゲーム終了：どちらのプレイヤーも石を置けません');
+
+      // 黒と白の石の数をカウント
+      let blackCount = 0;
+      let whiteCount = 0;
+      for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+          if (board[row][col].discColor === DiscColor.BLACK) {
+            blackCount++;
+          } else if (board[row][col].discColor === DiscColor.WHITE) {
+            whiteCount++;
+          }
+        }
+      }
+
+      // GameState.setGameOverを使用してゲーム終了状態に更新
+      setGameState(GameState.setGameOver(gameState, blackCount, whiteCount));
+      return;
+    }
+
+    // 次のターンを計算（相手が置ける場所があれば相手のターン、なければ現在のプレイヤーのターン）
+    const nextTurn = oppositePlayerCanPlace ? oppositeColor : currentTurn;
+
+    // パスが発生した場合はログを出力
+    if (!oppositePlayerCanPlace) {
+      console.log(
+        `${oppositeColor === DiscColor.BLACK ? '黒' : '白'}の手番はパスされました`,
+      );
+    }
+
+    // ターンを設定し、置ける位置を更新
+    setCurrentTurn(nextTurn);
+    updatePlaceableState(nextTurn);
   }, [
     flippingDiscs.length,
     isFlipping,
@@ -277,6 +321,8 @@ export const useDiscs = () => {
     board,
     getAllFlippableDiscs,
     updatePlaceableState,
+    setGameState,
+    gameState,
   ]);
 
   /**
