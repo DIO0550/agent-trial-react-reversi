@@ -1,19 +1,11 @@
+import { GameResult } from './game-result';
+
 /**
  * ゲームの状態を表す列挙型
  */
 export enum GameStateType {
   PLAYING = 'PLAYING', // ゲーム進行中
   GAME_OVER = 'GAME_OVER', // ゲーム終了
-}
-
-/**
- * 勝敗の結果を表す列挙型
- */
-export enum GameResult {
-  BLACK_WIN = 'BLACK_WIN',
-  WHITE_WIN = 'WHITE_WIN',
-  DRAW = 'DRAW',
-  IN_PROGRESS = 'IN_PROGRESS',
 }
 
 /**
@@ -53,13 +45,8 @@ export const GameState = {
     blackCount: number,
     whiteCount: number,
   ): GameState => {
-    // 勝敗を判定
-    let result = GameResult.DRAW;
-    if (blackCount > whiteCount) {
-      result = GameResult.BLACK_WIN;
-    } else if (blackCount < whiteCount) {
-      result = GameResult.WHITE_WIN;
-    }
+    // GameResultコンパニオンオブジェクトを使用して勝敗を判定
+    const result = GameResult.determineResult(blackCount, whiteCount);
 
     return {
       ...state,
@@ -94,16 +81,8 @@ export const GameState = {
         case GameStateType.PLAYING:
           return 'ゲーム進行中';
         case GameStateType.GAME_OVER:
-          switch (state.result) {
-            case GameResult.BLACK_WIN:
-              return '黒の勝ち';
-            case GameResult.WHITE_WIN:
-              return '白の勝ち';
-            case GameResult.DRAW:
-              return '引き分け';
-            default:
-              return 'ゲーム終了';
-          }
+          // GameResultのtoStringメソッドを使用
+          return GameResult.toString(state.result);
         default:
           return '不明な状態';
       }
