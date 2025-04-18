@@ -1,6 +1,5 @@
-import React from 'react';
-
-type GameResult = 'win' | 'lose' | 'draw';
+import React, { JSX } from 'react';
+import { GameResult } from '../../utils/game-result';
 
 type Props = {
   /**
@@ -26,6 +25,17 @@ type Props = {
 };
 
 /**
+ * GameResult.toString()の結果をゲーム結果メニュー向けのメッセージに変換するマッピング
+ */
+const resultMessageMap: Record<string, string> = {
+  黒の勝ち: '勝利しました！',
+  白の勝ち: '敗北しました...',
+  引き分け: '引き分けです',
+  ゲーム進行中: '',
+  不明な結果: '',
+};
+
+/**
  * ゲーム終了時に表示する結果メニューコンポーネント
  */
 export const GameResultMenu = ({
@@ -35,23 +45,12 @@ export const GameResultMenu = ({
   onRestart,
   onBackToMenu,
 }: Props): JSX.Element => {
-  const createResultMessage = (result: GameResult): string => {
-    switch (result) {
-      case 'win':
-        return '勝利しました！';
-      case 'lose':
-        return '敗北しました...';
-      case 'draw':
-        return '引き分けです';
-    }
-  };
+  const resultMessage = resultMessageMap[GameResult.toString(result)] || '';
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-80 text-center">
-        <h2 className="text-2xl font-bold mb-4">
-          {createResultMessage(result)}
-        </h2>
+        <h2 className="text-2xl font-bold mb-4">{resultMessage}</h2>
 
         <div className="mb-6">
           <div className="flex justify-between mb-2">

@@ -21,7 +21,7 @@ export const GameResult = {
    * @param result ゲーム結果
    * @returns 黒の勝ちならtrue
    */
-  isBlackWin: (result: GameResultType): boolean => {
+  isBlackWin: (result: GameResult): boolean => {
     return result === GameResultValues.BLACK_WIN;
   },
 
@@ -30,7 +30,7 @@ export const GameResult = {
    * @param result ゲーム結果
    * @returns 白の勝ちならtrue
    */
-  isWhiteWin: (result: GameResultType): boolean => {
+  isWhiteWin: (result: GameResult): boolean => {
     return result === GameResultValues.WHITE_WIN;
   },
 
@@ -39,7 +39,7 @@ export const GameResult = {
    * @param result ゲーム結果
    * @returns 引き分けならtrue
    */
-  isDraw: (result: GameResultType): boolean => {
+  isDraw: (result: GameResult): boolean => {
     return result === GameResultValues.DRAW;
   },
 
@@ -48,7 +48,7 @@ export const GameResult = {
    * @param result ゲーム結果
    * @returns ゲームが進行中ならtrue
    */
-  isInProgress: (result: GameResultType): boolean => {
+  isInProgress: (result: GameResult): boolean => {
     return result === GameResultValues.IN_PROGRESS;
   },
 
@@ -58,7 +58,7 @@ export const GameResult = {
    * @param whiteCount 白の石の数
    * @returns 勝敗結果
    */
-  determineResult: (blackCount: number, whiteCount: number): GameResultType => {
+  determineResult: (blackCount: number, whiteCount: number): GameResult => {
     if (blackCount > whiteCount) {
       return GameResultValues.BLACK_WIN;
     }
@@ -75,7 +75,7 @@ export const GameResult = {
    * @param result 勝敗結果
    * @returns 人間が読みやすい文字列
    */
-  toString: (result: GameResultType): string => {
+  toString: (result: GameResult): string => {
     switch (result) {
       case GameResultValues.BLACK_WIN:
         return '黒の勝ち';
@@ -95,5 +95,5 @@ export const GameResult = {
  * 勝敗の結果を表す型
  * GameResultValuesの値の型を取得
  */
-export type GameResultType =
+export type GameResult =
   (typeof GameResultValues)[keyof typeof GameResultValues];
