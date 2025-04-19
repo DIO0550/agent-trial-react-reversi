@@ -472,6 +472,27 @@ export const useDiscs = () => {
     }
   }, [flippingDiscs.length, processFlippingCompletion]);
 
+  /**
+   * 盤面上の黒と白の石の数をカウントする
+   * @returns 黒と白の石の数
+   */
+  const countDiscs = useCallback(() => {
+    let blackCount = 0;
+    let whiteCount = 0;
+
+    for (let row = 0; row < BOARD_SIZE; row++) {
+      for (let col = 0; col < BOARD_SIZE; col++) {
+        if (board[row][col].discColor === DiscColor.BLACK) {
+          blackCount++;
+        } else if (board[row][col].discColor === DiscColor.WHITE) {
+          whiteCount++;
+        }
+      }
+    }
+
+    return { blackCount, whiteCount };
+  }, [board]);
+
   return {
     board,
     currentTurn,
@@ -484,5 +505,6 @@ export const useDiscs = () => {
     notifyFlipCompleted,
     updatePlaceableState,
     gameState,
+    countDiscs,
   };
 };

@@ -1,6 +1,6 @@
 'use client';
 import { useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Board } from '../../../components/elements/boards/board';
 import { ScoreDisplay } from '../../../components/elements/scores/score-display';
 import { useDiscs } from '../../../features/reversi/hooks/use-discs';
@@ -10,9 +10,12 @@ import {
   CpuLevel,
   PlayerColor,
 } from '../../../features/start-menu/types/start-menu-types';
+import { GameState } from '../../../features/reversi/utils/game-state';
+import { GameResultMenu } from '../../../features/reversi/game-result/components/game-result-menu';
 
 export default function ReversiGamePage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   // URLパラメータからCPUレベルとプレイヤーの色を取得
   const cpuLevel = (searchParams.get('cpuLevel') as CpuLevel) || 'normal';
   const playerColor =
@@ -25,6 +28,8 @@ export default function ReversiGamePage() {
     placeablePositions,
     placeDisc,
     notifyFlipCompleted,
+    gameState,
+    countDiscs,
   } = useDiscs();
 
   // useCpuPlayerフックを使用して、CPU思考処理を管理
@@ -60,6 +65,25 @@ export default function ReversiGamePage() {
   const handleFlipComplete = useCallback(() => {
     notifyFlipCompleted();
   }, [notifyFlipCompleted]);
+
+  // ゲームを再開するハンドラ
+  const handleRestart = useCallback(() => {
+    // 現在のURLパラメータを維持して同じページを再読み込み
+    window.location.reload();
+  }, []);
+
+  // メニューに戻るハンドラ
+  const handleBackToMenu = useCallback(() => {
+    router.push('/');
+  }, [router]);
+
+  // 石の数のカウント
+  const { blackCount, whiteCount } = countDiscs();
+
+  // プレイヤーのスコアとCPUのスコアを計算
+  const playerScore =
+    playerDiscColor === DiscColor.BLACK ? blackCount : whiteCount;
+  const cpuScore = cpuDiscColor === DiscColor.BLACK ? blackCount : whiteCount;
 
   // 現在の盤面状態を取得
   const boardState = convertToBoardState();
@@ -113,6 +137,17 @@ export default function ReversiGamePage() {
           />
         </div>
       </div>
+
+      {/* ゲーム終了時に結果メニューを表示 */}
+      {GameState.isGameOver(gameState) && (
+        <GameResultMenu
+          result={gameState.result}
+          playerScore={playerScore}
+          cpuScore={cpuScore}
+          onRestart={handleRestart}
+          onBackToMenu={handleBackToMenu}
+        />
+      )}
     </div>
   );
 }
