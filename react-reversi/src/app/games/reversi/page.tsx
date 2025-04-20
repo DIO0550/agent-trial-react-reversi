@@ -111,12 +111,7 @@ export default function ReversiGamePage() {
       <div className="relative mb-8">
         {/* CPUのスコア - ボードの上部右側に表示 */}
         <div className="absolute -top-16 right-0">
-          <ScoreDisplay
-            playerColor={playerDiscColor}
-            cpuColor={cpuDiscColor}
-            discs={board}
-            position="cpu"
-          />
+          <ScoreDisplay discColor={cpuDiscColor} count={cpuScore} />
         </div>
 
         {/* ボード */}
@@ -129,12 +124,7 @@ export default function ReversiGamePage() {
 
         {/* プレイヤーのスコア - ボードの下部左側に表示 */}
         <div className="absolute -bottom-16 left-0">
-          <ScoreDisplay
-            playerColor={playerDiscColor}
-            cpuColor={cpuDiscColor}
-            discs={board}
-            position="player"
-          />
+          <ScoreDisplay discColor={playerDiscColor} count={playerScore} />
         </div>
       </div>
 
