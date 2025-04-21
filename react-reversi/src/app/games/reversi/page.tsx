@@ -1,6 +1,6 @@
 'use client';
 import { useCallback } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Board } from '@/components/elements/boards/board';
 import { ScoreDisplay } from '@/components/elements/scores/score-display';
 import { CurrentTurn } from '@/components/elements/turns/current-turn';
@@ -13,10 +13,12 @@ import {
 } from '@/features/start-menu/types/start-menu-types';
 import { GameState } from '@/features/reversi/utils/game-state';
 import { GameResultMenu } from '@/features/reversi/game-result/components/game-result-menu';
+import { useNavigation } from '@/hooks/use-navigation';
 
 export default function ReversiGamePage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const { navigateToHome, reloadCurrentPage } = useNavigation();
+
   // URLパラメータからCPUレベルとプレイヤーの色を取得
   const cpuLevel = (searchParams.get('cpuLevel') as CpuLevel) || 'normal';
   const playerColor =
@@ -69,14 +71,14 @@ export default function ReversiGamePage() {
 
   // ゲームを再開するハンドラ
   const handleRestart = useCallback(() => {
-    // 現在のURLパラメータを維持して同じページを再読み込み
-    window.location.reload();
-  }, []);
+    // 現在のページをリロード
+    reloadCurrentPage();
+  }, [reloadCurrentPage]);
 
   // メニューに戻るハンドラ
   const handleBackToMenu = useCallback(() => {
-    router.push('/');
-  }, [router]);
+    navigateToHome();
+  }, [navigateToHome]);
 
   // 石の数のカウント
   const { blackCount, whiteCount } = countDiscs();

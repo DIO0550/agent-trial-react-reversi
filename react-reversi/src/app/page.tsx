@@ -1,10 +1,10 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { StartMenu } from '../features/start-menu/components/start-menu';
 import { StartMenuSettings } from '../features/start-menu/types/start-menu-types';
+import { useNavigation } from '@/hooks/use-navigation';
 
 export default function Home() {
-  const router = useRouter();
+  const { navigateToReversiGame } = useNavigation();
 
   /**
    * ゲーム開始時の処理
@@ -12,9 +12,7 @@ export default function Home() {
    */
   const handleStart = (settings: StartMenuSettings) => {
     // ゲーム画面に遷移する
-    router.push(
-      `/games/reversi?cpuLevel=${settings.cpuLevel}&playerColor=${settings.playerColor}`,
-    );
+    navigateToReversiGame(settings.cpuLevel, settings.playerColor);
   };
 
   return (
