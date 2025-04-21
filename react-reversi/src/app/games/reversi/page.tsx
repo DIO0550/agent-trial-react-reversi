@@ -1,17 +1,18 @@
 'use client';
 import { useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Board } from '../../../components/elements/boards/board';
-import { ScoreDisplay } from '../../../components/elements/scores/score-display';
-import { useDiscs } from '../../../features/reversi/hooks/use-discs';
-import { useCpuPlayer } from '../../../features/reversi/hooks/use-cpu-player';
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import { Board } from '@/components/elements/boards/board';
+import { ScoreDisplay } from '@/components/elements/scores/score-display';
+import { CurrentTurn } from '@/components/elements/turns/current-turn';
+import { useDiscs } from '@/features/reversi/hooks/use-discs';
+import { useCpuPlayer } from '@/features/reversi/hooks/use-cpu-player';
+import { DiscColor } from '@/features/reversi/types/reversi-types';
 import {
   CpuLevel,
   PlayerColor,
-} from '../../../features/start-menu/types/start-menu-types';
-import { GameState } from '../../../features/reversi/utils/game-state';
-import { GameResultMenu } from '../../../features/reversi/game-result/components/game-result-menu';
+} from '@/features/start-menu/types/start-menu-types';
+import { GameState } from '@/features/reversi/utils/game-state';
+import { GameResultMenu } from '@/features/reversi/game-result/components/game-result-menu';
 
 export default function ReversiGamePage() {
   const searchParams = useSearchParams();
@@ -93,19 +94,7 @@ export default function ReversiGamePage() {
       <h1 className="text-3xl font-bold mb-4">リバーシゲーム</h1>
 
       {/* 現在の手番表示 */}
-      <div className="mb-6 text-xl font-medium">
-        <div className="flex items-center gap-2">
-          <span>現在の手番：</span>
-          <span
-            className={`inline-block w-6 h-6 rounded-full ${
-              currentTurn === DiscColor.BLACK
-                ? 'bg-black'
-                : 'bg-white border border-gray-300'
-            }`}
-          ></span>
-          <span>{currentTurn === DiscColor.BLACK ? '黒' : '白'}</span>
-        </div>
-      </div>
+      <CurrentTurn currentTurn={currentTurn} />
 
       {/* ゲームボードとスコア表示のコンテナ - 相対位置にして内部のスコア配置の基準にする */}
       <div className="relative mb-8">
