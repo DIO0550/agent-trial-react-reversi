@@ -45,12 +45,6 @@ export default function ReversiGamePage() {
     placeDisc,
   );
 
-  // 盤面の状態をBoardコンポーネントに渡す形式に変換する関数
-  const convertToBoardState = useCallback(() => {
-    // board型はすでにBoardコンポーネントに必要な形式なので、そのまま返す
-    return board;
-  }, [board]);
-
   // セルがクリックされた時のハンドラ
   const handleCellClick = useCallback(
     (row: number, col: number) => {
@@ -88,9 +82,6 @@ export default function ReversiGamePage() {
     playerDiscColor === DiscColor.BLACK ? blackCount : whiteCount;
   const cpuScore = cpuDiscColor === DiscColor.BLACK ? blackCount : whiteCount;
 
-  // 現在の盤面状態を取得
-  const boardState = convertToBoardState();
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-green-100">
       <h1 className="text-3xl font-bold mb-4">リバーシゲーム</h1>
@@ -107,7 +98,7 @@ export default function ReversiGamePage() {
 
         {/* ボード */}
         <Board
-          boardState={boardState}
+          boardState={board}
           currentTurn={currentTurn}
           onCellClick={handleCellClick}
           onFlipComplete={handleFlipComplete}
