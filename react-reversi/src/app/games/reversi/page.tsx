@@ -32,7 +32,7 @@ export default function ReversiGamePage() {
     placeDisc,
     notifyFlipCompleted,
     gameState,
-    countDiscs,
+    discCount,
   } = useDiscs();
 
   // useCpuPlayerフックを使用して、CPU思考処理を管理
@@ -75,7 +75,7 @@ export default function ReversiGamePage() {
   }, [navigateToHome]);
 
   // 石の数のカウント
-  const { blackCount, whiteCount } = countDiscs();
+  const { blackCount, whiteCount } = discCount;
 
   // プレイヤーのスコアとCPUのスコアを計算
   const playerScore =

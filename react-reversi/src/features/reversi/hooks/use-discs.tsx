@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   DiscColor,
   BOARD_SIZE,
@@ -476,7 +476,7 @@ export const useDiscs = () => {
    * 盤面上の黒と白の石の数をカウントする
    * @returns 黒と白の石の数
    */
-  const countDiscs = useCallback(() => {
+  const discCount = useMemo(() => {
     let blackCount = 0;
     let whiteCount = 0;
 
@@ -505,6 +505,6 @@ export const useDiscs = () => {
     notifyFlipCompleted,
     updatePlaceableState,
     gameState,
-    countDiscs,
+    discCount,
   };
 };
