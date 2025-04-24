@@ -40,8 +40,8 @@ export const GameResultMenu = ({
   onRestart,
   onBackToMenu,
 }: Props): JSX.Element => {
-  // GameResult.toStringメソッドにプレイヤーの色も渡して適切なメッセージを取得
-  const resultMessage = GameResult.toString(result, playerColor);
+  // GameResult.toStringメソッドで適切なメッセージを取得（playerColorは不要になりました）
+  const resultMessage = GameResult.toString(result);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

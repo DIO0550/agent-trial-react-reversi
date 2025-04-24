@@ -1,4 +1,5 @@
 import { GameResult } from './game-result';
+import { DiscColor } from '../types/reversi-types';
 
 /**
  * ゲームの状態を表す列挙型
@@ -16,6 +17,8 @@ export type GameState = {
   type: GameStateType;
   /** 勝敗結果 */
   result: GameResult;
+  /** プレイヤーの石の色（勝敗判定で使用） */
+  playerColor?: DiscColor;
 };
 
 /**
@@ -24,12 +27,14 @@ export type GameState = {
 export const GameState = {
   /**
    * 初期状態のゲーム状態を生成する
+   * @param playerColor プレイヤーの石の色
    * @returns 初期状態のゲーム状態
    */
-  createInitial: (): GameState => {
+  createInitial: (playerColor?: DiscColor): GameState => {
     return {
       type: GameStateType.PLAYING,
       result: GameResult.IN_PROGRESS,
+      playerColor,
     };
   },
 
@@ -45,8 +50,16 @@ export const GameState = {
     blackCount: number,
     whiteCount: number,
   ): GameState => {
+    // playerColorがない場合のデフォルト値（'black'）
+    const playerColorStr =
+      state.playerColor === DiscColor.BLACK ? 'black' : 'white';
+
     // GameResultコンパニオンオブジェクトを使用して勝敗を判定
-    const result = GameResult.determineResult(blackCount, whiteCount);
+    const result = GameResult.determineResult(
+      blackCount,
+      whiteCount,
+      playerColorStr,
+    );
 
     return {
       ...state,

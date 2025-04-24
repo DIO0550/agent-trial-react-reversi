@@ -3,8 +3,8 @@
  * 外部には公開せず、GameResultオブジェクトからアクセスする
  */
 const GameResultValues = {
-  BLACK_WIN: 'BLACK_WIN',
-  WHITE_WIN: 'WHITE_WIN',
+  PLAYER_WIN: 'PLAYER_WIN',
+  PLAYER_LOSE: 'PLAYER_LOSE',
   DRAW: 'DRAW',
   IN_PROGRESS: 'IN_PROGRESS',
 } as const;
@@ -13,11 +13,10 @@ const GameResultValues = {
  * プレイヤー向けメッセージのマッピング
  */
 const playerMessages = {
-  win: '勝利しました！',
-  lose: '敗北しました...',
-  draw: '引き分けです',
-  inProgress: 'ゲーム進行中',
-  unknown: '不明な結果',
+  PLAYER_WIN: '勝利しました！',
+  PLAYER_LOSE: '敗北しました...',
+  DRAW: '引き分けです',
+  IN_PROGRESS: 'ゲーム進行中',
 };
 
 /**
@@ -28,21 +27,21 @@ export const GameResult = {
   ...GameResultValues,
 
   /**
-   * 黒の勝ちかどうかを判定する
+   * プレイヤーの勝ちかどうかを判定する
    * @param result ゲーム結果
-   * @returns 黒の勝ちならtrue
+   * @returns プレイヤーの勝ちならtrue
    */
-  isBlackWin: (result: GameResult): boolean => {
-    return result === GameResultValues.BLACK_WIN;
+  isPlayerWin: (result: GameResult): boolean => {
+    return result === GameResultValues.PLAYER_WIN;
   },
 
   /**
-   * 白の勝ちかどうかを判定する
+   * プレイヤーの負けかどうかを判定する
    * @param result ゲーム結果
-   * @returns 白の勝ちならtrue
+   * @returns プレイヤーの負けならtrue
    */
-  isWhiteWin: (result: GameResult): boolean => {
-    return result === GameResultValues.WHITE_WIN;
+  isPlayerLose: (result: GameResult): boolean => {
+    return result === GameResultValues.PLAYER_LOSE;
   },
 
   /**
@@ -67,64 +66,39 @@ export const GameResult = {
    * 石の数から勝敗結果を判定する
    * @param blackCount 黒の石の数
    * @param whiteCount 白の石の数
+   * @param playerColor プレイヤーの石の色
    * @returns 勝敗結果
    */
-  determineResult: (blackCount: number, whiteCount: number): GameResult => {
-    if (blackCount > whiteCount) {
-      return GameResultValues.BLACK_WIN;
+  determineResult: (
+    blackCount: number,
+    whiteCount: number,
+    playerColor: 'black' | 'white',
+  ): GameResult => {
+    // 引き分けの場合
+    if (blackCount === whiteCount) {
+      return GameResultValues.DRAW;
     }
 
-    if (blackCount < whiteCount) {
-      return GameResultValues.WHITE_WIN;
+    // プレイヤーが黒の場合
+    if (playerColor === 'black') {
+      return blackCount > whiteCount
+        ? GameResultValues.PLAYER_WIN
+        : GameResultValues.PLAYER_LOSE;
     }
 
-    return GameResultValues.DRAW;
+    // プレイヤーが白の場合
+    return whiteCount > blackCount
+      ? GameResultValues.PLAYER_WIN
+      : GameResultValues.PLAYER_LOSE;
   },
 
   /**
    * 勝敗結果の文字列表現を取得する
    * @param result 勝敗結果
-   * @param playerColor プレイヤーの色（オプション）
    * @returns 人間が読みやすい文字列
    */
-  toString: (
-    result: GameResult,
-    playerColor?: 'black' | 'white' | 'random',
-  ): string => {
-    // playerColorが指定されており、ゲーム結果がプレイヤー向けメッセージを必要とする場合
-    if (playerColor && (playerColor === 'black' || playerColor === 'white')) {
-      if (result === GameResultValues.BLACK_WIN) {
-        return playerColor === 'black'
-          ? playerMessages.win
-          : playerMessages.lose;
-      }
-      if (result === GameResultValues.WHITE_WIN) {
-        return playerColor === 'white'
-          ? playerMessages.win
-          : playerMessages.lose;
-      }
-      if (result === GameResultValues.DRAW) {
-        return playerMessages.draw;
-      }
-      if (result === GameResultValues.IN_PROGRESS) {
-        return playerMessages.inProgress;
-      }
-      return playerMessages.unknown;
-    }
-
-    // playerColorが指定されていない場合は従来の結果文字列を返す
-    switch (result) {
-      case GameResultValues.BLACK_WIN:
-        return '黒の勝ち';
-      case GameResultValues.WHITE_WIN:
-        return '白の勝ち';
-      case GameResultValues.DRAW:
-        return '引き分け';
-      case GameResultValues.IN_PROGRESS:
-        return 'ゲーム進行中';
-      default:
-        return '不明な結果';
-    }
+  toString: (result: GameResult): string => {
+    return playerMessages[result] || '不明な結果';
   },
 };
 

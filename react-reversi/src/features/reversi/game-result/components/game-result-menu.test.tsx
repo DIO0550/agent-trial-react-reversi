@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
 import { GameResultMenu } from './game-result-menu';
+import { GameResult } from '../../utils/game-result';
 
 describe('GameResultMenu', () => {
   const mockOnRestart = vi.fn();
@@ -14,7 +15,7 @@ describe('GameResultMenu', () => {
   test('プレイヤーが黒で勝利した場合に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
-        result="BLACK_WIN"
+        result={GameResult.PLAYER_WIN}
         playerColor="black"
         playerScore={40}
         cpuScore={24}
@@ -33,7 +34,7 @@ describe('GameResultMenu', () => {
   test('プレイヤーが白で勝利した場合に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
-        result="WHITE_WIN"
+        result={GameResult.PLAYER_WIN}
         playerColor="white"
         playerScore={40}
         cpuScore={24}
@@ -48,7 +49,7 @@ describe('GameResultMenu', () => {
   test('プレイヤーが黒で敗北した場合に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
-        result="WHITE_WIN"
+        result={GameResult.PLAYER_LOSE}
         playerColor="black"
         playerScore={24}
         cpuScore={40}
@@ -63,7 +64,7 @@ describe('GameResultMenu', () => {
   test('プレイヤーが白で敗北した場合に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
-        result="BLACK_WIN"
+        result={GameResult.PLAYER_LOSE}
         playerColor="white"
         playerScore={24}
         cpuScore={40}
@@ -78,7 +79,7 @@ describe('GameResultMenu', () => {
   test('引き分け時に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
-        result="DRAW"
+        result={GameResult.DRAW}
         playerColor="black"
         playerScore={32}
         cpuScore={32}
@@ -93,7 +94,7 @@ describe('GameResultMenu', () => {
   test('リスタートボタンをクリックすると、onRestartが呼ばれる', async () => {
     render(
       <GameResultMenu
-        result="BLACK_WIN"
+        result={GameResult.PLAYER_WIN}
         playerColor="black"
         playerScore={40}
         cpuScore={24}
@@ -111,7 +112,7 @@ describe('GameResultMenu', () => {
   test('メニューに戻るボタンをクリックすると、onBackToMenuが呼ばれる', async () => {
     render(
       <GameResultMenu
-        result="BLACK_WIN"
+        result={GameResult.PLAYER_WIN}
         playerColor="black"
         playerScore={40}
         cpuScore={24}
