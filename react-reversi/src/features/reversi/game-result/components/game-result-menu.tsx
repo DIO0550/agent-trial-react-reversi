@@ -1,11 +1,16 @@
 import React, { JSX } from 'react';
 import { GameResult } from '../../utils/game-result';
+import { PlayerColor } from '@/features/start-menu/types/start-menu-types';
 
 type Props = {
   /**
    * ゲームの結果
    */
   result: GameResult;
+  /**
+   * プレイヤーの色（黒または白）
+   */
+  playerColor: PlayerColor;
   /**
    * プレイヤーのスコア
    */
@@ -25,27 +30,18 @@ type Props = {
 };
 
 /**
- * GameResult.toString()の結果をゲーム結果メニュー向けのメッセージに変換するマッピング
- */
-const resultMessageMap: Record<string, string> = {
-  黒の勝ち: '勝利しました！',
-  白の勝ち: '敗北しました...',
-  引き分け: '引き分けです',
-  ゲーム進行中: '',
-  不明な結果: '',
-};
-
-/**
  * ゲーム終了時に表示する結果メニューコンポーネント
  */
 export const GameResultMenu = ({
   result,
+  playerColor,
   playerScore,
   cpuScore,
   onRestart,
   onBackToMenu,
 }: Props): JSX.Element => {
-  const resultMessage = resultMessageMap[GameResult.toString(result)] || '';
+  // GameResult.toStringメソッドにプレイヤーの色も渡して適切なメッセージを取得
+  const resultMessage = GameResult.toString(result, playerColor);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

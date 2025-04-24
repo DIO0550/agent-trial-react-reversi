@@ -17,17 +17,37 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Win: Story = {
+export const BlackPlayerWins: Story = {
   args: {
-    result: 'win',
+    result: 'BLACK_WIN',
+    playerColor: 'black',
     playerScore: 40,
     cpuScore: 24,
   },
 };
 
-export const Lose: Story = {
+export const WhitePlayerWins: Story = {
   args: {
-    result: 'lose',
+    result: 'WHITE_WIN',
+    playerColor: 'white',
+    playerScore: 40,
+    cpuScore: 24,
+  },
+};
+
+export const BlackPlayerLoses: Story = {
+  args: {
+    result: 'WHITE_WIN',
+    playerColor: 'black',
+    playerScore: 24,
+    cpuScore: 40,
+  },
+};
+
+export const WhitePlayerLoses: Story = {
+  args: {
+    result: 'BLACK_WIN',
+    playerColor: 'white',
     playerScore: 24,
     cpuScore: 40,
   },
@@ -35,7 +55,8 @@ export const Lose: Story = {
 
 export const Draw: Story = {
   args: {
-    result: 'draw',
+    result: 'DRAW',
+    playerColor: 'black',
     playerScore: 32,
     cpuScore: 32,
   },

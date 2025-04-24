@@ -11,10 +11,11 @@ describe('GameResultMenu', () => {
     vi.clearAllMocks();
   });
 
-  test('勝利時に正しいメッセージが表示される', () => {
+  test('プレイヤーが黒で勝利した場合に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
-        result="win"
+        result="BLACK_WIN"
+        playerColor="black"
         playerScore={40}
         cpuScore={24}
         onRestart={mockOnRestart}
@@ -29,10 +30,41 @@ describe('GameResultMenu', () => {
     expect(screen.getByText('24')).toBeInTheDocument();
   });
 
-  test('敗北時に正しいメッセージが表示される', () => {
+  test('プレイヤーが白で勝利した場合に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
-        result="lose"
+        result="WHITE_WIN"
+        playerColor="white"
+        playerScore={40}
+        cpuScore={24}
+        onRestart={mockOnRestart}
+        onBackToMenu={mockOnBackToMenu}
+      />,
+    );
+
+    expect(screen.getByText('勝利しました！')).toBeInTheDocument();
+  });
+
+  test('プレイヤーが黒で敗北した場合に正しいメッセージが表示される', () => {
+    render(
+      <GameResultMenu
+        result="WHITE_WIN"
+        playerColor="black"
+        playerScore={24}
+        cpuScore={40}
+        onRestart={mockOnRestart}
+        onBackToMenu={mockOnBackToMenu}
+      />,
+    );
+
+    expect(screen.getByText('敗北しました...')).toBeInTheDocument();
+  });
+
+  test('プレイヤーが白で敗北した場合に正しいメッセージが表示される', () => {
+    render(
+      <GameResultMenu
+        result="BLACK_WIN"
+        playerColor="white"
         playerScore={24}
         cpuScore={40}
         onRestart={mockOnRestart}
@@ -46,7 +78,8 @@ describe('GameResultMenu', () => {
   test('引き分け時に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
-        result="draw"
+        result="DRAW"
+        playerColor="black"
         playerScore={32}
         cpuScore={32}
         onRestart={mockOnRestart}
@@ -60,7 +93,8 @@ describe('GameResultMenu', () => {
   test('リスタートボタンをクリックすると、onRestartが呼ばれる', async () => {
     render(
       <GameResultMenu
-        result="win"
+        result="BLACK_WIN"
+        playerColor="black"
         playerScore={40}
         cpuScore={24}
         onRestart={mockOnRestart}
@@ -77,7 +111,8 @@ describe('GameResultMenu', () => {
   test('メニューに戻るボタンをクリックすると、onBackToMenuが呼ばれる', async () => {
     render(
       <GameResultMenu
-        result="win"
+        result="BLACK_WIN"
+        playerColor="black"
         playerScore={40}
         cpuScore={24}
         onRestart={mockOnRestart}

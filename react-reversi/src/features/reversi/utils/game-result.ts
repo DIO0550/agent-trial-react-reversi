@@ -10,6 +10,17 @@ const GameResultValues = {
 } as const;
 
 /**
+ * プレイヤー向けメッセージのマッピング
+ */
+const playerMessages = {
+  win: '勝利しました！',
+  lose: '敗北しました...',
+  draw: '引き分けです',
+  inProgress: 'ゲーム進行中',
+  unknown: '不明な結果',
+};
+
+/**
  * GameResultオブジェクト
  * 値とその操作メソッドを含む
  */
@@ -73,9 +84,35 @@ export const GameResult = {
   /**
    * 勝敗結果の文字列表現を取得する
    * @param result 勝敗結果
+   * @param playerColor プレイヤーの色（オプション）
    * @returns 人間が読みやすい文字列
    */
-  toString: (result: GameResult): string => {
+  toString: (
+    result: GameResult,
+    playerColor?: 'black' | 'white' | 'random',
+  ): string => {
+    // playerColorが指定されており、ゲーム結果がプレイヤー向けメッセージを必要とする場合
+    if (playerColor && (playerColor === 'black' || playerColor === 'white')) {
+      if (result === GameResultValues.BLACK_WIN) {
+        return playerColor === 'black'
+          ? playerMessages.win
+          : playerMessages.lose;
+      }
+      if (result === GameResultValues.WHITE_WIN) {
+        return playerColor === 'white'
+          ? playerMessages.win
+          : playerMessages.lose;
+      }
+      if (result === GameResultValues.DRAW) {
+        return playerMessages.draw;
+      }
+      if (result === GameResultValues.IN_PROGRESS) {
+        return playerMessages.inProgress;
+      }
+      return playerMessages.unknown;
+    }
+
+    // playerColorが指定されていない場合は従来の結果文字列を返す
     switch (result) {
       case GameResultValues.BLACK_WIN:
         return '黒の勝ち';
