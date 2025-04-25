@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { GameResultMenu } from './game-result-menu';
+import { GameResult } from '../../utils/game-result';
 
 const meta = {
   title: 'Features/Reversi/GameResult/GameResultMenu',
@@ -17,47 +18,32 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const BlackPlayerWins: Story = {
+export const PlayerWins: Story = {
   args: {
-    result: 'BLACK_WIN',
-    playerColor: 'black',
+    result: GameResult.PLAYER_WIN,
     playerScore: 40,
     cpuScore: 24,
+    onRestart: () => {},
+    onBackToMenu: () => {},
   },
 };
 
-export const WhitePlayerWins: Story = {
+export const PlayerLoses: Story = {
   args: {
-    result: 'WHITE_WIN',
-    playerColor: 'white',
-    playerScore: 40,
-    cpuScore: 24,
-  },
-};
-
-export const BlackPlayerLoses: Story = {
-  args: {
-    result: 'WHITE_WIN',
-    playerColor: 'black',
+    result: GameResult.PLAYER_LOSE,
     playerScore: 24,
     cpuScore: 40,
-  },
-};
-
-export const WhitePlayerLoses: Story = {
-  args: {
-    result: 'BLACK_WIN',
-    playerColor: 'white',
-    playerScore: 24,
-    cpuScore: 40,
+    onRestart: () => {},
+    onBackToMenu: () => {},
   },
 };
 
 export const Draw: Story = {
   args: {
-    result: 'DRAW',
-    playerColor: 'black',
+    result: GameResult.DRAW,
     playerScore: 32,
     cpuScore: 32,
+    onRestart: () => {},
+    onBackToMenu: () => {},
   },
 };

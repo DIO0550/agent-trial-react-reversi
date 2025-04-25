@@ -12,11 +12,10 @@ describe('GameResultMenu', () => {
     vi.clearAllMocks();
   });
 
-  test('プレイヤーが黒で勝利した場合に正しいメッセージが表示される', () => {
+  test('プレイヤーが勝利した場合に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
         result={GameResult.PLAYER_WIN}
-        playerColor="black"
         playerScore={40}
         cpuScore={24}
         onRestart={mockOnRestart}
@@ -31,41 +30,10 @@ describe('GameResultMenu', () => {
     expect(screen.getByText('24')).toBeInTheDocument();
   });
 
-  test('プレイヤーが白で勝利した場合に正しいメッセージが表示される', () => {
-    render(
-      <GameResultMenu
-        result={GameResult.PLAYER_WIN}
-        playerColor="white"
-        playerScore={40}
-        cpuScore={24}
-        onRestart={mockOnRestart}
-        onBackToMenu={mockOnBackToMenu}
-      />,
-    );
-
-    expect(screen.getByText('勝利しました！')).toBeInTheDocument();
-  });
-
-  test('プレイヤーが黒で敗北した場合に正しいメッセージが表示される', () => {
+  test('プレイヤーが敗北した場合に正しいメッセージが表示される', () => {
     render(
       <GameResultMenu
         result={GameResult.PLAYER_LOSE}
-        playerColor="black"
-        playerScore={24}
-        cpuScore={40}
-        onRestart={mockOnRestart}
-        onBackToMenu={mockOnBackToMenu}
-      />,
-    );
-
-    expect(screen.getByText('敗北しました...')).toBeInTheDocument();
-  });
-
-  test('プレイヤーが白で敗北した場合に正しいメッセージが表示される', () => {
-    render(
-      <GameResultMenu
-        result={GameResult.PLAYER_LOSE}
-        playerColor="white"
         playerScore={24}
         cpuScore={40}
         onRestart={mockOnRestart}
@@ -80,7 +48,6 @@ describe('GameResultMenu', () => {
     render(
       <GameResultMenu
         result={GameResult.DRAW}
-        playerColor="black"
         playerScore={32}
         cpuScore={32}
         onRestart={mockOnRestart}
@@ -95,7 +62,6 @@ describe('GameResultMenu', () => {
     render(
       <GameResultMenu
         result={GameResult.PLAYER_WIN}
-        playerColor="black"
         playerScore={40}
         cpuScore={24}
         onRestart={mockOnRestart}
@@ -113,7 +79,6 @@ describe('GameResultMenu', () => {
     render(
       <GameResultMenu
         result={GameResult.PLAYER_WIN}
-        playerColor="black"
         playerScore={40}
         cpuScore={24}
         onRestart={mockOnRestart}
