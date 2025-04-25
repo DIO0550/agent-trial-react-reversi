@@ -1,16 +1,11 @@
 import React, { JSX } from 'react';
 import { GameResult } from '../../utils/game-result';
-import { PlayerColor } from '@/features/start-menu/types/start-menu-types';
 
 type Props = {
   /**
    * ゲームの結果
    */
   result: GameResult;
-  /**
-   * プレイヤーの色（黒または白）
-   */
-  playerColor: PlayerColor;
   /**
    * プレイヤーのスコア
    */
@@ -34,13 +29,12 @@ type Props = {
  */
 export const GameResultMenu = ({
   result,
-  playerColor,
   playerScore,
   cpuScore,
   onRestart,
   onBackToMenu,
 }: Props): JSX.Element => {
-  // GameResult.toStringメソッドで適切なメッセージを取得（playerColorは不要になりました）
+  // GameResult.toStringメソッドで適切なメッセージを取得
   const resultMessage = GameResult.toString(result);
 
   return (
