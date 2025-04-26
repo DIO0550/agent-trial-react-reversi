@@ -1,5 +1,5 @@
-import { GameResult } from './game-result';
-import { DiscColor } from '../types/reversi-types';
+import { GameResult } from '@/features/reversi/utils/game-result';
+import { DiscColor } from '@/features/reversi/types/reversi-types';
 
 /**
  * ゲームの状態を表す列挙型

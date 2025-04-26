@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useNavigation } from './use-navigation';
+import { useNavigation } from '@/hooks/use-navigation';
 
 // useRouterとそのpushメソッドのモック
 const mockPush = vi.fn();

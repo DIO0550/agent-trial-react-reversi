@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test, vi } from 'vitest';
-import { GameResultMenu } from './game-result-menu';
-import { GameResult } from '../../utils/game-result';
+import { GameResultMenu } from '@/features/reversi/game-result/components/game-result-menu';
+import { GameResult } from '@/features/reversi/utils/game-result';
 
 describe('GameResultMenu', () => {
   const mockOnRestart = vi.fn();
