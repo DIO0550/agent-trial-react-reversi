@@ -1,7 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createSuperCpuPlayer } from './super-cpu-player';
-import { Board, Point } from '../types/reversi-types';
+import {
+  Board,
+  BoardPosition,
+  DiscColor,
+  CellState,
+} from '../types/reversi-types';
 import * as boardUtils from '../utils/board-utils';
+import { RotationState } from '../utils/rotation-state-utils';
 
 describe('SuperCpuPlayer', () => {
   // テスト後にモックをリセット
@@ -10,12 +16,31 @@ describe('SuperCpuPlayer', () => {
   });
 
   it('相手の石を挟める場所がない場合はエラーをスローする', () => {
-    const board: Board = [
-      [1, 2, 1],
-      [2, 1, 2],
-      [1, 2, 1],
-    ];
-    const currentPlayer = 1;
+    // テスト用の盤面を作成
+    const board: Board = Array(3)
+      .fill(null)
+      .map(() =>
+        Array(3)
+          .fill(null)
+          .map(
+            () =>
+              ({
+                discColor: DiscColor.NONE,
+                rotationState: RotationState.createInitial(),
+                canPlace: { black: false, white: false },
+              }) as CellState,
+          ),
+      );
+
+    // 石を配置
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 3; col++) {
+        const isEven = (row + col) % 2 === 0;
+        board[row][col].discColor = isEven ? DiscColor.BLACK : DiscColor.WHITE;
+      }
+    }
+
+    const currentPlayer = DiscColor.BLACK;
     const cpuPlayer = createSuperCpuPlayer();
 
     // 置ける場所が無いことをモックする
@@ -27,16 +52,31 @@ describe('SuperCpuPlayer', () => {
   });
 
   it('角が選択肢にある場合は角を最優先で選択する', () => {
-    const board: Board = [
-      [0, 1, 0],
-      [2, 2, 0],
-      [0, 0, 0],
-    ];
-    // プレイヤー1の番：(0,0)が角かつ相手の石(2)を挟める位置
-    const currentPlayer = 1;
+    // テスト用の盤面を作成
+    const board: Board = Array(3)
+      .fill(null)
+      .map(() =>
+        Array(3)
+          .fill(null)
+          .map(
+            () =>
+              ({
+                discColor: DiscColor.NONE,
+                rotationState: RotationState.createInitial(),
+                canPlace: { black: false, white: false },
+              }) as CellState,
+          ),
+      );
+
+    // 石を配置
+    board[0][1].discColor = DiscColor.BLACK;
+    board[1][1].discColor = DiscColor.WHITE;
+    board[1][0].discColor = DiscColor.WHITE;
+
+    const currentPlayer = DiscColor.BLACK;
 
     // 角の位置を含む有効な位置をモック
-    const availablePositions: Point[] = [
+    const availablePositions: BoardPosition[] = [
       { row: 0, col: 0 }, // 角
       { row: 2, col: 1 }, // その他
     ];
@@ -61,13 +101,26 @@ describe('SuperCpuPlayer', () => {
 
   it('X打点（角の隣）の位置は可能な限り避ける', () => {
     const boardSize = 8;
+    // テスト用の盤面を作成
     const board: Board = Array(boardSize)
-      .fill(0)
-      .map(() => Array(boardSize).fill(0));
-    const currentPlayer = 1;
+      .fill(null)
+      .map(() =>
+        Array(boardSize)
+          .fill(null)
+          .map(
+            () =>
+              ({
+                discColor: DiscColor.NONE,
+                rotationState: RotationState.createInitial(),
+                canPlace: { black: false, white: false },
+              }) as CellState,
+          ),
+      );
+
+    const currentPlayer = DiscColor.BLACK;
 
     // X打点と通常のマスを含む有効な位置をモック
-    const availablePositions: Point[] = [
+    const availablePositions: BoardPosition[] = [
       { row: 0, col: 1 }, // X打点（角の隣）
       { row: 1, col: 0 }, // X打点（角の隣）
       { row: 3, col: 3 }, // 通常のマス
@@ -93,13 +146,26 @@ describe('SuperCpuPlayer', () => {
 
   it('C打点（対角から3つ目）は積極的に取る', () => {
     const boardSize = 8;
+    // テスト用の盤面を作成
     const board: Board = Array(boardSize)
-      .fill(0)
-      .map(() => Array(boardSize).fill(0));
-    const currentPlayer = 1;
+      .fill(null)
+      .map(() =>
+        Array(boardSize)
+          .fill(null)
+          .map(
+            () =>
+              ({
+                discColor: DiscColor.NONE,
+                rotationState: RotationState.createInitial(),
+                canPlace: { black: false, white: false },
+              }) as CellState,
+          ),
+      );
+
+    const currentPlayer = DiscColor.BLACK;
 
     // C打点と通常のマスを含む有効な位置をモック
-    const availablePositions: Point[] = [
+    const availablePositions: BoardPosition[] = [
       { row: 0, col: 2 }, // C打点（角から2つ目）
       { row: 2, col: 0 }, // C打点（角から2つ目）
       { row: 4, col: 4 }, // 通常のマス
@@ -125,13 +191,26 @@ describe('SuperCpuPlayer', () => {
 
   it('角がなく、端がある場合は端を優先的に選択する', () => {
     const boardSize = 8;
+    // テスト用の盤面を作成
     const board: Board = Array(boardSize)
-      .fill(0)
-      .map(() => Array(boardSize).fill(0));
-    const currentPlayer = 1;
+      .fill(null)
+      .map(() =>
+        Array(boardSize)
+          .fill(null)
+          .map(
+            () =>
+              ({
+                discColor: DiscColor.NONE,
+                rotationState: RotationState.createInitial(),
+                canPlace: { black: false, white: false },
+              }) as CellState,
+          ),
+      );
+
+    const currentPlayer = DiscColor.BLACK;
 
     // 端とその他のマスを含む有効な位置をモック
-    const availablePositions: Point[] = [
+    const availablePositions: BoardPosition[] = [
       { row: 0, col: 3 }, // 端
       { row: 3, col: 3 }, // その他
     ];
@@ -156,20 +235,33 @@ describe('SuperCpuPlayer', () => {
 
   it('初期盤面では長期的な評価を優先する', () => {
     // 初期盤面に似た状態でテスト
-    const board: Board = [
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 1, 2, 0, 0, 0],
-      [0, 0, 0, 2, 1, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    const currentPlayer = 1;
+    const boardSize = 8;
+    // テスト用の盤面を作成
+    const board: Board = Array(boardSize)
+      .fill(null)
+      .map(() =>
+        Array(boardSize)
+          .fill(null)
+          .map(
+            () =>
+              ({
+                discColor: DiscColor.NONE,
+                rotationState: RotationState.createInitial(),
+                canPlace: { black: false, white: false },
+              }) as CellState,
+          ),
+      );
+
+    // 初期配置
+    board[3][3].discColor = DiscColor.BLACK;
+    board[3][4].discColor = DiscColor.WHITE;
+    board[4][3].discColor = DiscColor.WHITE;
+    board[4][4].discColor = DiscColor.BLACK;
+
+    const currentPlayer = DiscColor.BLACK;
 
     // 初期状態で選択可能な位置をモック
-    const availablePositions: Point[] = [
+    const availablePositions: BoardPosition[] = [
       { row: 2, col: 3 }, // 石が少なく取れるが戦略的に有利な位置
       { row: 3, col: 2 }, // 石が多く取れるが戦略的に不利な位置
     ];
@@ -179,7 +271,7 @@ describe('SuperCpuPlayer', () => {
 
     // 裏返せる石の数をモック
     vi.spyOn(boardUtils, 'findFlippableDiscs').mockImplementation(
-      (row, col, player, board) => {
+      (row, col) => {
         if (row === 2 && col === 3) return [{ row: 3, col: 3 }]; // 1つだけ裏返せる
         if (row === 3 && col === 2)
           return [
@@ -202,20 +294,47 @@ describe('SuperCpuPlayer', () => {
 
   it('終盤では石を多く取れる手を選択する', () => {
     // ほとんどのマスが埋まっている終盤の盤面
-    const board: Board = [
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 2, 2, 1, 1, 1],
-      [1, 1, 2, 0, 0, 2, 1, 1],
-      [1, 1, 1, 0, 1, 1, 1, 1],
-    ];
-    const currentPlayer = 1;
+    const boardSize = 8;
+    // テスト用の盤面を作成
+    const board: Board = Array(boardSize)
+      .fill(null)
+      .map(() =>
+        Array(boardSize)
+          .fill(null)
+          .map(
+            () =>
+              ({
+                discColor: DiscColor.NONE,
+                rotationState: RotationState.createInitial(),
+                canPlace: { black: false, white: false },
+              }) as CellState,
+          ),
+      );
+
+    // 終盤の状態を設定
+    for (let row = 0; row < boardSize; row++) {
+      for (let col = 0; col < boardSize; col++) {
+        // ほとんどを黒石で埋める
+        board[row][col].discColor = DiscColor.BLACK;
+      }
+    }
+
+    // 一部を白石に
+    board[5][3].discColor = DiscColor.WHITE;
+    board[5][4].discColor = DiscColor.WHITE;
+    board[6][2].discColor = DiscColor.WHITE;
+    board[6][5].discColor = DiscColor.WHITE;
+
+    // 空きマスを設定
+    board[6][3].discColor = DiscColor.NONE;
+    board[6][4].discColor = DiscColor.NONE;
+    board[7][3].discColor = DiscColor.NONE;
+    board[7][4].discColor = DiscColor.NONE;
+
+    const currentPlayer = DiscColor.BLACK;
 
     // 終盤で選択可能な位置をモック
-    const availablePositions: Point[] = [
+    const availablePositions: BoardPosition[] = [
       { row: 6, col: 3 }, // 石を多く取れる位置
       { row: 6, col: 4 }, // 石を少なく取れる位置
     ];
@@ -225,7 +344,7 @@ describe('SuperCpuPlayer', () => {
 
     // 裏返せる石の数をモック
     vi.spyOn(boardUtils, 'findFlippableDiscs').mockImplementation(
-      (row, col, player, board) => {
+      (row, col) => {
         if (row === 6 && col === 3)
           return [
             { row: 6, col: 2 },
@@ -245,16 +364,32 @@ describe('SuperCpuPlayer', () => {
   });
 
   it('同じ評価値の手が複数ある場合はその中からランダムに選択する', () => {
-    const board: Board = [
-      [0, 0, 0, 0],
-      [0, 1, 2, 0],
-      [0, 2, 1, 0],
-      [0, 0, 0, 0],
-    ];
-    const currentPlayer = 1;
+    // テスト用の盤面を作成
+    const board: Board = Array(4)
+      .fill(null)
+      .map(() =>
+        Array(4)
+          .fill(null)
+          .map(
+            () =>
+              ({
+                discColor: DiscColor.NONE,
+                rotationState: RotationState.createInitial(),
+                canPlace: { black: false, white: false },
+              }) as CellState,
+          ),
+      );
+
+    // 初期配置
+    board[1][1].discColor = DiscColor.BLACK;
+    board[1][2].discColor = DiscColor.WHITE;
+    board[2][1].discColor = DiscColor.WHITE;
+    board[2][2].discColor = DiscColor.BLACK;
+
+    const currentPlayer = DiscColor.BLACK;
 
     // 同じ評価値を持つ位置をモック
-    const availablePositions: Point[] = [
+    const availablePositions: BoardPosition[] = [
       { row: 0, col: 1 },
       { row: 1, col: 0 },
     ];

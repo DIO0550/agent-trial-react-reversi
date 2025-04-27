@@ -1,4 +1,4 @@
-import { Board, Point } from '../types/reversi-types';
+import { Board, BoardPosition, DiscColor } from '../types/reversi-types';
 import { CpuPlayer } from './types/cpu-player-types';
 import {
   findFlippableDiscs,
@@ -25,7 +25,7 @@ type PositionType = (typeof POSITION_TYPE)[keyof typeof POSITION_TYPE];
  * 評価付きの位置を表す型
  */
 type PositionWithEvaluation = {
-  position: Point;
+  position: BoardPosition;
   type: PositionType;
   flippableCount: number;
   strategicValue: number; // 戦略的な価値（高いほど良い）
@@ -44,6 +44,35 @@ const GAME_PHASE = {
  * 盤面の状態
  */
 type GamePhase = (typeof GAME_PHASE)[keyof typeof GAME_PHASE];
+
+/**
+ * 位置の基本的な価値（高いほど優先）
+ */
+const POSITION_VALUES = {
+  [POSITION_TYPE.CORNER]: 100,
+  [POSITION_TYPE.C_POINT]: 50,
+  [POSITION_TYPE.EDGE]: 30,
+  [POSITION_TYPE.OTHER]: 10,
+  [POSITION_TYPE.X_POINT]: -20, // X打点は避ける
+};
+
+/**
+ * ゲームフェーズに応じた重み付け係数
+ */
+const PHASE_MULTIPLIERS = {
+  position: {
+    // 位置の価値の重み
+    [GAME_PHASE.EARLY]: 0.9,
+    [GAME_PHASE.MID]: 0.7,
+    [GAME_PHASE.LATE]: 0.2,
+  },
+  flips: {
+    // 裏返せる石の数の重み
+    [GAME_PHASE.EARLY]: 0.1,
+    [GAME_PHASE.MID]: 0.3,
+    [GAME_PHASE.LATE]: 0.8,
+  },
+};
 
 /**
  * マスの位置が角かどうか判定する関数
@@ -108,7 +137,10 @@ const isEdgePosition = (row: number, col: number, size: number): boolean => {
 /**
  * 位置の種類を判定する関数
  */
-const getPositionType = (position: Point, boardSize: number): PositionType => {
+const getPositionType = (
+  position: BoardPosition,
+  boardSize: number,
+): PositionType => {
   const { row, col } = position;
   if (isCornerPosition(row, col, boardSize)) {
     return POSITION_TYPE.CORNER;
@@ -144,7 +176,7 @@ const determineGamePhase = (board: Board): GamePhase => {
   let filledCells = 0;
   for (let row = 0; row < boardSize; row++) {
     for (let col = 0; col < boardSize; col++) {
-      if (board[row][col] !== 0) {
+      if (board[row][col].discColor !== DiscColor.NONE) {
         filledCells++;
       }
     }
@@ -170,35 +202,10 @@ const calculateStrategicValue = (
   posType: PositionType,
   flippableCount: number,
   gamePhase: GamePhase,
-  position: Point,
+  position: BoardPosition,
   board: Board,
 ): number => {
-  // 基本的な位置の価値（高いほど優先）
-  const positionValues = {
-    [POSITION_TYPE.CORNER]: 100,
-    [POSITION_TYPE.C_POINT]: 50,
-    [POSITION_TYPE.EDGE]: 30,
-    [POSITION_TYPE.OTHER]: 10,
-    [POSITION_TYPE.X_POINT]: -20, // X打点は避ける
-  };
-
-  // ゲームフェーズに応じた重み付け係数
-  const phaseMultipliers = {
-    position: {
-      // 位置の価値の重み
-      [GAME_PHASE.EARLY]: 0.9,
-      [GAME_PHASE.MID]: 0.7,
-      [GAME_PHASE.LATE]: 0.2,
-    },
-    flips: {
-      // 裏返せる石の数の重み
-      [GAME_PHASE.EARLY]: 0.1,
-      [GAME_PHASE.MID]: 0.3,
-      [GAME_PHASE.LATE]: 0.8,
-    },
-  };
-
-  const positionValue = positionValues[posType];
+  const positionValue = POSITION_VALUES[posType];
   const flipsValue = flippableCount * 5; // 石1つにつき5点
 
   // 特定の戦略的位置に対する追加評価
@@ -225,8 +232,8 @@ const calculateStrategicValue = (
 
   // 戦略的価値 = 位置の価値×位置の重み + 裏返せる石の価値×石の重み + 追加の戦略的価値
   return (
-    positionValue * phaseMultipliers.position[gamePhase] +
-    flipsValue * phaseMultipliers.flips[gamePhase] +
+    positionValue * PHASE_MULTIPLIERS.position[gamePhase] +
+    flipsValue * PHASE_MULTIPLIERS.flips[gamePhase] +
     additionalValue
   );
 };
@@ -257,7 +264,10 @@ export const createSuperCpuPlayer = (): CpuPlayer => {
   /**
    * 次の手を計算する関数
    */
-  const calculateNextMove = (board: Board, currentPlayer: number): Point => {
+  const calculateNextMove = (
+    board: Board,
+    currentPlayer: number,
+  ): BoardPosition => {
     const availablePositions = getPlaceablePositions(board, currentPlayer);
     if (availablePositions.length === 0) {
       throw new Error('No available positions');
