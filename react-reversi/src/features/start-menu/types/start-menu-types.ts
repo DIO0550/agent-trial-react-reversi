@@ -1,7 +1,4 @@
-/**
- * CPUレベルの型
- */
-export type CpuLevel = 'easy' | 'normal' | 'hard' | 'strongest';
+import { CpuLevel } from '@/types/cpu-level';
 
 /**
  * プレイヤーの色（手番）の型
