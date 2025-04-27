@@ -114,7 +114,6 @@ export default function ReversiGamePage() {
       {GameState.isGameOver(gameState) && (
         <GameResultMenu
           result={gameState.result}
-          playerColor={playerColor}
           playerScore={playerScore}
           cpuScore={cpuScore}
           onRestart={handleRestart}
