@@ -5,6 +5,7 @@ import { useCpuPlayer } from './use-cpu-player';
 import { createWeakCpuPlayer } from '../cpu-player/weak-cpu-player';
 import { createNormalCpuPlayer } from '../cpu-player/normal-cpu-player';
 import { createStrongCpuPlayer } from '../cpu-player/strong-cpu-player';
+import { createSuperCpuPlayer } from '../cpu-player/super-cpu-player';
 
 // 各モジュールのモック
 vi.mock('../cpu-player/weak-cpu-player', () => ({
@@ -21,6 +22,12 @@ vi.mock('../cpu-player/normal-cpu-player', () => ({
 
 vi.mock('../cpu-player/strong-cpu-player', () => ({
   createStrongCpuPlayer: vi.fn(() => ({
+    calculateNextMove: vi.fn().mockReturnValue({ row: 2, col: 3 }),
+  })),
+}));
+
+vi.mock('../cpu-player/super-cpu-player', () => ({
+  createSuperCpuPlayer: vi.fn(() => ({
     calculateNextMove: vi.fn().mockReturnValue({ row: 2, col: 3 }),
   })),
 }));
@@ -66,14 +73,14 @@ describe('useCpuPlayerフック', () => {
 
   it('プレイヤーが黒を選択した場合、CPUの色は白になる', () => {
     const { result } = renderHook(() =>
-      useCpuPlayer(
-        'normal',
-        'black',
-        mockBoard,
-        DiscColor.BLACK,
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.BLACK,
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
 
     expect(result.current.playerDiscColor).toBe(DiscColor.BLACK);
@@ -82,14 +89,14 @@ describe('useCpuPlayerフック', () => {
 
   it('プレイヤーが白を選択した場合、CPUの色は黒になる', () => {
     const { result } = renderHook(() =>
-      useCpuPlayer(
-        'normal',
-        'white',
-        mockBoard,
-        DiscColor.WHITE,
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.WHITE,
+        discs: mockBoard,
+        currentTurn: DiscColor.WHITE,
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
 
     expect(result.current.playerDiscColor).toBe(DiscColor.WHITE);
@@ -99,67 +106,67 @@ describe('useCpuPlayerフック', () => {
   it('難易度に応じて適切なCPUプレイヤーが生成される', () => {
     // easyの場合
     renderHook(() =>
-      useCpuPlayer(
-        'easy',
-        'black',
-        mockBoard,
-        DiscColor.BLACK,
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'easy',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.BLACK,
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
     expect(createWeakCpuPlayer).toHaveBeenCalled();
 
     // normalの場合
     renderHook(() =>
-      useCpuPlayer(
-        'normal',
-        'black',
-        mockBoard,
-        DiscColor.BLACK,
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.BLACK,
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
     expect(createNormalCpuPlayer).toHaveBeenCalled();
 
     // hardの場合
     renderHook(() =>
-      useCpuPlayer(
-        'hard',
-        'black',
-        mockBoard,
-        DiscColor.BLACK,
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'hard',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.BLACK,
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
     expect(createStrongCpuPlayer).toHaveBeenCalled();
 
     // strongestの場合
     renderHook(() =>
-      useCpuPlayer(
-        'strongest',
-        'black',
-        mockBoard,
-        DiscColor.BLACK,
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'strongest',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.BLACK,
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
-    expect(createStrongCpuPlayer).toHaveBeenCalled();
+    expect(createSuperCpuPlayer).toHaveBeenCalled();
   });
 
   it('CPUの番でない場合、思考処理は実行されない', () => {
     renderHook(() =>
-      useCpuPlayer(
-        'normal',
-        'black',
-        mockBoard,
-        DiscColor.BLACK, // プレイヤーの番
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.BLACK, // プレイヤーの番
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
 
     // タイマーを進める
@@ -176,14 +183,14 @@ describe('useCpuPlayerフック', () => {
     mockPlaceablePositions.mockReturnValueOnce([]);
 
     renderHook(() =>
-      useCpuPlayer(
-        'normal',
-        'black',
-        mockBoard,
-        DiscColor.WHITE, // CPUの番
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.WHITE, // CPUの番
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
 
     // タイマーを進める
@@ -206,14 +213,14 @@ describe('useCpuPlayerフック', () => {
     }));
 
     renderHook(() =>
-      useCpuPlayer(
-        'normal',
-        'black',
-        mockBoard,
-        DiscColor.WHITE, // CPUの番
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.WHITE, // CPUの番
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
 
     // まだタイマーが実行されていないので呼ばれない
@@ -241,14 +248,14 @@ describe('useCpuPlayerフック', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     renderHook(() =>
-      useCpuPlayer(
-        'normal',
-        'black',
-        mockBoard,
-        DiscColor.WHITE, // CPUの番
-        mockPlaceablePositions,
-        mockPlaceDisc,
-      ),
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.WHITE, // CPUの番
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
     );
 
     // タイマーを進める

@@ -7,21 +7,52 @@ import {
 import { createWeakCpuPlayer } from '@/features/reversi/cpu-player/weak-cpu-player';
 import { createNormalCpuPlayer } from '@/features/reversi/cpu-player/normal-cpu-player';
 import { createStrongCpuPlayer } from '@/features/reversi/cpu-player/strong-cpu-player';
+import { createSuperCpuPlayer } from '@/features/reversi/cpu-player/super-cpu-player';
 import { CpuPlayer } from '@/features/reversi/cpu-player/types/cpu-player-types';
 import { CpuLevel } from '@/types/cpu-level';
+
+/**
+ * useCpuPlayerフックの引数型定義
+ */
+export type Props = {
+  /**
+   * CPUの難易度レベル
+   */
+  cpuLevel: CpuLevel;
+  /**
+   * プレイヤーの石の色
+   */
+  playerDiscColor: DiscColor;
+  /**
+   * 現在の盤面状態
+   */
+  discs: Board;
+  /**
+   * 現在のターンのプレイヤーの色
+   */
+  currentTurn: DiscColor;
+  /**
+   * 配置可能な位置を取得する関数
+   */
+  placeablePositions: () => BoardPosition[];
+  /**
+   * 石を配置する関数
+   */
+  placeDisc: (position: BoardPosition) => void;
+};
 
 /**
  * CPU思考処理のためのカスタムフック
  * リバーシゲームでのCPUプレイヤーの動作を制御する
  */
-export const useCpuPlayer = (
-  cpuLevel: CpuLevel,
-  playerDiscColor: DiscColor,
-  discs: Board,
-  currentTurn: DiscColor,
-  placeablePositions: () => BoardPosition[],
-  placeDisc: (position: BoardPosition) => void,
-) => {
+export const useCpuPlayer = ({
+  cpuLevel,
+  playerDiscColor,
+  discs,
+  currentTurn,
+  placeablePositions,
+  placeDisc,
+}: Props) => {
   // プレイヤーとCPUの色を設定
   const cpuDiscColor =
     playerDiscColor === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
@@ -37,8 +68,8 @@ export const useCpuPlayer = (
       case 'hard':
         return createStrongCpuPlayer();
       case 'strongest':
-        // 最強CPUも一旦strongCPUを使用
-        return createStrongCpuPlayer();
+        // 最強CPUにはSuperCpuPlayerを使用
+        return createSuperCpuPlayer();
       case 'normal':
       default:
         return createNormalCpuPlayer();
