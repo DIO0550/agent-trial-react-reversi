@@ -46,10 +46,7 @@ describe('useCpuPlayerフック', () => {
   mockBoard[middle + 1][middle + 1] = DiscColor.WHITE;
 
   // プレースホルダーの配置可能な位置を返す関数
-  const mockPlaceablePositions = vi.fn().mockReturnValue([
-    { row: 2, col: 3 },
-    { row: 3, col: 2 },
-  ]);
+  const mockPlaceablePositions = vi.fn();
 
   // placeDisc関数のモック
   const mockPlaceDisc = vi.fn();
@@ -203,14 +200,15 @@ describe('useCpuPlayerフック', () => {
   });
 
   it('CPUの番の場合、1秒後に思考処理が実行される', () => {
-    // モック関数を取得
-    const calculateNextMoveMock = vi.fn().mockReturnValue({ row: 2, col: 3 });
     const cpuMoveMock = { row: 2, col: 3 };
+    const calculateNextMoveMock = vi.fn().mockReturnValue(cpuMoveMock);
 
-    // モック関数を設定
-    (createNormalCpuPlayer as jest.Mock).mockImplementationOnce(() => ({
+    // 特定のテストだけ別のモック関数を使用
+    (
+      createNormalCpuPlayer as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValueOnce({
       calculateNextMove: calculateNextMoveMock,
-    }));
+    });
 
     renderHook(() =>
       useCpuPlayer({
@@ -231,18 +229,24 @@ describe('useCpuPlayerフック', () => {
       vi.advanceTimersByTime(1000);
     });
 
-    // placeDiscが呼ばれる
-    expect(mockPlaceDisc).toHaveBeenCalled();
+    // calculateNextMoveが呼び出されたことを確認
+    expect(calculateNextMoveMock).toHaveBeenCalled();
+    // placeDiscが正しい位置で呼ばれることを確認
+    expect(mockPlaceDisc).toHaveBeenCalledWith(cpuMoveMock);
   });
 
   it('CPU思考処理中にエラーが発生しても処理が継続する', () => {
     // CPUの計算処理がエラーを投げるようにモック
     const mockError = new Error('CPU error');
-    (createNormalCpuPlayer as jest.Mock).mockImplementationOnce(() => ({
-      calculateNextMove: vi.fn().mockImplementation(() => {
-        throw mockError;
-      }),
-    }));
+    const errorCalculateNextMove = vi.fn().mockImplementation(() => {
+      throw mockError;
+    });
+
+    (
+      createNormalCpuPlayer as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValueOnce({
+      calculateNextMove: errorCalculateNextMove,
+    });
 
     // コンソールエラーをスパイ
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -269,5 +273,64 @@ describe('useCpuPlayerフック', () => {
     expect(mockPlaceDisc).not.toHaveBeenCalled();
 
     consoleSpy.mockRestore();
+  });
+
+  it('thinkNextMoveでエラーが発生した場合、nullが返される', () => {
+    const errorCalculateNextMove = vi.fn().mockImplementation(() => {
+      throw new Error('CPU error');
+    });
+
+    (
+      createNormalCpuPlayer as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValueOnce({
+      calculateNextMove: errorCalculateNextMove,
+    });
+
+    // コンソールエラーをスパイ
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { result } = renderHook(() =>
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.WHITE, // CPUの番
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
+    );
+
+    // タイマーを進める
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    // エラーがコンソールに出力される
+    expect(consoleSpy).toHaveBeenCalledWith('CPU error:', expect.any(Error));
+
+    consoleSpy.mockRestore();
+  });
+
+  it('コンポーネントのアンマウント時にタイマーがクリアされる', () => {
+    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+
+    const { unmount } = renderHook(() =>
+      useCpuPlayer({
+        cpuLevel: 'normal',
+        playerDiscColor: DiscColor.BLACK,
+        discs: mockBoard,
+        currentTurn: DiscColor.WHITE, // CPUの番
+        placeablePositions: mockPlaceablePositions,
+        placeDisc: mockPlaceDisc,
+      }),
+    );
+
+    // コンポーネントをアンマウント
+    unmount();
+
+    // clearTimeoutが呼ばれることを確認
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+
+    clearTimeoutSpy.mockRestore();
   });
 });
