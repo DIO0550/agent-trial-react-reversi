@@ -7,10 +7,8 @@ import { CurrentTurn } from '@/components/elements/turns/current-turn';
 import { useDiscs } from '@/features/reversi/hooks/use-discs';
 import { useCpuPlayer } from '@/features/reversi/hooks/use-cpu-player';
 import { DiscColor } from '@/features/reversi/types/reversi-types';
-import {
-  CpuLevel,
-  PlayerColor,
-} from '@/features/start-menu/types/start-menu-types';
+import { PlayerColor } from '@/features/start-menu/types/start-menu-types';
+import { CpuLevel } from '@/types/cpu-level';
 import { GameState } from '@/features/reversi/utils/game-state';
 import { GameResultMenu } from '@/features/reversi/game-result/components/game-result-menu';
 import { useNavigation } from '@/hooks/use-navigation';
@@ -35,15 +33,19 @@ export default function ReversiGamePage() {
     discCount,
   } = useDiscs();
 
+  // プレイヤーの石の色を設定（playerColorをDiscColorに変換）
+  const playerDiscColor =
+    playerColor === 'black' ? DiscColor.BLACK : DiscColor.WHITE;
+
   // useCpuPlayerフックを使用して、CPU思考処理を管理
-  const { playerDiscColor, cpuDiscColor } = useCpuPlayer(
+  const { cpuDiscColor } = useCpuPlayer({
     cpuLevel,
-    playerColor,
-    board,
+    playerDiscColor,
+    discs: board,
     currentTurn,
     placeablePositions,
     placeDisc,
-  );
+  });
 
   // セルがクリックされた時のハンドラ
   const handleCellClick = useCallback(
