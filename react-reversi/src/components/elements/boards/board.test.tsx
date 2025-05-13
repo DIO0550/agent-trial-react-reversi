@@ -1,10 +1,12 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'; // fireEvent の代わりに userEvent をインポート
 import { describe, expect, it, vi } from 'vitest';
 import { Board } from './board';
 import {
   Board as ReversiBoard,
   DiscColor,
 } from '@/features/reversi/types/reversi-types';
+import { CanPlace } from '@/features/reversi/utils/can-place'; // canPlace をインポート
 
 /**
  * 空のボード状態を作成する
@@ -18,11 +20,10 @@ const createEmptyBoardState = (): ReversiBoard => {
         .map(() => ({
           discColor: DiscColor.NONE,
           rotationState: {
-            blackRotateX: 0,
-            blackRotateY: 0,
-            whiteRotateX: 180,
-            whiteRotateY: 0,
+            black: { xDeg: 0, yDeg: 0 },
+            white: { xDeg: 180, yDeg: 0 },
           },
+          canPlace: CanPlace.createEmpty(),
         })),
     );
 };
@@ -37,38 +38,34 @@ const createInitialBoardState = (): ReversiBoard => {
   board[3][3] = {
     discColor: DiscColor.WHITE,
     rotationState: {
-      blackRotateX: 180,
-      blackRotateY: 0,
-      whiteRotateX: 0,
-      whiteRotateY: 0,
+      black: { xDeg: 180, yDeg: 0 },
+      white: { xDeg: 0, yDeg: 0 },
     },
+    canPlace: CanPlace.createEmpty(),
   };
   board[3][4] = {
     discColor: DiscColor.BLACK,
     rotationState: {
-      blackRotateX: 0,
-      blackRotateY: 0,
-      whiteRotateX: 180,
-      whiteRotateY: 0,
+      black: { xDeg: 0, yDeg: 0 },
+      white: { xDeg: 180, yDeg: 0 },
     },
+    canPlace: CanPlace.createEmpty(),
   };
   board[4][3] = {
     discColor: DiscColor.BLACK,
     rotationState: {
-      blackRotateX: 0,
-      blackRotateY: 0,
-      whiteRotateX: 180,
-      whiteRotateY: 0,
+      black: { xDeg: 0, yDeg: 0 },
+      white: { xDeg: 180, yDeg: 0 },
     },
+    canPlace: CanPlace.createEmpty(),
   };
   board[4][4] = {
     discColor: DiscColor.WHITE,
     rotationState: {
-      blackRotateX: 180,
-      blackRotateY: 0,
-      whiteRotateX: 0,
-      whiteRotateY: 0,
+      black: { xDeg: 180, yDeg: 0 },
+      white: { xDeg: 0, yDeg: 0 },
     },
+    canPlace: CanPlace.createEmpty(),
   };
 
   return board;
@@ -76,7 +73,12 @@ const createInitialBoardState = (): ReversiBoard => {
 
 describe('Boardコンポーネント', () => {
   it('空のボードが正しくレンダリングされること', () => {
-    render(<Board boardState={createEmptyBoardState()} />);
+    render(
+      <Board
+        boardState={createEmptyBoardState()}
+        currentTurn={DiscColor.BLACK}
+      />,
+    );
     const board = screen.getByTestId('reversi-board');
     expect(board).toBeInTheDocument();
 
@@ -90,69 +92,88 @@ describe('Boardコンポーネント', () => {
   });
 
   it('初期状態のボードが正しくレンダリングされること', () => {
-    render(<Board boardState={createInitialBoardState()} />);
+    render(
+      <Board
+        boardState={createInitialBoardState()}
+        currentTurn={DiscColor.BLACK}
+      />,
+    );
 
     // 中央の4つのセルに石が配置されていることを確認
     const centerCells = [
-      { row: 3, col: 3, color: 'white' },
-      { row: 3, col: 4, color: 'black' },
-      { row: 4, col: 3, color: 'black' },
-      { row: 4, col: 4, color: 'white' },
+      { row: 3, col: 3, expectedColor: DiscColor.WHITE },
+      { row: 3, col: 4, expectedColor: DiscColor.BLACK },
+      { row: 4, col: 3, expectedColor: DiscColor.BLACK },
+      { row: 4, col: 4, expectedColor: DiscColor.WHITE },
     ];
 
-    centerCells.forEach(({ row, col, color }) => {
+    centerCells.forEach(({ row, col, expectedColor }) => {
       const cell = screen.getByTestId(`cell-${row}-${col}`);
       expect(cell).toBeInTheDocument();
 
       // セル内にcolor属性を持つ石があることを確認
-      const disc = cell.querySelector(`[data-testid^="disc-${color}"]`);
+      const disc = cell.querySelector(`[data-testid="disc-${expectedColor}"]`);
       expect(disc).toBeInTheDocument();
     });
   });
 
-  it('セルをクリックしたときにonCellClickが呼ばれること', () => {
+  it('セルをクリックしたときにonCellClickが呼ばれること', async () => {
     const handleCellClick = vi.fn();
     render(
       <Board
         boardState={createEmptyBoardState()}
         onCellClick={handleCellClick}
+        currentTurn={DiscColor.BLACK}
       />,
     );
 
     // (2, 3)のセルをクリック
     const cell = screen.getByTestId('cell-2-3');
-    fireEvent.click(cell);
+    await userEvent.click(cell);
 
     // ハンドラが適切な引数で呼び出されたことを確認
     expect(handleCellClick).toHaveBeenCalledTimes(1);
     expect(handleCellClick).toHaveBeenCalledWith(2, 3);
   });
 
+  // 未実装のため一時的にスキップしていたテストのスキップを解除
   it('フリップ完了時にonFlipCompleteが呼ばれること', async () => {
     const handleFlipComplete = vi.fn();
+    const boardStateWithDisc = createEmptyBoardState();
+    // テスト対象のセルに石を置く
+    boardStateWithDisc[2][3] = {
+      ...boardStateWithDisc[2][3],
+      discColor: DiscColor.BLACK, // 石の色を黒に設定
+    };
 
-    // onFlipCompleteを持つBoardをレンダリング
     render(
       <Board
-        boardState={createEmptyBoardState()}
+        boardState={boardStateWithDisc}
         onFlipComplete={handleFlipComplete}
+        currentTurn={DiscColor.WHITE} // どちらでも良いが、明確にする
       />,
     );
 
-    // FlipDiscコンポーネントのonFlipCompleteをシミュレート
-    // onFlipCompleteはFlipDiscコンポーネント内で呼び出される想定
-    // 実際のテストでは、FlipDiscコンポーネントのテストで確認する
-    // このテストはコールバックの受け渡しが正しいかを確認する
-
-    // セルの位置を取得
+    // (2,3)のセル内のFlipDisc要素を取得
+    // FlipDiscコンポーネントのdata-testidは disc-${color} または disc-${color}-flipping
+    // ここでは単純化のため、石が存在する前提で disc-black を探す
     const cell = screen.getByTestId('cell-2-3');
+    // FlipDiscのルート要素は、Board内のdivの子要素として存在する
+    // FlipDiscのdata-testidは `disc-${color}`
+    const flipDiscElement = cell.querySelector('[data-testid="disc-1"]'); // DiscColor.BLACK は 1
 
-    // セル内のFlipDiscコンポーネントを取得
-    const flipDisc = cell.querySelector('div').children[0];
+    // FlipDisc要素が存在することを確認 (存在しない場合テストが失敗する)
+    expect(flipDiscElement).toBeInTheDocument();
 
-    // アニメーション完了のコールバックをシミュレート
-    // （実際にはFlipDiscコンポーネント内で呼び出される）
-    // これはただのシミュレーションなので、実際のテストではFlipDisc側で確認する
+    // transitionendイベントを発火させて、onFlipCompleteをトリガー
+    if (flipDiscElement) {
+      // 要素が見つかった場合のみ実行
+      fireEvent.transitionEnd(flipDiscElement);
+    }
+
+    // onFlipCompleteが適切な引数で呼び出されたことを確認
+    expect(handleFlipComplete).toHaveBeenCalledTimes(1);
+    expect(handleFlipComplete).toHaveBeenCalledWith(2, 3);
   });
 
   it('8x8以外のボードサイズでエラーメッセージが表示されること', () => {
@@ -165,15 +186,19 @@ describe('Boardコンポーネント', () => {
           .map(() => ({
             discColor: DiscColor.NONE,
             rotationState: {
-              blackRotateX: 0,
-              blackRotateY: 0,
-              whiteRotateX: 180,
-              whiteRotateY: 0,
+              black: { xDeg: 0, yDeg: 0 },
+              white: { xDeg: 180, yDeg: 0 },
             },
+            canPlace: CanPlace.createEmpty(),
           })),
       );
 
-    render(<Board boardState={invalidBoard} />);
+    render(
+      <Board
+        boardState={invalidBoard as ReversiBoard}
+        currentTurn={DiscColor.BLACK}
+      />,
+    );
 
     // エラーメッセージが表示されていることを確認
     const errorMessage = screen.getByText('Error: Board must be 8x8');
@@ -181,7 +206,12 @@ describe('Boardコンポーネント', () => {
   });
 
   it('適切なアクセシビリティ属性が設定されること', () => {
-    render(<Board boardState={createEmptyBoardState()} />);
+    render(
+      <Board
+        boardState={createEmptyBoardState()}
+        currentTurn={DiscColor.BLACK}
+      />,
+    );
 
     const board = screen.getByTestId('reversi-board');
     expect(board).toHaveAttribute('role', 'grid');
