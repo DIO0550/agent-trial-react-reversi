@@ -15,7 +15,7 @@ const GameResultValues = {
 const playerMessages = {
   PLAYER_WIN: '勝利しました！',
   PLAYER_LOSE: '敗北しました...',
-  DRAW: '引き分けです',
+  DRAW: '引き分け',
   IN_PROGRESS: 'ゲーム進行中',
 };
 

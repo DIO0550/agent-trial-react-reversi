@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { GameState, GameStateType, GameResult } from './game-state';
+import { GameState, GameStateType } from './game-state';
+import { GameResult } from './game-result';
+import { DiscColor } from '@/features/reversi/types/reversi-types';
 
 describe('GameState', () => {
   describe('createInitial', () => {
@@ -13,25 +15,25 @@ describe('GameState', () => {
 
   describe('setGameOver', () => {
     it('黒が勝利の場合、正しく状態が更新されること', () => {
-      const state = GameState.createInitial();
+      const state = GameState.createInitial(DiscColor.BLACK);
       const blackCount = 40;
       const whiteCount = 24;
 
       const result = GameState.setGameOver(state, blackCount, whiteCount);
 
       expect(result.type).toBe(GameStateType.GAME_OVER);
-      expect(result.result).toBe(GameResult.BLACK_WIN);
+      expect(result.result).toBe(GameResult.PLAYER_WIN);
     });
 
     it('白が勝利の場合、正しく状態が更新されること', () => {
-      const state = GameState.createInitial();
+      const state = GameState.createInitial(DiscColor.WHITE);
       const blackCount = 20;
       const whiteCount = 44;
 
       const result = GameState.setGameOver(state, blackCount, whiteCount);
 
       expect(result.type).toBe(GameStateType.GAME_OVER);
-      expect(result.result).toBe(GameResult.WHITE_WIN);
+      expect(result.result).toBe(GameResult.PLAYER_WIN);
     });
 
     it('引き分けの場合、正しく状態が更新されること', () => {
@@ -52,7 +54,6 @@ describe('GameState', () => {
 
       GameState.setGameOver(state, blackCount, whiteCount);
 
-      // 元の状態が変更されていないことを確認
       expect(state.type).toBe(GameStateType.PLAYING);
       expect(state.result).toBe(GameResult.IN_PROGRESS);
     });
@@ -62,7 +63,7 @@ describe('GameState', () => {
     it('GAME_OVER状態の場合、trueを返すこと', () => {
       const state = {
         type: GameStateType.GAME_OVER,
-        result: GameResult.BLACK_WIN,
+        result: GameResult.PLAYER_WIN,
       };
 
       const result = GameState.isGameOver(state);
@@ -93,27 +94,27 @@ describe('GameState', () => {
     it('ゲーム終了状態（黒の勝ち）が正しく文字列化されること', () => {
       const state = {
         type: GameStateType.GAME_OVER,
-        result: GameResult.BLACK_WIN,
+        result: GameResult.PLAYER_WIN,
       };
       const blackCount = 40;
       const whiteCount = 24;
 
       const result = GameState.toString(state, blackCount, whiteCount);
 
-      expect(result).toBe('黒の勝ち (黒:40, 白:24)');
+      expect(result).toBe('勝利しました！ (黒:40, 白:24)');
     });
 
     it('ゲーム終了状態（白の勝ち）が正しく文字列化されること', () => {
       const state = {
         type: GameStateType.GAME_OVER,
-        result: GameResult.WHITE_WIN,
+        result: GameResult.PLAYER_WIN,
       };
       const blackCount = 24;
       const whiteCount = 40;
 
       const result = GameState.toString(state, blackCount, whiteCount);
 
-      expect(result).toBe('白の勝ち (黒:24, 白:40)');
+      expect(result).toBe('勝利しました！ (黒:24, 白:40)');
     });
 
     it('ゲーム終了状態（引き分け）が正しく文字列化されること', () => {
