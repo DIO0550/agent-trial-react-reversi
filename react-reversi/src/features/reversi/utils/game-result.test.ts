@@ -87,12 +87,14 @@ describe('GameResult', () => {
       expect(GameResult.toString(GameResult.PLAYER_LOSE)).toBe(
         '敗北しました...',
       );
-      expect(GameResult.toString(GameResult.DRAW)).toBe('引き分けです');
+      expect(GameResult.toString(GameResult.DRAW)).toBe('引き分け');
       expect(GameResult.toString(GameResult.IN_PROGRESS)).toBe('ゲーム進行中');
     });
 
     it('不明な結果の場合は「不明な結果」を返すこと', () => {
-      expect(GameResult.toString('UNKNOWN' as any)).toBe('不明な結果');
+      expect(GameResult.toString('UNKNOWN' as unknown as GameResult)).toBe(
+        '不明な結果',
+      );
     });
   });
 });
