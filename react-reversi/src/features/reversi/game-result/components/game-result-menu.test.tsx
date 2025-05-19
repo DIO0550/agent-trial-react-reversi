@@ -55,7 +55,7 @@ describe('GameResultMenu', () => {
       />,
     );
 
-    expect(screen.getByText('引き分けです')).toBeInTheDocument();
+    expect(screen.getByText('引き分け')).toBeInTheDocument();
   });
 
   test('リスタートボタンをクリックすると、onRestartが呼ばれる', async () => {

@@ -14,12 +14,12 @@ const defaultRotateProps = {
 describe('Discコンポーネント', () => {
   it('黒の石が正しくレンダリングされること', () => {
     render(<FlipDisc color={DiscColor.BLACK} {...defaultRotateProps} />);
-    const disc = screen.getByTestId('disc-black');
+    const disc = screen.getByTestId(`disc-${DiscColor.BLACK}`);
     expect(disc).toBeInTheDocument();
   });
   it('白の石が正しくレンダリングされること', () => {
     render(<FlipDisc color={DiscColor.WHITE} {...defaultRotateProps} />);
-    const disc = screen.getByTestId('disc-white');
+    const disc = screen.getByTestId(`disc-${DiscColor.WHITE}`);
     expect(disc).toBeInTheDocument();
   });
   it('空の石が正しくレンダリングされること', () => {
@@ -49,7 +49,7 @@ describe('Discコンポーネント', () => {
         {...defaultRotateProps}
       />,
     );
-    const disc = screen.getByTestId('disc-black');
+    const disc = screen.getByTestId(`disc-${DiscColor.BLACK}`);
     fireEvent.click(disc);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -59,14 +59,14 @@ describe('Discコンポーネント', () => {
         <FlipDisc color={DiscColor.WHITE} {...defaultRotateProps} />
       </div>,
     );
-    const disc = screen.getByTestId('disc-white');
+    const disc = screen.getByTestId(`disc-${DiscColor.WHITE}`);
     expect(disc.className).toContain('w-full');
     expect(disc.className).toContain('h-full');
   });
   it('適切なアクセシビリティ属性が設定されること', () => {
     render(<FlipDisc color={DiscColor.BLACK} {...defaultRotateProps} />);
-    const disc = screen.getByTestId('disc-black');
-    expect(disc).toHaveAttribute('aria-label', 'black disc');
+    const disc = screen.getByTestId(`disc-${DiscColor.BLACK}`);
+    expect(disc).toHaveAttribute('aria-label', `${DiscColor.BLACK} disc`);
     expect(disc).toHaveAttribute('role', 'presentation');
   });
   it('クリック可能な場合は適切なロール属性が設定されること', () => {
@@ -77,7 +77,7 @@ describe('Discコンポーネント', () => {
         {...defaultRotateProps}
       />,
     );
-    const disc = screen.getByTestId('disc-black');
+    const disc = screen.getByTestId(`disc-${DiscColor.BLACK}`);
     expect(disc).toHaveAttribute('role', 'button');
   });
   it.todo('アニメーション中の場合、適切なクラスが適用されること');
