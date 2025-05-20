@@ -31,10 +31,9 @@ export const StartMenu = ({ onStart }: StartMenuProps) => {
    * ランダムが選択された場合は、黒か白をランダムに決定する
    */
   const handleStartClick = () => {
-    // ランダムの場合は DiscColor.fromPlayerColor でランダムに決定する
+    // ランダムの場合はランダムに黒か白を決定する
     if (playerColor === 'random') {
-      const discColor = DiscColor.fromPlayerColor(playerColor);
-      const actualPlayerColor = discColor === DiscColor.Type.BLACK ? 'black' : 'white';
+      const actualPlayerColor = Math.random() < 0.5 ? 'black' : 'white';
       
       onStart({
         cpuLevel,

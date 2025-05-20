@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DiscColor, BoardPosition } from '../types/reversi-types';
+import { BoardPosition } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 import { useCpuPlayer } from './use-cpu-player';
 import { createWeakCpuPlayer } from '../cpu-player/weak-cpu-player';
 import { createNormalCpuPlayer } from '../cpu-player/normal-cpu-player';
@@ -36,14 +37,14 @@ describe('useCpuPlayerフック', () => {
   // テスト用の共通データ
   const mockBoard = Array(8)
     .fill(null)
-    .map(() => Array(8).fill(DiscColor.NONE));
+    .map(() => Array(8).fill(DiscColor.Type.NONE));
 
   // 初期配置
   const middle = 8 / 2 - 1;
-  mockBoard[middle][middle] = DiscColor.WHITE;
-  mockBoard[middle][middle + 1] = DiscColor.BLACK;
-  mockBoard[middle + 1][middle] = DiscColor.BLACK;
-  mockBoard[middle + 1][middle + 1] = DiscColor.WHITE;
+  mockBoard[middle][middle] = DiscColor.Type.WHITE;
+  mockBoard[middle][middle + 1] = DiscColor.Type.BLACK;
+  mockBoard[middle + 1][middle] = DiscColor.Type.BLACK;
+  mockBoard[middle + 1][middle + 1] = DiscColor.Type.WHITE;
 
   // プレースホルダーの配置可能な位置を返す関数
   const mockPlaceablePositions = vi.fn();
@@ -72,32 +73,32 @@ describe('useCpuPlayerフック', () => {
     const { result } = renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.BLACK,
+        currentTurn: DiscColor.Type.BLACK,
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
     );
 
-    expect(result.current.playerDiscColor).toBe(DiscColor.BLACK);
-    expect(result.current.cpuDiscColor).toBe(DiscColor.WHITE);
+    expect(result.current.playerDiscColor).toBe(DiscColor.Type.BLACK);
+    expect(result.current.cpuDiscColor).toBe(DiscColor.Type.WHITE);
   });
 
   it('プレイヤーが白を選択した場合、CPUの色は黒になる', () => {
     const { result } = renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.WHITE,
+        playerDiscColor: DiscColor.Type.WHITE,
         discs: mockBoard,
-        currentTurn: DiscColor.WHITE,
+        currentTurn: DiscColor.Type.WHITE,
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
     );
 
-    expect(result.current.playerDiscColor).toBe(DiscColor.WHITE);
-    expect(result.current.cpuDiscColor).toBe(DiscColor.BLACK);
+    expect(result.current.playerDiscColor).toBe(DiscColor.Type.WHITE);
+    expect(result.current.cpuDiscColor).toBe(DiscColor.Type.BLACK);
   });
 
   it('難易度に応じて適切なCPUプレイヤーが生成される', () => {
@@ -105,9 +106,9 @@ describe('useCpuPlayerフック', () => {
     renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'easy',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.BLACK,
+        currentTurn: DiscColor.Type.BLACK,
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -118,9 +119,9 @@ describe('useCpuPlayerフック', () => {
     renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.BLACK,
+        currentTurn: DiscColor.Type.BLACK,
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -131,9 +132,9 @@ describe('useCpuPlayerフック', () => {
     renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'hard',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.BLACK,
+        currentTurn: DiscColor.Type.BLACK,
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -144,9 +145,9 @@ describe('useCpuPlayerフック', () => {
     renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'strongest',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.BLACK,
+        currentTurn: DiscColor.Type.BLACK,
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -158,9 +159,9 @@ describe('useCpuPlayerフック', () => {
     renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.BLACK, // プレイヤーの番
+        currentTurn: DiscColor.Type.BLACK, // プレイヤーの番
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -182,9 +183,9 @@ describe('useCpuPlayerフック', () => {
     renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.WHITE, // CPUの番
+        currentTurn: DiscColor.Type.WHITE, // CPUの番
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -213,9 +214,9 @@ describe('useCpuPlayerフック', () => {
     renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.WHITE, // CPUの番
+        currentTurn: DiscColor.Type.WHITE, // CPUの番
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -254,9 +255,9 @@ describe('useCpuPlayerフック', () => {
     renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.WHITE, // CPUの番
+        currentTurn: DiscColor.Type.WHITE, // CPUの番
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -292,9 +293,9 @@ describe('useCpuPlayerフック', () => {
     const { result } = renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.WHITE, // CPUの番
+        currentTurn: DiscColor.Type.WHITE, // CPUの番
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),
@@ -317,9 +318,9 @@ describe('useCpuPlayerフック', () => {
     const { unmount } = renderHook(() =>
       useCpuPlayer({
         cpuLevel: 'normal',
-        playerDiscColor: DiscColor.BLACK,
+        playerDiscColor: DiscColor.Type.BLACK,
         discs: mockBoard,
-        currentTurn: DiscColor.WHITE, // CPUの番
+        currentTurn: DiscColor.Type.WHITE, // CPUの番
         placeablePositions: mockPlaceablePositions,
         placeDisc: mockPlaceDisc,
       }),

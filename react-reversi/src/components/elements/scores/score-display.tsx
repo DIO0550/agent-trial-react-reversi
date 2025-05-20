@@ -1,8 +1,8 @@
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/utils/disc-color';
 
 type Props = {
   /** 表示する石の色 */
-  discColor: DiscColor;
+  discColor: DiscColor.Type;
   /** 表示する石の数 */
   count: number;
 };
@@ -14,16 +14,16 @@ type Props = {
 export const ScoreDisplay = ({ discColor, count }: Props) => {
   // 石の色に応じたスタイルを適用
   const colorStyles = {
-    [DiscColor.BLACK]: 'bg-black text-white',
-    [DiscColor.WHITE]: 'bg-white text-black',
-    [DiscColor.NONE]: '', // NONEは使用しない想定
+    [DiscColor.Type.BLACK]: 'bg-black text-white',
+    [DiscColor.Type.WHITE]: 'bg-white text-black',
+    [DiscColor.Type.NONE]: '', // NONEは使用しない想定
   };
 
   // 石の色に応じたリングカラーを定義（コントラストを確保）
   const ringStyles = {
-    [DiscColor.BLACK]: 'ring-2 ring-white',
-    [DiscColor.WHITE]: 'ring-2 ring-black',
-    [DiscColor.NONE]: '',
+    [DiscColor.Type.BLACK]: 'ring-2 ring-white',
+    [DiscColor.Type.WHITE]: 'ring-2 ring-black',
+    [DiscColor.Type.NONE]: '',
   };
 
   return (
