@@ -42,12 +42,12 @@ export const FlipDisc = ({
   const cursorClasses = onClick ? 'cursor-pointer' : 'cursor-default';
 
   // ディスクが空で、置くことが可能な場合
-  if (color === DiscColor.Type.NONE && canPlace) {
+  if (color === DiscColor.NONE && canPlace) {
     return <PlaceableDisc onClick={onClick} />;
   }
 
   // ディスクが空の場合（色がnoneの場合）
-  if (color === DiscColor.Type.NONE) {
+  if (color === DiscColor.NONE) {
     return (
       <div
         className={`${baseClasses} ${cursorClasses} bg-transparent`}
@@ -79,12 +79,12 @@ export const FlipDisc = ({
       onTransitionEnd={handleTransitionEnd}
     >
       <Disk
-        color={DiscColor.Type.BLACK}
+        color={DiscColor.BLACK}
         rotateX={blackRotateX}
         rotateY={blackRotateY}
       />
       <Disk
-        color={DiscColor.Type.WHITE}
+        color={DiscColor.WHITE}
         rotateX={whiteRotateX}
         rotateY={whiteRotateY}
       />

@@ -9,7 +9,7 @@ import { DiscColor } from '../utils/disc-color';
  */
 export type CellState = {
   /** 石の色 */
-  discColor: DiscColor.Type;
+  discColor: DiscColor;
   /** 回転状態（角度） */
   rotationState: RotationState;
   /** このマスに石を置けるかどうか */

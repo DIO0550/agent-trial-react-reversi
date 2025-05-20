@@ -52,7 +52,7 @@ export const GameState = {
   ): GameState => {
     // playerColorがない場合のデフォルト値（'black'）
     const playerColorStr =
-      state.playerColor === DiscColor.Type.BLACK ? 'black' : 'white';
+      state.playerColor === DiscColor.BLACK ? 'black' : 'white';
 
     // GameResultコンパニオンオブジェクトを使用して勝敗を判定
     const result = GameResult.determineResult(

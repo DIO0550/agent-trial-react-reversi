@@ -177,7 +177,7 @@ const determineGamePhase = (board: Board): GamePhase => {
   let filledCells = 0;
   for (let row = 0; row < boardSize; row++) {
     for (let col = 0; col < boardSize; col++) {
-      if (board[row][col].discColor !== DiscColor.Type.NONE) {
+      if (board[row][col].discColor !== DiscColor.NONE) {
         filledCells++;
       }
     }

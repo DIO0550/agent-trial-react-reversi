@@ -5,7 +5,7 @@ import { DiscColor } from '@/features/reversi/utils/disc-color';
  */
 type Props = {
   /** ディスクの色 */
-  color: Exclude<DiscColor.Type, DiscColor.Type.NONE>;
+  color: Exclude<DiscColor.Type, DiscColor.NONE>;
 
   // X軸の回転角度
   rotateX?: number;
@@ -15,7 +15,7 @@ type Props = {
 
 export const Disk = ({ color, rotateX = 0, rotateY = 0 }: Props) => {
   const discClasses = `w-full h-full rounded-full shadow-md absolute backface-hidden  ${
-    color === DiscColor.Type.BLACK ? 'bg-black' : 'bg-white'
+    color === DiscColor.BLACK ? 'bg-black' : 'bg-white'
   }`;
 
   const rotateXClass = `${rotateX < 0 ? '-rotate-x-' + String(rotateX * -1) : 'rotate-x-' + String(rotateX)}`;

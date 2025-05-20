@@ -5,19 +5,19 @@ import { DiscColor } from '../../../features/reversi/utils/disc-color';
 describe('ScoreDisplay コンポーネント', () => {
   // テスト用の石の配置データ
   const sampleDiscs = {
-    '3,3': DiscColor.Type.WHITE,
-    '3,4': DiscColor.Type.BLACK,
-    '4,3': DiscColor.Type.BLACK,
-    '4,4': DiscColor.Type.WHITE,
-    '2,3': DiscColor.Type.BLACK,
-    '5,5': DiscColor.Type.BLACK,
+    '3,3': DiscColor.WHITE,
+    '3,4': DiscColor.BLACK,
+    '4,3': DiscColor.BLACK,
+    '4,4': DiscColor.WHITE,
+    '2,3': DiscColor.BLACK,
+    '5,5': DiscColor.BLACK,
   };
 
   it('プレイヤーのスコアが正しく表示されること', () => {
     render(
       <ScoreDisplay
-        playerColor={DiscColor.Type.BLACK}
-        cpuColor={DiscColor.Type.WHITE}
+        playerColor={DiscColor.BLACK}
+        cpuColor={DiscColor.WHITE}
         discs={sampleDiscs}
         position="player"
       />,
@@ -32,8 +32,8 @@ describe('ScoreDisplay コンポーネント', () => {
   it('CPUのスコアが正しく表示されること', () => {
     render(
       <ScoreDisplay
-        playerColor={DiscColor.Type.BLACK}
-        cpuColor={DiscColor.Type.WHITE}
+        playerColor={DiscColor.BLACK}
+        cpuColor={DiscColor.WHITE}
         discs={sampleDiscs}
         position="cpu"
       />,
@@ -48,8 +48,8 @@ describe('ScoreDisplay コンポーネント', () => {
   it('プレイヤーが白の場合も正しくスコアが表示されること', () => {
     render(
       <ScoreDisplay
-        playerColor={DiscColor.Type.WHITE}
-        cpuColor={DiscColor.Type.BLACK}
+        playerColor={DiscColor.WHITE}
+        cpuColor={DiscColor.BLACK}
         discs={sampleDiscs}
         position="player"
       />,
@@ -64,8 +64,8 @@ describe('ScoreDisplay コンポーネント', () => {
   it('表示位置が正しく適用されること', () => {
     const { rerender } = render(
       <ScoreDisplay
-        playerColor={DiscColor.Type.BLACK}
-        cpuColor={DiscColor.Type.WHITE}
+        playerColor={DiscColor.BLACK}
+        cpuColor={DiscColor.WHITE}
         discs={sampleDiscs}
         position="player"
       />,
@@ -78,8 +78,8 @@ describe('ScoreDisplay コンポーネント', () => {
     // CPUの位置に再レンダリング
     rerender(
       <ScoreDisplay
-        playerColor={DiscColor.Type.BLACK}
-        cpuColor={DiscColor.Type.WHITE}
+        playerColor={DiscColor.BLACK}
+        cpuColor={DiscColor.WHITE}
         discs={sampleDiscs}
         position="cpu"
       />,
@@ -93,8 +93,8 @@ describe('ScoreDisplay コンポーネント', () => {
   it('石がない場合は0が表示されること', () => {
     render(
       <ScoreDisplay
-        playerColor={DiscColor.Type.BLACK}
-        cpuColor={DiscColor.Type.WHITE}
+        playerColor={DiscColor.BLACK}
+        cpuColor={DiscColor.WHITE}
         discs={{}} // 空のディスク状態
         position="player"
       />,

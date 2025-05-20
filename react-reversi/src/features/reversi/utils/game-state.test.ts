@@ -15,7 +15,7 @@ describe('GameState', () => {
 
   describe('setGameOver', () => {
     it('黒が勝利の場合、正しく状態が更新されること', () => {
-      const state = GameState.createInitial(DiscColor.Type.BLACK);
+      const state = GameState.createInitial(DiscColor.BLACK);
       const blackCount = 40;
       const whiteCount = 24;
 
@@ -26,7 +26,7 @@ describe('GameState', () => {
     });
 
     it('白が勝利の場合、正しく状態が更新されること', () => {
-      const state = GameState.createInitial(DiscColor.Type.WHITE);
+      const state = GameState.createInitial(DiscColor.WHITE);
       const blackCount = 20;
       const whiteCount = 44;
 

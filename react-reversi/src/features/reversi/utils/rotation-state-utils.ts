@@ -61,7 +61,7 @@ export const RotationState = {
   fromDiscColor: (discColor: DiscColor.Type): RotationState => {
     // DiscColorに基づいた回転状態を返す
     switch (discColor) {
-      case DiscColor.Type.BLACK:
+      case DiscColor.BLACK:
         return {
           black: {
             xDeg: 0,
@@ -72,7 +72,7 @@ export const RotationState = {
             yDeg: 0,
           },
         };
-      case DiscColor.Type.WHITE:
+      case DiscColor.WHITE:
         return {
           black: {
             xDeg: 180,
@@ -83,7 +83,7 @@ export const RotationState = {
             yDeg: 0,
           },
         };
-      case DiscColor.Type.NONE:
+      case DiscColor.NONE:
       default:
         return {
           black: {
@@ -171,11 +171,11 @@ export const RotationState = {
       },
     };
 
-    if (fromColor === DiscColor.Type.BLACK && toColor === DiscColor.Type.WHITE) {
+    if (fromColor === DiscColor.BLACK && toColor === DiscColor.WHITE) {
       // BLACK to WHITE
       return defaultRotationState;
     }
-    if (fromColor === DiscColor.Type.WHITE && toColor === DiscColor.Type.BLACK) {
+    if (fromColor === DiscColor.WHITE && toColor === DiscColor.BLACK) {
       // WHITE to BLACK
       return defaultRotationState;
     }

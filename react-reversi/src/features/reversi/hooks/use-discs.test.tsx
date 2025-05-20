@@ -9,15 +9,15 @@ describe('useDiscs', () => {
     const board = result.current.board;
     const middle = Math.floor(board.length / 2) - 1;
 
-    expect(board[middle][middle].discColor).toBe(DiscColor.Type.WHITE);
-    expect(board[middle][middle + 1].discColor).toBe(DiscColor.Type.BLACK);
-    expect(board[middle + 1][middle].discColor).toBe(DiscColor.Type.BLACK);
-    expect(board[middle + 1][middle + 1].discColor).toBe(DiscColor.Type.WHITE);
+    expect(board[middle][middle].discColor).toBe(DiscColor.WHITE);
+    expect(board[middle][middle + 1].discColor).toBe(DiscColor.BLACK);
+    expect(board[middle + 1][middle].discColor).toBe(DiscColor.BLACK);
+    expect(board[middle + 1][middle + 1].discColor).toBe(DiscColor.WHITE);
   });
 
   it('初期状態で黒の手番から開始すること', () => {
     const { result } = renderHook(() => useDiscs());
-    expect(result.current.currentTurn).toBe(DiscColor.Type.BLACK);
+    expect(result.current.currentTurn).toBe(DiscColor.BLACK);
   });
 
   it.todo('置ける位置に石を置くと、間の石がひっくり返ること');

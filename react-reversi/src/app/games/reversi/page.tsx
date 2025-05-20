@@ -80,8 +80,8 @@ export default function ReversiGamePage() {
 
   // プレイヤーのスコアとCPUのスコアを計算
   const playerScore =
-    playerDiscColor === DiscColor.Type.BLACK ? blackCount : whiteCount;
-  const cpuScore = cpuDiscColor === DiscColor.Type.BLACK ? blackCount : whiteCount;
+    playerDiscColor === DiscColor.BLACK ? blackCount : whiteCount;
+  const cpuScore = cpuDiscColor === DiscColor.BLACK ? blackCount : whiteCount;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-green-100">

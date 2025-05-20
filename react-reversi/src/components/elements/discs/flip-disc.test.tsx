@@ -13,24 +13,24 @@ const defaultRotateProps = {
 
 describe('Discコンポーネント', () => {
   it('黒の石が正しくレンダリングされること', () => {
-    render(<FlipDisc color={DiscColor.Type.BLACK} {...defaultRotateProps} />);
-    const disc = screen.getByTestId(`disc-${DiscColor.Type.BLACK}`);
+    render(<FlipDisc color={DiscColor.BLACK} {...defaultRotateProps} />);
+    const disc = screen.getByTestId(`disc-${DiscColor.BLACK}`);
     expect(disc).toBeInTheDocument();
   });
   it('白の石が正しくレンダリングされること', () => {
-    render(<FlipDisc color={DiscColor.Type.WHITE} {...defaultRotateProps} />);
-    const disc = screen.getByTestId(`disc-${DiscColor.Type.WHITE}`);
+    render(<FlipDisc color={DiscColor.WHITE} {...defaultRotateProps} />);
+    const disc = screen.getByTestId(`disc-${DiscColor.WHITE}`);
     expect(disc).toBeInTheDocument();
   });
   it('空の石が正しくレンダリングされること', () => {
-    render(<FlipDisc color={DiscColor.Type.NONE} {...defaultRotateProps} />);
+    render(<FlipDisc color={DiscColor.NONE} {...defaultRotateProps} />);
     const disc = screen.getByTestId('disc-none');
     expect(disc).toBeInTheDocument();
   });
   it('配置可能な表示がされること', () => {
     render(
       <FlipDisc
-        color={DiscColor.Type.NONE}
+        color={DiscColor.NONE}
         canPlace={true}
         {...defaultRotateProps}
       />,
@@ -44,40 +44,40 @@ describe('Discコンポーネント', () => {
     const handleClick = vi.fn();
     render(
       <FlipDisc
-        color={DiscColor.Type.BLACK}
+        color={DiscColor.BLACK}
         onClick={handleClick}
         {...defaultRotateProps}
       />,
     );
-    const disc = screen.getByTestId(`disc-${DiscColor.Type.BLACK}`);
+    const disc = screen.getByTestId(`disc-${DiscColor.BLACK}`);
     fireEvent.click(disc);
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
   it('親要素のサイズに合わせたスタイルが適用されること', () => {
     render(
       <div style={{ width: '100px', height: '100px' }}>
-        <FlipDisc color={DiscColor.Type.WHITE} {...defaultRotateProps} />
+        <FlipDisc color={DiscColor.WHITE} {...defaultRotateProps} />
       </div>,
     );
-    const disc = screen.getByTestId(`disc-${DiscColor.Type.WHITE}`);
+    const disc = screen.getByTestId(`disc-${DiscColor.WHITE}`);
     expect(disc.className).toContain('w-full');
     expect(disc.className).toContain('h-full');
   });
   it('適切なアクセシビリティ属性が設定されること', () => {
-    render(<FlipDisc color={DiscColor.Type.BLACK} {...defaultRotateProps} />);
-    const disc = screen.getByTestId(`disc-${DiscColor.Type.BLACK}`);
-    expect(disc).toHaveAttribute('aria-label', `${DiscColor.Type.BLACK} disc`);
+    render(<FlipDisc color={DiscColor.BLACK} {...defaultRotateProps} />);
+    const disc = screen.getByTestId(`disc-${DiscColor.BLACK}`);
+    expect(disc).toHaveAttribute('aria-label', `${DiscColor.BLACK} disc`);
     expect(disc).toHaveAttribute('role', 'presentation');
   });
   it('クリック可能な場合は適切なロール属性が設定されること', () => {
     render(
       <FlipDisc
-        color={DiscColor.Type.BLACK}
+        color={DiscColor.BLACK}
         onClick={() => {}}
         {...defaultRotateProps}
       />,
     );
-    const disc = screen.getByTestId(`disc-${DiscColor.Type.BLACK}`);
+    const disc = screen.getByTestId(`disc-${DiscColor.BLACK}`);
     expect(disc).toHaveAttribute('role', 'button');
   });
   it.todo('アニメーション中の場合、適切なクラスが適用されること');

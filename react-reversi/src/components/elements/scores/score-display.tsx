@@ -14,16 +14,16 @@ type Props = {
 export const ScoreDisplay = ({ discColor, count }: Props) => {
   // 石の色に応じたスタイルを適用
   const colorStyles = {
-    [DiscColor.Type.BLACK]: 'bg-black text-white',
-    [DiscColor.Type.WHITE]: 'bg-white text-black',
-    [DiscColor.Type.NONE]: '', // NONEは使用しない想定
+    [DiscColor.BLACK]: 'bg-black text-white',
+    [DiscColor.WHITE]: 'bg-white text-black',
+    [DiscColor.NONE]: '', // NONEは使用しない想定
   };
 
   // 石の色に応じたリングカラーを定義（コントラストを確保）
   const ringStyles = {
-    [DiscColor.Type.BLACK]: 'ring-2 ring-white',
-    [DiscColor.Type.WHITE]: 'ring-2 ring-black',
-    [DiscColor.Type.NONE]: '',
+    [DiscColor.BLACK]: 'ring-2 ring-white',
+    [DiscColor.WHITE]: 'ring-2 ring-black',
+    [DiscColor.NONE]: '',
   };
 
   return (

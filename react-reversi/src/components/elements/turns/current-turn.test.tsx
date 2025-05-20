@@ -5,7 +5,7 @@ import { DiscColor } from '../../../features/reversi/utils/disc-color';
 
 describe('CurrentTurnコンポーネント', () => {
   it('黒の手番が正しく表示される', () => {
-    render(<CurrentTurn currentTurn={DiscColor.Type.BLACK} />);
+    render(<CurrentTurn currentTurn={DiscColor.BLACK} />);
 
     // テキストが表示されているか確認
     expect(screen.getByText('現在の手番：')).toBeInTheDocument();
@@ -17,7 +17,7 @@ describe('CurrentTurnコンポーネント', () => {
   });
 
   it('白の手番が正しく表示される', () => {
-    render(<CurrentTurn currentTurn={DiscColor.Type.WHITE} />);
+    render(<CurrentTurn currentTurn={DiscColor.WHITE} />);
 
     // テキストが表示されているか確認
     expect(screen.getByText('現在の手番：')).toBeInTheDocument();
