@@ -6,7 +6,6 @@ import { ScoreDisplay } from '@/components/elements/scores/score-display';
 import { CurrentTurn } from '@/components/elements/turns/current-turn';
 import { useDiscs } from '@/features/reversi/hooks/use-discs';
 import { useCpuPlayer } from '@/features/reversi/hooks/use-cpu-player';
-import { DiscColor as DiscColorEnum } from '@/features/reversi/types/reversi-types';
 import { DiscColor } from '@/features/reversi/utils/disc-color';
 import { PlayerColor } from '@/features/start-menu/types/start-menu-types';
 import { CpuLevel } from '@/types/cpu-level';
@@ -81,8 +80,8 @@ export default function ReversiGamePage() {
 
   // プレイヤーのスコアとCPUのスコアを計算
   const playerScore =
-    playerDiscColor === DiscColorEnum.BLACK ? blackCount : whiteCount;
-  const cpuScore = cpuDiscColor === DiscColorEnum.BLACK ? blackCount : whiteCount;
+    playerDiscColor === DiscColor.Type.BLACK ? blackCount : whiteCount;
+  const cpuScore = cpuDiscColor === DiscColor.Type.BLACK ? blackCount : whiteCount;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-green-100">

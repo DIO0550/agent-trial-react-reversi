@@ -1,16 +1,7 @@
 // 回転関連の型と関数を新しいファイルからインポート
 import { FlipDirection, RotationState } from '../utils/rotation-state-utils';
 import { CanPlace } from '../utils/can-place';
-
-/**
- * 石の色を表す列挙型
- * 0: 空、1: 黒、2: 白
- */
-export enum DiscColor {
-  NONE = 0,
-  BLACK = 1,
-  WHITE = 2,
-}
+import { DiscColor } from '../utils/disc-color';
 
 /**
  * 1マスの状態を表す型
@@ -18,7 +9,7 @@ export enum DiscColor {
  */
 export type CellState = {
   /** 石の色 */
-  discColor: DiscColor;
+  discColor: DiscColor.Type;
   /** 回転状態（角度） */
   rotationState: RotationState;
   /** このマスに石を置けるかどうか */

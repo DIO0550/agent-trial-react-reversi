@@ -1,4 +1,5 @@
 import { CpuLevel } from '@/types/cpu-level';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 /**
  * プレイヤーの色（手番）の型
@@ -10,7 +11,7 @@ export type PlayerColor = 'black' | 'white' | 'random';
  */
 export type StartMenuSettings = {
   cpuLevel: CpuLevel;
-  playerColor: PlayerColor;
+  playerColor: 'black' | 'white';
 };
 
 /**
