@@ -2,8 +2,8 @@ import {
   Board,
   Direction,
   BoardPosition,
-  DiscColor,
 } from '../types/reversi-types';
+import { DiscColor } from './disc-color';
 
 /**
  * 盤面内かどうかをチェックする関数
@@ -21,9 +21,9 @@ export const isWithinBoard = (
  */
 export const isValidDiscColor = (value: number): boolean => {
   return (
-    value === DiscColor.NONE ||
-    value === DiscColor.BLACK ||
-    value === DiscColor.WHITE
+    value === DiscColor.Type.NONE ||
+    value === DiscColor.Type.BLACK ||
+    value === DiscColor.Type.WHITE
   );
 };
 
@@ -41,7 +41,7 @@ export const findFlippableDiscsInDirection = (
   board: Board,
 ): BoardPosition[] => {
   const oppositePlayer =
-    currentPlayer === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+    currentPlayer === DiscColor.Type.BLACK ? DiscColor.Type.WHITE : DiscColor.Type.BLACK;
   const flippablePositions: BoardPosition[] = [];
   let currentRow = row + direction.rowDelta;
   let currentCol = col + direction.colDelta;
@@ -78,7 +78,7 @@ export const findFlippableDiscs = (
   board: Board,
 ): BoardPosition[] => {
   // すでに石がある場合は置けない
-  if (board[row][col].discColor !== DiscColor.NONE) {
+  if (board[row][col].discColor !== DiscColor.Type.NONE) {
     return [];
   }
 
@@ -101,7 +101,7 @@ export const getPlaceablePositions = (
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
       // 既に石があるマスにはおけない
-      if (board[row][col].discColor !== DiscColor.NONE) {
+      if (board[row][col].discColor !== DiscColor.Type.NONE) {
         continue;
       }
 

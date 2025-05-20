@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { CurrentTurn } from './current-turn';
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/utils/disc-color';
 
 describe('CurrentTurnコンポーネント', () => {
   it('黒の手番が正しく表示される', () => {
-    render(<CurrentTurn currentTurn={DiscColor.BLACK} />);
+    render(<CurrentTurn currentTurn={DiscColor.Type.BLACK} />);
 
     // テキストが表示されているか確認
     expect(screen.getByText('現在の手番：')).toBeInTheDocument();
@@ -17,7 +17,7 @@ describe('CurrentTurnコンポーネント', () => {
   });
 
   it('白の手番が正しく表示される', () => {
-    render(<CurrentTurn currentTurn={DiscColor.WHITE} />);
+    render(<CurrentTurn currentTurn={DiscColor.Type.WHITE} />);
 
     // テキストが表示されているか確認
     expect(screen.getByText('現在の手番：')).toBeInTheDocument();

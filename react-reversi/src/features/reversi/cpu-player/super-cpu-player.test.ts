@@ -3,9 +3,9 @@ import { createSuperCpuPlayer } from './super-cpu-player';
 import {
   Board,
   BoardPosition,
-  DiscColor,
   CellState,
 } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 import * as boardUtils from '../utils/board-utils';
 import { RotationState } from '../utils/rotation-state-utils';
 
@@ -25,7 +25,7 @@ describe('SuperCpuPlayer', () => {
           .map(
             () =>
               ({
-                discColor: DiscColor.NONE,
+                discColor: DiscColor.Type.NONE,
                 rotationState: RotationState.createInitial(),
                 canPlace: { black: false, white: false },
               }) as CellState,
@@ -36,11 +36,11 @@ describe('SuperCpuPlayer', () => {
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 3; col++) {
         const isEven = (row + col) % 2 === 0;
-        board[row][col].discColor = isEven ? DiscColor.BLACK : DiscColor.WHITE;
+        board[row][col].discColor = isEven ? DiscColor.Type.BLACK : DiscColor.Type.WHITE;
       }
     }
 
-    const currentPlayer = DiscColor.BLACK;
+    const currentPlayer = DiscColor.Type.BLACK;
     const cpuPlayer = createSuperCpuPlayer();
 
     // 置ける場所が無いことをモックする
@@ -61,7 +61,7 @@ describe('SuperCpuPlayer', () => {
           .map(
             () =>
               ({
-                discColor: DiscColor.NONE,
+                discColor: DiscColor.Type.NONE,
                 rotationState: RotationState.createInitial(),
                 canPlace: { black: false, white: false },
               }) as CellState,
@@ -69,11 +69,11 @@ describe('SuperCpuPlayer', () => {
       );
 
     // 石を配置
-    board[0][1].discColor = DiscColor.BLACK;
-    board[1][1].discColor = DiscColor.WHITE;
-    board[1][0].discColor = DiscColor.WHITE;
+    board[0][1].discColor = DiscColor.Type.BLACK;
+    board[1][1].discColor = DiscColor.Type.WHITE;
+    board[1][0].discColor = DiscColor.Type.WHITE;
 
-    const currentPlayer = DiscColor.BLACK;
+    const currentPlayer = DiscColor.Type.BLACK;
 
     // 角の位置を含む有効な位置をモック
     const availablePositions: BoardPosition[] = [
@@ -110,14 +110,14 @@ describe('SuperCpuPlayer', () => {
           .map(
             () =>
               ({
-                discColor: DiscColor.NONE,
+                discColor: DiscColor.Type.NONE,
                 rotationState: RotationState.createInitial(),
                 canPlace: { black: false, white: false },
               }) as CellState,
           ),
       );
 
-    const currentPlayer = DiscColor.BLACK;
+    const currentPlayer = DiscColor.Type.BLACK;
 
     // X打点と通常のマスを含む有効な位置をモック
     const availablePositions: BoardPosition[] = [
@@ -155,14 +155,14 @@ describe('SuperCpuPlayer', () => {
           .map(
             () =>
               ({
-                discColor: DiscColor.NONE,
+                discColor: DiscColor.Type.NONE,
                 rotationState: RotationState.createInitial(),
                 canPlace: { black: false, white: false },
               }) as CellState,
           ),
       );
 
-    const currentPlayer = DiscColor.BLACK;
+    const currentPlayer = DiscColor.Type.BLACK;
 
     // C打点と通常のマスを含む有効な位置をモック
     const availablePositions: BoardPosition[] = [
@@ -200,14 +200,14 @@ describe('SuperCpuPlayer', () => {
           .map(
             () =>
               ({
-                discColor: DiscColor.NONE,
+                discColor: DiscColor.Type.NONE,
                 rotationState: RotationState.createInitial(),
                 canPlace: { black: false, white: false },
               }) as CellState,
           ),
       );
 
-    const currentPlayer = DiscColor.BLACK;
+    const currentPlayer = DiscColor.Type.BLACK;
 
     // 端とその他のマスを含む有効な位置をモック
     const availablePositions: BoardPosition[] = [
@@ -245,7 +245,7 @@ describe('SuperCpuPlayer', () => {
           .map(
             () =>
               ({
-                discColor: DiscColor.NONE,
+                discColor: DiscColor.Type.NONE,
                 rotationState: RotationState.createInitial(),
                 canPlace: { black: false, white: false },
               }) as CellState,
@@ -253,12 +253,12 @@ describe('SuperCpuPlayer', () => {
       );
 
     // 初期配置
-    board[3][3].discColor = DiscColor.BLACK;
-    board[3][4].discColor = DiscColor.WHITE;
-    board[4][3].discColor = DiscColor.WHITE;
-    board[4][4].discColor = DiscColor.BLACK;
+    board[3][3].discColor = DiscColor.Type.BLACK;
+    board[3][4].discColor = DiscColor.Type.WHITE;
+    board[4][3].discColor = DiscColor.Type.WHITE;
+    board[4][4].discColor = DiscColor.Type.BLACK;
 
-    const currentPlayer = DiscColor.BLACK;
+    const currentPlayer = DiscColor.Type.BLACK;
 
     // 初期状態で選択可能な位置をモック
     const availablePositions: BoardPosition[] = [
@@ -304,7 +304,7 @@ describe('SuperCpuPlayer', () => {
           .map(
             () =>
               ({
-                discColor: DiscColor.NONE,
+                discColor: DiscColor.Type.NONE,
                 rotationState: RotationState.createInitial(),
                 canPlace: { black: false, white: false },
               }) as CellState,
@@ -315,23 +315,23 @@ describe('SuperCpuPlayer', () => {
     for (let row = 0; row < boardSize; row++) {
       for (let col = 0; col < boardSize; col++) {
         // ほとんどを黒石で埋める
-        board[row][col].discColor = DiscColor.BLACK;
+        board[row][col].discColor = DiscColor.Type.BLACK;
       }
     }
 
     // 一部を白石に
-    board[5][3].discColor = DiscColor.WHITE;
-    board[5][4].discColor = DiscColor.WHITE;
-    board[6][2].discColor = DiscColor.WHITE;
-    board[6][5].discColor = DiscColor.WHITE;
+    board[5][3].discColor = DiscColor.Type.WHITE;
+    board[5][4].discColor = DiscColor.Type.WHITE;
+    board[6][2].discColor = DiscColor.Type.WHITE;
+    board[6][5].discColor = DiscColor.Type.WHITE;
 
     // 空きマスを設定
-    board[6][3].discColor = DiscColor.NONE;
-    board[6][4].discColor = DiscColor.NONE;
-    board[7][3].discColor = DiscColor.NONE;
-    board[7][4].discColor = DiscColor.NONE;
+    board[6][3].discColor = DiscColor.Type.NONE;
+    board[6][4].discColor = DiscColor.Type.NONE;
+    board[7][3].discColor = DiscColor.Type.NONE;
+    board[7][4].discColor = DiscColor.Type.NONE;
 
-    const currentPlayer = DiscColor.BLACK;
+    const currentPlayer = DiscColor.Type.BLACK;
 
     // 終盤で選択可能な位置をモック
     const availablePositions: BoardPosition[] = [
@@ -373,7 +373,7 @@ describe('SuperCpuPlayer', () => {
           .map(
             () =>
               ({
-                discColor: DiscColor.NONE,
+                discColor: DiscColor.Type.NONE,
                 rotationState: RotationState.createInitial(),
                 canPlace: { black: false, white: false },
               }) as CellState,
@@ -381,12 +381,12 @@ describe('SuperCpuPlayer', () => {
       );
 
     // 初期配置
-    board[1][1].discColor = DiscColor.BLACK;
-    board[1][2].discColor = DiscColor.WHITE;
-    board[2][1].discColor = DiscColor.WHITE;
-    board[2][2].discColor = DiscColor.BLACK;
+    board[1][1].discColor = DiscColor.Type.BLACK;
+    board[1][2].discColor = DiscColor.Type.WHITE;
+    board[2][1].discColor = DiscColor.Type.WHITE;
+    board[2][2].discColor = DiscColor.Type.BLACK;
 
-    const currentPlayer = DiscColor.BLACK;
+    const currentPlayer = DiscColor.Type.BLACK;
 
     // 同じ評価値を持つ位置をモック
     const availablePositions: BoardPosition[] = [

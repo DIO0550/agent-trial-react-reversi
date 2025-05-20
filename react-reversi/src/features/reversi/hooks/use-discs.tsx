@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import {
-  DiscColor,
   BOARD_SIZE,
   BoardPosition,
   Direction,
   Board,
 } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 import { RotationState } from '../utils/rotation-state-utils';
 import { CanPlace } from '../utils/can-place';
 import { GameState } from '../utils/game-state';
@@ -42,7 +42,7 @@ const createInitialBoard = (): Board => {
       Array(BOARD_SIZE)
         .fill(null)
         .map(() => ({
-          discColor: DiscColor.NONE,
+          discColor: DiscColor.Type.NONE,
           rotationState: RotationState.createInitial(),
           canPlace: CanPlace.createEmpty(),
         })),
@@ -52,23 +52,23 @@ const createInitialBoard = (): Board => {
   const middle = Math.floor(BOARD_SIZE / 2) - 1;
   board[middle][middle] = {
     ...board[middle][middle],
-    discColor: DiscColor.WHITE,
-    rotationState: RotationState.fromDiscColor(DiscColor.WHITE),
+    discColor: DiscColor.Type.WHITE,
+    rotationState: RotationState.fromDiscColor(DiscColor.Type.WHITE),
   };
   board[middle][middle + 1] = {
     ...board[middle][middle + 1],
-    discColor: DiscColor.BLACK,
-    rotationState: RotationState.fromDiscColor(DiscColor.BLACK),
+    discColor: DiscColor.Type.BLACK,
+    rotationState: RotationState.fromDiscColor(DiscColor.Type.BLACK),
   };
   board[middle + 1][middle] = {
     ...board[middle + 1][middle],
-    discColor: DiscColor.BLACK,
-    rotationState: RotationState.fromDiscColor(DiscColor.BLACK),
+    discColor: DiscColor.Type.BLACK,
+    rotationState: RotationState.fromDiscColor(DiscColor.Type.BLACK),
   };
   board[middle + 1][middle + 1] = {
     ...board[middle + 1][middle + 1],
-    discColor: DiscColor.WHITE,
-    rotationState: RotationState.fromDiscColor(DiscColor.WHITE),
+    discColor: DiscColor.Type.WHITE,
+    rotationState: RotationState.fromDiscColor(DiscColor.Type.WHITE),
   };
 
   return board;
@@ -81,7 +81,7 @@ export const useDiscs = () => {
   // 盤面の状態
   const [board, setBoard] = useState<Board>(createInitialBoard);
   // 現在のターン
-  const [currentTurn, setCurrentTurn] = useState<DiscColor>(DiscColor.BLACK);
+  const [currentTurn, setCurrentTurn] = useState<DiscColor>(DiscColor.Type.BLACK);
   // ゲームの状態
   const [gameState, setGameState] = useState<GameState>(
     GameState.createInitial,
@@ -119,7 +119,7 @@ export const useDiscs = () => {
     ): FlipDiscPosition[] => {
       const flippableDiscs: FlipDiscPosition[] = [];
       const opponentColor =
-        turnColor === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+        turnColor === DiscColor.Type.BLACK ? DiscColor.Type.WHITE : DiscColor.Type.BLACK;
 
       let currentRow = row + direction.rowDelta;
       let currentCol = col + direction.colDelta;
@@ -182,7 +182,7 @@ export const useDiscs = () => {
       for (let col = 0; col < BOARD_SIZE; col++) {
         // 空のセルで、かつ石を反転させられる場所を探す
         if (
-          board[row][col].discColor === DiscColor.NONE &&
+          board[row][col].discColor === DiscColor.Type.NONE &&
           getAllFlippableDiscs(row, col, currentTurn).length > 0
         ) {
           positions.push({ row, col });
@@ -207,13 +207,13 @@ export const useDiscs = () => {
           for (let col = 0; col < BOARD_SIZE; col++) {
             // 空のセルかつ、石を裏返せる位置かどうかを確認
             const canPlaceHere =
-              newBoard[row][col].discColor === DiscColor.NONE &&
+              newBoard[row][col].discColor === DiscColor.Type.NONE &&
               getAllFlippableDiscs(row, col, turnColor).length > 0;
 
             // canPlace状態を更新（現在のターンの色に応じて適切なメソッドを使用）
             const currentCanPlace = newBoard[row][col].canPlace;
             const updatedCanPlace =
-              turnColor === DiscColor.BLACK
+              turnColor === DiscColor.Type.BLACK
                 ? CanPlace.setBlackCanPlace(currentCanPlace, canPlaceHere)
                 : CanPlace.setWhiteCanPlace(currentCanPlace, canPlaceHere);
 
@@ -243,7 +243,7 @@ export const useDiscs = () => {
 
     // 反対の色を計算
     const oppositeColor =
-      currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+      currentTurn === DiscColor.Type.BLACK ? DiscColor.Type.WHITE : DiscColor.Type.BLACK;
 
     // 両方のプレイヤーが石を置ける位置があるかチェック
     let currentPlayerCanPlace = false;
@@ -252,7 +252,7 @@ export const useDiscs = () => {
     // 盤面の全セルをチェック
     for (let row = 0; row < BOARD_SIZE; row++) {
       for (let col = 0; col < BOARD_SIZE; col++) {
-        if (board[row][col].discColor === DiscColor.NONE) {
+        if (board[row][col].discColor === DiscColor.Type.NONE) {
           // 現在のプレイヤーが置ける場所をチェック
           if (
             !currentPlayerCanPlace &&
@@ -288,9 +288,9 @@ export const useDiscs = () => {
       let whiteCount = 0;
       for (let row = 0; row < BOARD_SIZE; row++) {
         for (let col = 0; col < BOARD_SIZE; col++) {
-          if (board[row][col].discColor === DiscColor.BLACK) {
+          if (board[row][col].discColor === DiscColor.Type.BLACK) {
             blackCount++;
-          } else if (board[row][col].discColor === DiscColor.WHITE) {
+          } else if (board[row][col].discColor === DiscColor.Type.WHITE) {
             whiteCount++;
           }
         }
@@ -307,7 +307,7 @@ export const useDiscs = () => {
     // パスが発生した場合はログを出力
     if (!oppositePlayerCanPlace) {
       console.log(
-        `${oppositeColor === DiscColor.BLACK ? '黒' : '白'}の手番はパスされました`,
+        `${oppositeColor === DiscColor.Type.BLACK ? '黒' : '白'}の手番はパスされました`,
       );
     }
 
@@ -349,9 +349,9 @@ export const useDiscs = () => {
         // 現在のマスの色と逆の色を設定
         const currentDiscColor = newBoard[row][col].discColor;
         const flippedColor =
-          currentDiscColor === DiscColor.BLACK
-            ? DiscColor.WHITE
-            : DiscColor.BLACK;
+          currentDiscColor === DiscColor.Type.BLACK
+            ? DiscColor.Type.WHITE
+            : DiscColor.Type.BLACK;
 
         newBoard[row][col] = {
           ...newBoard[row][col],
@@ -395,7 +395,7 @@ export const useDiscs = () => {
    */
   useEffect(() => {
     // コンポーネントのマウント時に初期の置ける位置を設定
-    updatePlaceableState(DiscColor.BLACK);
+    updatePlaceableState(DiscColor.Type.BLACK);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 依存配列を空にすることでマウント時のみ実行される
 
@@ -414,7 +414,7 @@ export const useDiscs = () => {
       const { row, col } = position;
 
       // 空のセルかチェック
-      if (board[row][col].discColor !== DiscColor.NONE) {
+      if (board[row][col].discColor !== DiscColor.Type.NONE) {
         throw new Error('この位置には既に石が置かれています');
       }
 
@@ -455,7 +455,7 @@ export const useDiscs = () => {
   const isPlaceablePosition = useCallback(
     (row: number, col: number): boolean => {
       return (
-        board[row][col].discColor === DiscColor.NONE &&
+        board[row][col].discColor === DiscColor.Type.NONE &&
         getAllFlippableDiscs(row, col, currentTurn).length > 0
       );
     },
@@ -482,9 +482,9 @@ export const useDiscs = () => {
 
     for (let row = 0; row < BOARD_SIZE; row++) {
       for (let col = 0; col < BOARD_SIZE; col++) {
-        if (board[row][col].discColor === DiscColor.BLACK) {
+        if (board[row][col].discColor === DiscColor.Type.BLACK) {
           blackCount++;
-        } else if (board[row][col].discColor === DiscColor.WHITE) {
+        } else if (board[row][col].discColor === DiscColor.Type.WHITE) {
           whiteCount++;
         }
       }

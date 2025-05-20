@@ -1,10 +1,10 @@
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/utils/disc-color';
 
 type Props = {
   /**
    * 現在の手番の色
    */
-  currentTurn: DiscColor;
+  currentTurn: DiscColor.Type;
 };
 
 /**
@@ -17,12 +17,12 @@ export const CurrentTurn = ({ currentTurn }: Props) => {
         <span>現在の手番：</span>
         <span
           className={`inline-block w-6 h-6 rounded-full ${
-            currentTurn === DiscColor.BLACK
+            currentTurn === DiscColor.Type.BLACK
               ? 'bg-black'
               : 'bg-white border border-gray-300'
           }`}
         ></span>
-        <span>{currentTurn === DiscColor.BLACK ? '黒' : '白'}</span>
+        <span>{currentTurn === DiscColor.Type.BLACK ? '黒' : '白'}</span>
       </div>
     </div>
   );

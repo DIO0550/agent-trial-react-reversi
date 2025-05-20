@@ -1,4 +1,5 @@
-import { Board, BoardPosition, DiscColor } from '../types/reversi-types';
+import { Board, BoardPosition } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 import { CpuPlayer } from './types/cpu-player-types';
 import {
   findFlippableDiscs,
@@ -176,7 +177,7 @@ const determineGamePhase = (board: Board): GamePhase => {
   let filledCells = 0;
   for (let row = 0; row < boardSize; row++) {
     for (let col = 0; col < boardSize; col++) {
-      if (board[row][col].discColor !== DiscColor.NONE) {
+      if (board[row][col].discColor !== DiscColor.Type.NONE) {
         filledCells++;
       }
     }

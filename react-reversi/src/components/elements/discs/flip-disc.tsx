@@ -1,13 +1,13 @@
 import { Disk } from './disc';
 import { PlaceableDisc } from './placeable-disc';
-import { DiscColor } from '@/features/reversi/types/reversi-types';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 /**
  * ディスク(石)コンポーネントのProps
  */
 type Props = {
   /** ディスクの色 */
-  color: DiscColor;
+  color: DiscColor.Type;
   /** クリック時のイベントハンドラ */
   onClick?: () => void;
   /** 置くことが可能かどうか（ヒント表示用） */
@@ -42,12 +42,12 @@ export const FlipDisc = ({
   const cursorClasses = onClick ? 'cursor-pointer' : 'cursor-default';
 
   // ディスクが空で、置くことが可能な場合
-  if (color === DiscColor.NONE && canPlace) {
+  if (color === DiscColor.Type.NONE && canPlace) {
     return <PlaceableDisc onClick={onClick} />;
   }
 
   // ディスクが空の場合（色がnoneの場合）
-  if (color === DiscColor.NONE) {
+  if (color === DiscColor.Type.NONE) {
     return (
       <div
         className={`${baseClasses} ${cursorClasses} bg-transparent`}
@@ -79,12 +79,12 @@ export const FlipDisc = ({
       onTransitionEnd={handleTransitionEnd}
     >
       <Disk
-        color={DiscColor.BLACK}
+        color={DiscColor.Type.BLACK}
         rotateX={blackRotateX}
         rotateY={blackRotateY}
       />
       <Disk
-        color={DiscColor.WHITE}
+        color={DiscColor.Type.WHITE}
         rotateX={whiteRotateX}
         rotateY={whiteRotateY}
       />
