@@ -1,13 +1,13 @@
 import { Disk } from './disc';
 import { PlaceableDisc } from './placeable-disc';
-import { DiscColor } from '@/features/reversi/types/reversi-types';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 /**
  * ディスク(石)コンポーネントのProps
  */
 type Props = {
   /** ディスクの色 */
-  color: DiscColor;
+  color: DiscColor.Type;
   /** クリック時のイベントハンドラ */
   onClick?: () => void;
   /** 置くことが可能かどうか（ヒント表示用） */

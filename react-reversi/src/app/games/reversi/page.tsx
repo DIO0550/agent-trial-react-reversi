@@ -6,7 +6,7 @@ import { ScoreDisplay } from '@/components/elements/scores/score-display';
 import { CurrentTurn } from '@/components/elements/turns/current-turn';
 import { useDiscs } from '@/features/reversi/hooks/use-discs';
 import { useCpuPlayer } from '@/features/reversi/hooks/use-cpu-player';
-import { DiscColor } from '@/features/reversi/types/reversi-types';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 import { PlayerColor } from '@/features/start-menu/types/start-menu-types';
 import { CpuLevel } from '@/types/cpu-level';
 import { GameState } from '@/features/reversi/utils/game-state';
@@ -34,8 +34,7 @@ export default function ReversiGamePage() {
   } = useDiscs();
 
   // プレイヤーの石の色を設定（playerColorをDiscColorに変換）
-  const playerDiscColor =
-    playerColor === 'black' ? DiscColor.BLACK : DiscColor.WHITE;
+  const playerDiscColor = DiscColor.fromPlayerColor(playerColor);
 
   // useCpuPlayerフックを使用して、CPU思考処理を管理
   const { cpuDiscColor } = useCpuPlayer({

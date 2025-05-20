@@ -1,10 +1,10 @@
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/utils/disc-color';
 
 type Props = {
   /**
    * 現在の手番の色
    */
-  currentTurn: DiscColor;
+  currentTurn: DiscColor.Type;
 };
 
 /**

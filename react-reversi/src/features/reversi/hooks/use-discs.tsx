@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import {
-  DiscColor,
   BOARD_SIZE,
   BoardPosition,
   Direction,
   Board,
 } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 import { RotationState } from '../utils/rotation-state-utils';
 import { CanPlace } from '../utils/can-place';
 import { GameState } from '../utils/game-state';

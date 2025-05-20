@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { useDiscs } from './use-discs';
-import { DiscColor } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 
 describe('useDiscs', () => {
   it('初期状態で中央に4つの石が配置されていること', () => {

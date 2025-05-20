@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DiscColor, BoardPosition } from '../types/reversi-types';
+import { BoardPosition } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 import { useCpuPlayer } from './use-cpu-player';
 import { createWeakCpuPlayer } from '../cpu-player/weak-cpu-player';
 import { createNormalCpuPlayer } from '../cpu-player/normal-cpu-player';

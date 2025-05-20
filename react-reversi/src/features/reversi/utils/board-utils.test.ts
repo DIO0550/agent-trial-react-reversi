@@ -9,17 +9,17 @@ import {
 import {
   Direction,
   BoardPosition,
-  DiscColor,
   Board,
   CellState,
 } from '../types/reversi-types';
 import { CanPlace } from '../utils/can-place';
 import { RotationState } from '../utils/rotation-state-utils';
+import { DiscColor } from './disc-color';
 
 /**
  * テスト用にDiscColorの二次元配列をCellStateの二次元配列に変換するヘルパー関数
  */
-const createBoardFromDiscColors = (discColors: DiscColor[][]): Board => {
+const createBoardFromDiscColors = (discColors: DiscColor.Type[][]): Board => {
   return discColors.map((row) =>
     row.map((discColor) => ({
       discColor,

@@ -2,8 +2,8 @@ import {
   Board,
   Direction,
   BoardPosition,
-  DiscColor,
 } from '../types/reversi-types';
+import { DiscColor } from './disc-color';
 
 /**
  * 盤面内かどうかをチェックする関数

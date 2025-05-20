@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GameState, GameStateType } from './game-state';
 import { GameResult } from './game-result';
-import { DiscColor } from '@/features/reversi/types/reversi-types';
+import { DiscColor } from './disc-color';
 
 describe('GameState', () => {
   describe('createInitial', () => {

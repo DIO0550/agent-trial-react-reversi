@@ -3,9 +3,9 @@ import { createSuperCpuPlayer } from './super-cpu-player';
 import {
   Board,
   BoardPosition,
-  DiscColor,
   CellState,
 } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 import * as boardUtils from '../utils/board-utils';
 import { RotationState } from '../utils/rotation-state-utils';
 

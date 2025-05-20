@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { CurrentTurn } from './current-turn';
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/utils/disc-color';
 
 describe('CurrentTurnコンポーネント', () => {
   it('黒の手番が正しく表示される', () => {

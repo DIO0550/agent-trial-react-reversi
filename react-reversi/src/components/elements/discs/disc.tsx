@@ -1,11 +1,11 @@
-import { DiscColor } from '@/features/reversi/types/reversi-types';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 /**
  * ディスク(石)コンポーネントのProps
  */
 type Props = {
   /** ディスクの色 */
-  color: Exclude<DiscColor, DiscColor.NONE>;
+  color: Exclude<DiscColor.Type, DiscColor.NONE>;
 
   // X軸の回転角度
   rotateX?: number;

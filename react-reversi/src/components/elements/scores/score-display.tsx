@@ -1,8 +1,8 @@
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/utils/disc-color';
 
 type Props = {
   /** 表示する石の色 */
-  discColor: DiscColor;
+  discColor: DiscColor.Type;
   /** 表示する石の数 */
   count: number;
 };

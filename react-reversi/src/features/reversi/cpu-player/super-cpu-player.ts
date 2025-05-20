@@ -1,4 +1,5 @@
-import { Board, BoardPosition, DiscColor } from '../types/reversi-types';
+import { Board, BoardPosition } from '../types/reversi-types';
+import { DiscColor } from '../utils/disc-color';
 import { CpuPlayer } from './types/cpu-player-types';
 import {
   findFlippableDiscs,

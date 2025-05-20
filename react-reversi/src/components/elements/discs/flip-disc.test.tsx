@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { FlipDisc } from './flip-disc';
-import { DiscColor } from '@/features/reversi/types/reversi-types';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 // デフォルトの回転角度プロップス
 const defaultRotateProps = {

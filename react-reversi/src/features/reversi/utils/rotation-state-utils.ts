@@ -28,8 +28,8 @@ export enum FlipDirection {
   BOTTOM_TO_TOP = 'bottomToTop', // 下から上
 }
 
-// reversi-types.tsからDiscColorをインポート
-import { DiscColor } from '../types/reversi-types';
+// DiscColorを新しい場所からインポート
+import { DiscColor } from './disc-color';
 
 /**
  * RotationStateのコンパニオンオブジェクト
@@ -58,7 +58,7 @@ export const RotationState = {
    * @param discColor 石の色
    * @returns 対応するRotationState
    */
-  fromDiscColor: (discColor: DiscColor): RotationState => {
+  fromDiscColor: (discColor: DiscColor.Type): RotationState => {
     // DiscColorに基づいた回転状態を返す
     switch (discColor) {
       case DiscColor.BLACK:
@@ -157,8 +157,8 @@ export const RotationState = {
    * @deprecated 代わりに calculateDirectionalRotation を使用してください
    */
   calculateColorBasedRotation: (
-    fromColor: DiscColor,
-    toColor: DiscColor,
+    fromColor: DiscColor.Type,
+    toColor: DiscColor.Type,
   ): RotationState => {
     const defaultRotationState: RotationState = {
       black: {

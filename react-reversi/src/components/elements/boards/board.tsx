@@ -1,9 +1,9 @@
 import { FlipDisc } from '../discs/flip-disc';
 import {
   Board as ReversiBoard,
-  DiscColor,
   BOARD_SIZE,
 } from '@/features/reversi/types/reversi-types';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 import { CanPlace } from '@/features/reversi/utils/can-place';
 
 /**
@@ -13,7 +13,7 @@ type Props = {
   /** ボードの状態 */
   boardState: ReversiBoard;
   /** 現在のターン (黒または白) */
-  currentTurn: DiscColor;
+  currentTurn: DiscColor.Type;
   /** セルクリック時のイベントハンドラ */
   onCellClick?: (row: number, col: number) => void;
   /** フリップ完了時のコールバック関数 */

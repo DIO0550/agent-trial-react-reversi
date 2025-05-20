@@ -1,5 +1,5 @@
 import { GameResult } from '@/features/reversi/utils/game-result';
-import { DiscColor } from '@/features/reversi/types/reversi-types';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 /**
  * ゲームの状態を表す列挙型
@@ -18,7 +18,7 @@ export type GameState = {
   /** 勝敗結果 */
   result: GameResult;
   /** プレイヤーの石の色（勝敗判定で使用） */
-  playerColor?: DiscColor;
+  playerColor?: DiscColor.Type;
 };
 
 /**
@@ -30,7 +30,7 @@ export const GameState = {
    * @param playerColor プレイヤーの石の色
    * @returns 初期状態のゲーム状態
    */
-  createInitial: (playerColor?: DiscColor): GameState => {
+  createInitial: (playerColor?: DiscColor.Type): GameState => {
     return {
       type: GameStateType.PLAYING,
       result: GameResult.IN_PROGRESS,

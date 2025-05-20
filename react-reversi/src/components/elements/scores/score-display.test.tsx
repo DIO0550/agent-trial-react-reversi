@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { ScoreDisplay } from './score-display';
-import { DiscColor } from '../../../features/reversi/types/reversi-types';
+import { DiscColor } from '../../../features/reversi/utils/disc-color';
 
 describe('ScoreDisplay コンポーネント', () => {
   // テスト用の石の配置データ
