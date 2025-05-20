@@ -12,6 +12,7 @@ import {
   PLAYER_COLOR_OPTIONS,
 } from '../constants/start-menu-constants';
 import Image from 'next/image';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 /**
  * リバーシゲームのスタート画面メニューコンポーネント
@@ -30,12 +31,16 @@ export const StartMenu = ({ onStart }: StartMenuProps) => {
    * ランダムが選択された場合は、黒か白をランダムに決定する
    */
   const handleStartClick = () => {
-    // ランダムの場合は黒か白をランダムに決定
+    // ランダムの場合は DiscColor.fromPlayerColor でランダムに決定する
     if (playerColor === 'random') {
-      const randomColor = Math.random() < 0.5 ? 'black' : 'white';
+      // DiscColor.fromPlayerColor はランダムの場合、内部でランダムに黒か白を決定する
+      // その結果に応じて対応する PlayerColor を生成
+      const discColor = DiscColor.fromPlayerColor(playerColor);
+      const actualPlayerColor = discColor === 1 ? 'black' : 'white';
+      
       onStart({
         cpuLevel,
-        playerColor: randomColor as PlayerColor,
+        playerColor: actualPlayerColor,
       });
       return;
     }
