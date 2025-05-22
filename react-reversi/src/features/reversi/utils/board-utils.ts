@@ -39,21 +39,7 @@ export const isValidDiscColor = (value: number): boolean => {
   );
 };
 
-/**
- * findFlippableDiscsInDirection関数の引数の型
- */
-export type FindFlippableDiscsInDirectionParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** 現在のプレイヤーの色 */
-  currentPlayer: DiscColor;
-  /** 方向 */
-  direction: Direction;
-  /** 盤面 */
-  board: Board;
-};
+
 
 /**
  * 指定された位置から特定の方向にひっくり返せる石があるかチェックする関数
@@ -64,7 +50,18 @@ export const findFlippableDiscsInDirection = ({
   currentPlayer,
   direction,
   board,
-}: FindFlippableDiscsInDirectionParams): BoardPosition[] => {
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** 現在のプレイヤーの色 */
+  currentPlayer: DiscColor;
+  /** 方向 */
+  direction: Direction;
+  /** 盤面 */
+  board: Board;
+}): BoardPosition[] => {
   const oppositePlayer =
     currentPlayer === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
   const flippablePositions: BoardPosition[] = [];
@@ -93,19 +90,7 @@ export const findFlippableDiscsInDirection = ({
   return [];
 };
 
-/**
- * findFlippableDiscs関数の引数の型
- */
-export type FindFlippableDiscsParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** 現在のプレイヤーの色 */
-  currentPlayer: DiscColor;
-  /** 盤面 */
-  board: Board;
-};
+
 
 /**
  * 指定された位置に石を置いた場合にひっくり返せる石の位置を取得する関数
@@ -115,7 +100,16 @@ export const findFlippableDiscs = ({
   col,
   currentPlayer,
   board,
-}: FindFlippableDiscsParams): BoardPosition[] => {
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** 現在のプレイヤーの色 */
+  currentPlayer: DiscColor;
+  /** 盤面 */
+  board: Board;
+}): BoardPosition[] => {
   // すでに石がある場合は置けない
   if (board[row][col].discColor !== DiscColor.NONE) {
     return [];

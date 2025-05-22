@@ -14,21 +14,18 @@ export const useNavigation = () => {
     router.push('/');
   }, [router]);
 
-/**
- * navigateToReversiGame関数の引数の型
- */
-type NavigateToReversiGameParams = {
-  /** CPUレベル */
-  cpuLevel: string;
-  /** プレイヤーの色 */
-  playerColor: string;
-};
+
 
 /**
  * リバーシゲーム画面に移動
  */
 const navigateToReversiGame = useCallback(
-  ({ cpuLevel, playerColor }: NavigateToReversiGameParams) => {
+  ({ cpuLevel, playerColor }: {
+    /** CPUレベル */
+    cpuLevel: string;
+    /** プレイヤーの色 */
+    playerColor: string;
+  }) => {
     router.push(
       `/games/reversi?cpuLevel=${cpuLevel}&playerColor=${playerColor}`,
     );
