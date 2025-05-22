@@ -30,25 +30,20 @@ type PositionWithEvaluation = {
 };
 
 /**
- * isCornerPosition関数の引数の型
- */
-type IsCornerPositionParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** ボードのサイズ */
-  size: number;
-};
-
-/**
  * マスの位置が角かどうか判定する関数
  */
 const isCornerPosition = ({
   row,
   col,
   size,
-}: IsCornerPositionParams): boolean => {
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** ボードのサイズ */
+  size: number;
+}): boolean => {
   return (
     (row === 0 && col === 0) ||
     (row === 0 && col === size - 1) ||
@@ -58,25 +53,20 @@ const isCornerPosition = ({
 };
 
 /**
- * isXPointPosition関数の引数の型
- */
-type IsXPointPositionParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** ボードのサイズ */
-  size: number;
-};
-
-/**
  * マスの位置がX打点（角の隣）かどうか判定する関数
  */
 const isXPointPosition = ({
   row,
   col,
   size,
-}: IsXPointPositionParams): boolean => {
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** ボードのサイズ */
+  size: number;
+}): boolean => {
   return (
     (row === 0 && col === 1) ||
     (row === 1 && col === 0) ||
@@ -94,25 +84,20 @@ const isXPointPosition = ({
 };
 
 /**
- * isEdgePosition関数の引数の型
- */
-type IsEdgePositionParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** ボードのサイズ */
-  size: number;
-};
-
-/**
  * マスの位置が端（角とX打点を除く）かどうか判定する関数
  */
 const isEdgePosition = ({
   row,
   col,
   size,
-}: IsEdgePositionParams): boolean => {
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** ボードのサイズ */
+  size: number;
+}): boolean => {
   return (
     (row === 0 || row === size - 1 || col === 0 || col === size - 1) &&
     !isCornerPosition({ row, col, size }) &&
@@ -121,22 +106,17 @@ const isEdgePosition = ({
 };
 
 /**
- * getPositionType関数の引数の型
- */
-type GetPositionTypeParams = {
-  /** 位置 */
-  position: BoardPosition;
-  /** ボードのサイズ */
-  boardSize: number;
-};
-
-/**
  * 位置の種類を判定する関数
  */
 const getPositionType = ({
   position,
   boardSize,
-}: GetPositionTypeParams): PositionType => {
+}: {
+  /** 位置 */
+  position: BoardPosition;
+  /** ボードのサイズ */
+  boardSize: number;
+}): PositionType => {
   const { row, col } = position;
   if (isCornerPosition({ row, col, size: boardSize })) {
     return POSITION_TYPE.CORNER;

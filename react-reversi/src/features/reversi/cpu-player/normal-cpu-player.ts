@@ -25,25 +25,20 @@ type PositionWithEvaluation = {
 };
 
 /**
- * isCornerPosition関数の引数の型
- */
-type IsCornerPositionParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** ボードのサイズ */
-  size: number;
-};
-
-/**
  * マスの位置が角かどうか判定する関数
  */
 const isCornerPosition = ({
   row,
   col,
   size,
-}: IsCornerPositionParams): boolean => {
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** ボードのサイズ */
+  size: number;
+}): boolean => {
   return (
     (row === 0 && col === 0) ||
     (row === 0 && col === size - 1) ||
@@ -53,25 +48,20 @@ const isCornerPosition = ({
 };
 
 /**
- * isEdgePosition関数の引数の型
- */
-type IsEdgePositionParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** ボードのサイズ */
-  size: number;
-};
-
-/**
  * マスの位置が端（角を除く）かどうか判定する関数
  */
 const isEdgePosition = ({
   row,
   col,
   size,
-}: IsEdgePositionParams): boolean => {
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** ボードのサイズ */
+  size: number;
+}): boolean => {
   return (
     (row === 0 || row === size - 1 || col === 0 || col === size - 1) &&
     !isCornerPosition({ row, col, size })
