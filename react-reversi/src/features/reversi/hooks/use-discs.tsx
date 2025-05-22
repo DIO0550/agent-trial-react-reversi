@@ -93,37 +93,18 @@ export const useDiscs = () => {
     useFlipDiscQueue();
 
   /**
- * isValidPosition関数の引数の型
- */
-type IsValidPositionParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-};
-
-/**
  * 盤面の位置が有効かどうかを確認
  * @param params 位置のパラメータ
  * @returns 有効な位置ならtrue
  */
-const isValidPosition = useCallback(({ row, col }: IsValidPositionParams): boolean => {
-  return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
-}, []);
-
-  /**
- * getFlippableDiscsInDirection関数の引数の型
- */
-type GetFlippableDiscsInDirectionParams = {
+const isValidPosition = useCallback(({ row, col }: {
   /** 行番号 */
   row: number;
   /** 列番号 */
   col: number;
-  /** 方向 */
-  direction: Direction;
-  /** 現在のターンの色 */
-  turnColor: DiscColor;
-};
+}): boolean => {
+  return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
+}, []);
 
 /**
  * 指定した方向に対する反転できる石の位置と方向情報を取得
@@ -136,7 +117,16 @@ const getFlippableDiscsInDirection = useCallback(
     col,
     direction,
     turnColor,
-  }: GetFlippableDiscsInDirectionParams): FlipDiscPosition[] => {
+  }: {
+    /** 行番号 */
+    row: number;
+    /** 列番号 */
+    col: number;
+    /** 方向 */
+    direction: Direction;
+    /** 現在のターンの色 */
+    turnColor: DiscColor;
+  }): FlipDiscPosition[] => {
     const flippableDiscs: FlipDiscPosition[] = [];
     const opponentColor =
       turnColor === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
@@ -175,25 +165,20 @@ const getFlippableDiscsInDirection = useCallback(
   [board, isValidPosition],
 );
 
-  /**
- * getAllFlippableDiscs関数の引数の型
- */
-type GetAllFlippableDiscsParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** 現在のターンの色 */
-  turnColor: DiscColor;
-};
-
 /**
  * すべての方向に対する反転できる石の位置と方向情報を取得
  * @param params パラメータオブジェクト
  * @returns 反転できる石の情報の配列
  */
 const getAllFlippableDiscs = useCallback(
-  ({ row, col, turnColor }: GetAllFlippableDiscsParams): FlipDiscPosition[] => {
+  ({ row, col, turnColor }: {
+    /** 行番号 */
+    row: number;
+    /** 列番号 */
+    col: number;
+    /** 現在のターンの色 */
+    turnColor: DiscColor;
+  }): FlipDiscPosition[] => {
     return DIRECTIONS.flatMap((direction) =>
       getFlippableDiscsInDirection({
         row,
@@ -482,22 +467,17 @@ const placeDisc = useCallback(
   );
 
   /**
- * isPlaceablePosition関数の引数の型
- */
-type IsPlaceablePositionParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-};
-
-/**
  * 指定したセルが置ける位置かどうかを判定
  * @param params パラメータオブジェクト
  * @returns 置ける位置ならtrue、そうでなければfalse
  */
 const isPlaceablePosition = useCallback(
-  ({ row, col }: IsPlaceablePositionParams): boolean => {
+  ({ row, col }: {
+    /** 行番号 */
+    row: number;
+    /** 列番号 */
+    col: number;
+  }): boolean => {
     return (
       board[row][col].discColor === DiscColor.NONE &&
       getAllFlippableDiscs({ row, col, turnColor: currentTurn }).length > 0

@@ -6,25 +6,20 @@ import {
 import { DiscColor } from './disc-color';
 
 /**
- * isWithinBoard関数の引数の型
- */
-export type IsWithinBoardParams = {
-  /** 行番号 */
-  row: number;
-  /** 列番号 */
-  col: number;
-  /** ボードのサイズ */
-  size: number;
-};
-
-/**
  * 盤面内かどうかをチェックする関数
  */
 export const isWithinBoard = ({
   row,
   col,
   size,
-}: IsWithinBoardParams): boolean => {
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** ボードのサイズ */
+  size: number;
+}): boolean => {
   return row >= 0 && row < size && col >= 0 && col < size;
 };
 
@@ -128,22 +123,17 @@ export const findFlippableDiscs = ({
 };
 
 /**
- * getPlaceablePositions関数の引数の型
- */
-export type GetPlaceablePositionsParams = {
-  /** 盤面 */
-  board: Board;
-  /** 現在のプレイヤーの色 */
-  currentPlayer: DiscColor;
-};
-
-/**
  * 盤面上で現在のプレイヤーが石を置ける位置をすべて取得する関数
  */
 export const getPlaceablePositions = ({
   board,
   currentPlayer,
-}: GetPlaceablePositionsParams): BoardPosition[] => {
+}: {
+  /** 盤面 */
+  board: Board;
+  /** 現在のプレイヤーの色 */
+  currentPlayer: DiscColor;
+}): BoardPosition[] => {
   const placeablePositions: BoardPosition[] = [];
   const size = board.length;
 
