@@ -1,4 +1,4 @@
-import { Board, Point } from '../types/reversi-types';
+import { Board, BoardPosition } from '../types/reversi-types';
 import { CpuPlayer } from './types/cpu-player-types';
 import { getPlaceablePositions } from '../utils/board-utils';
 
@@ -17,8 +17,11 @@ export const createWeakCpuPlayer = (): CpuPlayer => {
   /**
    * 次の手を計算する関数
    */
-  const calculateNextMove = (board: Board, currentPlayer: number): Point => {
-    const availablePositions = getPlaceablePositions(board, currentPlayer);
+  const calculateNextMove = (board: Board, currentPlayer: number): BoardPosition => {
+    const availablePositions = getPlaceablePositions({
+      board,
+      currentPlayer,
+    });
     if (availablePositions.length === 0) {
       throw new Error('No available positions');
     }
