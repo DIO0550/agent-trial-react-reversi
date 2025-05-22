@@ -60,7 +60,10 @@ describe('useNavigation', () => {
     const playerColor = 'black';
 
     // navigateToReversiGameを実行
-    result.current.navigateToReversiGame(cpuLevel, playerColor);
+    result.current.navigateToReversiGame({
+      cpuLevel,
+      playerColor,
+    });
 
     // useRouter().pushが正しいパスとクエリパラメータで呼ばれたことを確認
     expect(mockPush).toHaveBeenCalledTimes(1);

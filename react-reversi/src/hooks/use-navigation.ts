@@ -14,15 +14,27 @@ export const useNavigation = () => {
     router.push('/');
   }, [router]);
 
-  // リバーシゲーム画面に移動
-  const navigateToReversiGame = useCallback(
-    (cpuLevel: string, playerColor: string) => {
-      router.push(
-        `/games/reversi?cpuLevel=${cpuLevel}&playerColor=${playerColor}`,
-      );
-    },
-    [router],
-  );
+/**
+ * navigateToReversiGame関数の引数の型
+ */
+type NavigateToReversiGameParams = {
+  /** CPUレベル */
+  cpuLevel: string;
+  /** プレイヤーの色 */
+  playerColor: string;
+};
+
+/**
+ * リバーシゲーム画面に移動
+ */
+const navigateToReversiGame = useCallback(
+  ({ cpuLevel, playerColor }: NavigateToReversiGameParams) => {
+    router.push(
+      `/games/reversi?cpuLevel=${cpuLevel}&playerColor=${playerColor}`,
+    );
+  },
+  [router],
+);
 
   // 現在のページをリロード
   const reloadCurrentPage = useCallback(() => {
