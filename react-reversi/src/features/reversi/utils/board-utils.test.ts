@@ -33,22 +33,22 @@ describe('board-utils関数', () => {
   // isWithinBoardのテスト
   describe('isWithinBoard関数', () => {
     it('盤面内の座標の場合はtrueを返すこと', () => {
-      expect(isWithinBoard(0, 0, 8)).toBeTrue();
-      expect(isWithinBoard(3, 4, 8)).toBeTrue();
-      expect(isWithinBoard(7, 7, 8)).toBeTrue();
+      expect(isWithinBoard({ row: 0, col: 0, size: 8 })).toBeTrue();
+      expect(isWithinBoard({ row: 3, col: 4, size: 8 })).toBeTrue();
+      expect(isWithinBoard({ row: 7, col: 7, size: 8 })).toBeTrue();
     });
 
     it('盤面外の座標の場合はfalseを返すこと', () => {
-      expect(isWithinBoard(-1, 0, 8)).toBeFalse();
-      expect(isWithinBoard(0, -1, 8)).toBeFalse();
-      expect(isWithinBoard(8, 0, 8)).toBeFalse();
-      expect(isWithinBoard(0, 8, 8)).toBeFalse();
+      expect(isWithinBoard({ row: -1, col: 0, size: 8 })).toBeFalse();
+      expect(isWithinBoard({ row: 0, col: -1, size: 8 })).toBeFalse();
+      expect(isWithinBoard({ row: 8, col: 0, size: 8 })).toBeFalse();
+      expect(isWithinBoard({ row: 0, col: 8, size: 8 })).toBeFalse();
     });
 
     it('サイズが異なる盤面でも正しく判定すること', () => {
-      expect(isWithinBoard(0, 0, 4)).toBeTrue();
-      expect(isWithinBoard(3, 3, 4)).toBeTrue();
-      expect(isWithinBoard(4, 0, 4)).toBeFalse();
+      expect(isWithinBoard({ row: 0, col: 0, size: 4 })).toBeTrue();
+      expect(isWithinBoard({ row: 3, col: 3, size: 4 })).toBeTrue();
+      expect(isWithinBoard({ row: 4, col: 0, size: 4 })).toBeFalse();
     });
   });
 
@@ -101,8 +101,8 @@ describe('board-utils関数', () => {
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
+          DiscColor.NONE,
+          DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
@@ -139,25 +139,25 @@ describe('board-utils関数', () => {
         ],
       ]);
 
-      // 右方向をテスト: (3,3)の黒から見て、(3,4)(3,5)の白をひっくり返せる
+      // 方向: 右（colDelta: 1, rowDelta: 0）
       const direction: Direction = { rowDelta: 0, colDelta: 1 };
-      const result = findFlippableDiscsInDirection(
-        3,
-        3,
-        DiscColor.BLACK,
+      // 黒の立場で白を挟むかチェック
+      const result = findFlippableDiscsInDirection({
+        row: 3,
+        col: 2,
+        currentPlayer: DiscColor.BLACK,
         direction,
         board,
-      );
+      });
 
+      // 結果を検証（(3,4)(3,5)が裏返せるはず）
       expect(result).toHaveLength(2);
-      expect(result).toEqual([
-        { row: 3, col: 4 },
-        { row: 3, col: 5 },
-      ]);
+      expect(result[0]).toEqual({ row: 3, col: 4 });
+      expect(result[1]).toEqual({ row: 3, col: 5 });
     });
 
     it('直線上に複数の石がひっくり返せる場合は全ての位置を返すこと', () => {
-      // 盤面を設定（連続した相手の石がある場合）
+      // 盤面を設定
       const board = createBoardFromDiscColors([
         [
           DiscColor.NONE,
@@ -182,37 +182,27 @@ describe('board-utils関数', () => {
         [
           DiscColor.NONE,
           DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
           DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
+          DiscColor.WHITE,
+          DiscColor.WHITE,
           DiscColor.WHITE,
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
-          DiscColor.NONE,
-        ],
+        ], // この行に注目: (3,0)に黒、(3,1)(3,2)(3,3)に白
         [
           DiscColor.NONE,
           DiscColor.NONE,
-          DiscColor.WHITE,
           DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
@@ -222,7 +212,17 @@ describe('board-utils関数', () => {
         [
           DiscColor.NONE,
           DiscColor.NONE,
-          DiscColor.BLACK,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
@@ -241,312 +241,73 @@ describe('board-utils関数', () => {
         ],
       ]);
 
-      // 下方向をテスト: (2,2)から(5,2)までの石をひっくり返す
-      const direction: Direction = { rowDelta: 1, colDelta: 0 };
-      const result = findFlippableDiscsInDirection(
-        2,
-        2,
-        DiscColor.BLACK,
-        direction,
+      // 黒の立場で白を挟むかチェック
+      const result = findFlippableDiscsInDirection({
+        row: 3,
+        col: 4,
+        currentPlayer: DiscColor.BLACK,
+        direction: { rowDelta: 0, colDelta: -1 }, // 左方向
         board,
-      );
+      });
 
+      // 結果を検証（(3,1)(3,2)(3,3)が裏返せるはず）
       expect(result).toHaveLength(3);
       expect(result).toEqual([
+        { row: 3, col: 3 },
         { row: 3, col: 2 },
-        { row: 4, col: 2 },
-        { row: 5, col: 2 },
+        { row: 3, col: 1 },
       ]);
     });
 
     it('相手の石がない場合は空の配列を返すこと', () => {
       const board = createBoardFromDiscColors([
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.BLACK,
-          DiscColor.WHITE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
+        [DiscColor.NONE, DiscColor.NONE],
+        [DiscColor.NONE, DiscColor.NONE],
       ]);
 
-      // 上方向をテスト (3,3)に黒(DiscColor.BLACK)を置こうとしても置けない
-      const direction: Direction = { rowDelta: -1, colDelta: 0 };
-      const result = findFlippableDiscsInDirection(
-        3,
-        3,
-        DiscColor.BLACK,
-        direction,
+      const result = findFlippableDiscsInDirection({
+        row: 0,
+        col: 0,
+        currentPlayer: DiscColor.BLACK,
+        direction: { rowDelta: 0, colDelta: 1 },
         board,
-      );
+      });
 
       expect(result).toHaveLength(0);
     });
 
     it('相手の石の後に自分の石がない場合は空の配列を返すこと', () => {
       const board = createBoardFromDiscColors([
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.BLACK,
-          DiscColor.WHITE,
-          DiscColor.WHITE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
+        [DiscColor.NONE, DiscColor.WHITE, DiscColor.NONE],
+        [DiscColor.NONE, DiscColor.NONE, DiscColor.NONE],
+        [DiscColor.NONE, DiscColor.NONE, DiscColor.NONE],
       ]);
 
-      // 右方向をテスト (3,3)から(3,6)で自分の石がないため挟めない
-      const direction: Direction = { rowDelta: 0, colDelta: 1 };
-      const result = findFlippableDiscsInDirection(
-        3,
-        3,
-        DiscColor.BLACK,
-        direction,
+      const result = findFlippableDiscsInDirection({
+        row: 0,
+        col: 0,
+        currentPlayer: DiscColor.BLACK,
+        direction: { rowDelta: 0, colDelta: 1 },
         board,
-      );
+      });
 
-      // 最後に自分の石がないので、空の配列を返す
       expect(result).toHaveLength(0);
     });
 
     it('盤面の端を超える方向では空の配列を返すこと', () => {
       const board = createBoardFromDiscColors([
-        [
-          DiscColor.BLACK,
-          DiscColor.WHITE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.BLACK,
-          DiscColor.WHITE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
+        [DiscColor.NONE, DiscColor.WHITE, DiscColor.NONE],
+        [DiscColor.NONE, DiscColor.NONE, DiscColor.NONE],
+        [DiscColor.NONE, DiscColor.NONE, DiscColor.NONE],
       ]);
 
-      // 左上方向をテスト (0,0)に白(DiscColor.WHITE)を置こうとしても盤面外になる
-      const direction: Direction = { rowDelta: -1, colDelta: -1 };
-      const result = findFlippableDiscsInDirection(
-        0,
-        0,
-        DiscColor.WHITE,
-        direction,
+      const result = findFlippableDiscsInDirection({
+        row: 0,
+        col: 0,
+        currentPlayer: DiscColor.BLACK,
+        direction: { rowDelta: -1, colDelta: 0 },
         board,
-      );
+      });
 
       expect(result).toHaveLength(0);
     });
@@ -555,7 +316,7 @@ describe('board-utils関数', () => {
   // findFlippableDiscsのテスト
   describe('findFlippableDiscs関数', () => {
     it('すべての方向のひっくり返せる石を取得できること', () => {
-      // 標準的な盤面を設定
+      // 初期盤面を設定
       const board = createBoardFromDiscColors([
         [
           DiscColor.NONE,
@@ -591,16 +352,6 @@ describe('board-utils関数', () => {
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
-          DiscColor.BLACK,
-          DiscColor.WHITE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
           DiscColor.WHITE,
           DiscColor.BLACK,
           DiscColor.NONE,
@@ -611,8 +362,18 @@ describe('board-utils関数', () => {
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
-          DiscColor.NONE,
+          DiscColor.BLACK,
           DiscColor.WHITE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
           DiscColor.NONE,
@@ -639,191 +400,57 @@ describe('board-utils関数', () => {
         ],
       ]);
 
-      // (5,3)に黒(DiscColor.BLACK)を置くと、白をひっくり返せる
-      const result = findFlippableDiscs(5, 3, DiscColor.BLACK, board);
+      // 黒がプレイする場合、(3,5)に置くと(3,4)の白が裏返せるはず
+      const result = findFlippableDiscs({
+        row: 3,
+        col: 5,
+        currentPlayer: DiscColor.BLACK,
+        board,
+      });
 
       expect(result).toHaveLength(1);
-      expect(result).toEqual([
-        { row: 4, col: 3 }, // 上方向
-      ]);
+      expect(result[0]).toEqual({ row: 3, col: 4 });
+
+      // 黒がプレイする場合、(5,3)に置くと(4,3)の白が裏返せるはず
+      const result2 = findFlippableDiscs({
+        row: 5,
+        col: 3,
+        currentPlayer: DiscColor.BLACK,
+        board,
+      });
+
+      expect(result2).toHaveLength(1);
+      expect(result2[0]).toEqual({ row: 4, col: 3 });
     });
 
     it('既に石がある場所には置けないこと', () => {
       const board = createBoardFromDiscColors([
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.BLACK,
-          DiscColor.WHITE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
+        [DiscColor.NONE, DiscColor.NONE],
+        [DiscColor.NONE, DiscColor.BLACK],
       ]);
 
-      // 既に石がある(3,3)に置こうとする
-      const result = findFlippableDiscs(3, 3, DiscColor.WHITE, board);
+      const result = findFlippableDiscs({
+        row: 1,
+        col: 1,
+        currentPlayer: DiscColor.BLACK,
+        board,
+      });
 
       expect(result).toHaveLength(0);
     });
 
     it('ひっくり返せる石がない場合は空の配列を返すこと', () => {
       const board = createBoardFromDiscColors([
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.BLACK,
-          DiscColor.WHITE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
+        [DiscColor.NONE, DiscColor.NONE],
+        [DiscColor.NONE, DiscColor.BLACK],
       ]);
 
-      // 相手の石を挟めない場所
-      const result = findFlippableDiscs(0, 0, DiscColor.BLACK, board);
+      const result = findFlippableDiscs({
+        row: 0,
+        col: 0,
+        currentPlayer: DiscColor.BLACK,
+        board,
+      });
 
       expect(result).toHaveLength(0);
     });
@@ -832,166 +459,156 @@ describe('board-utils関数', () => {
   // getPlaceablePositionsのテスト
   describe('getPlaceablePositions関数', () => {
     it('初期盤面で黒が置ける位置を正しく取得できること', () => {
-      // 初期状態の盤面を設定（4x4の例）
+      // 初期盤面を設定
       const board = createBoardFromDiscColors([
-        [DiscColor.NONE, DiscColor.NONE, DiscColor.NONE, DiscColor.NONE],
-        [DiscColor.NONE, DiscColor.BLACK, DiscColor.WHITE, DiscColor.NONE],
-        [DiscColor.NONE, DiscColor.WHITE, DiscColor.BLACK, DiscColor.NONE],
-        [DiscColor.NONE, DiscColor.NONE, DiscColor.NONE, DiscColor.NONE],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.WHITE,
+          DiscColor.BLACK,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.BLACK,
+          DiscColor.WHITE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
+        [
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+          DiscColor.NONE,
+        ],
       ]);
 
-      // 黒(DiscColor.BLACK)が置ける位置を取得
-      const result = getPlaceablePositions(board, DiscColor.BLACK);
-
-      // 配列の要素数をチェック
-      expect(result).toHaveLength(4);
-
-      // 結果に特定の位置が含まれているか確認（順序は問わない）
-      const expectedPositions: BoardPosition[] = [
-        { row: 0, col: 2 },
-        { row: 1, col: 3 },
-        { row: 2, col: 0 },
-        { row: 3, col: 1 },
-      ];
-
-      // 各要素が結果に含まれているか確認
-      expectedPositions.forEach((pos) => {
-        expect(
-          result.some((r) => r.row === pos.row && r.col === pos.col),
-        ).toBeTrue();
+      const positions = getPlaceablePositions({
+        board,
+        currentPlayer: DiscColor.BLACK,
       });
+
+      // 初期盤面で黒が置ける位置は4箇所
+      expect(positions).toHaveLength(4);
+      expect(positions).toEqual(
+        expect.arrayContaining([
+          { row: 2, col: 4 },
+          { row: 3, col: 5 },
+          { row: 4, col: 2 },
+          { row: 5, col: 3 },
+        ]),
+      );
     });
 
     it('置ける場所がない場合は空の配列を返すこと', () => {
-      // 黒が置ける場所がない盤面
       const board = createBoardFromDiscColors([
-        [DiscColor.BLACK, DiscColor.BLACK, DiscColor.BLACK],
-        [DiscColor.BLACK, DiscColor.WHITE, DiscColor.BLACK],
-        [DiscColor.BLACK, DiscColor.BLACK, DiscColor.BLACK],
+        [DiscColor.BLACK, DiscColor.BLACK],
+        [DiscColor.BLACK, DiscColor.BLACK],
       ]);
 
-      // 白(DiscColor.WHITE)が置ける位置を取得
-      const result = getPlaceablePositions(board, DiscColor.WHITE);
+      const positions = getPlaceablePositions({
+        board,
+        currentPlayer: DiscColor.WHITE,
+      });
 
-      expect(result).toHaveLength(0);
+      expect(positions).toHaveLength(0);
     });
 
     it('盤面全体をスキャンして置ける場所をすべて返すこと', () => {
-      // 複雑な盤面
       const board = createBoardFromDiscColors([
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.WHITE,
-          DiscColor.BLACK,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
-        [
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-          DiscColor.NONE,
-        ],
+        [DiscColor.NONE, DiscColor.NONE, DiscColor.BLACK],
+        [DiscColor.NONE, DiscColor.WHITE, DiscColor.NONE],
+        [DiscColor.NONE, DiscColor.NONE, DiscColor.NONE],
       ]);
 
-      // 黒(DiscColor.BLACK)が置ける位置を取得
-      const result = getPlaceablePositions(board, DiscColor.BLACK);
+      const positions = getPlaceablePositions({
+        board,
+        currentPlayer: DiscColor.BLACK,
+      });
 
-      // それぞれの位置に置けるか確認
-      expect(result.length).toBeGreaterThan(0);
-
-      // 1つだけ確認（(1,1)には置けるはず）
-      expect(result.some((pos) => pos.row === 1 && pos.col === 1)).toBeTrue();
+      // 黒が置ける場所は1箇所のはず
+      expect(positions).toHaveLength(1);
+      expect(positions[0]).toEqual({ row: 2, col: 1 });
     });
   });
 
-  // DIRECTIONSのテスト
+  // DIRECTIONS定数のテスト
   describe('DIRECTIONS定数', () => {
     it('8方向すべての変化量が定義されていること', () => {
       expect(DIRECTIONS).toHaveLength(8);
-
-      // 全方向が含まれているか確認
-      const expectedDirections: Direction[] = [
-        { rowDelta: -1, colDelta: -1 }, // 左上
-        { rowDelta: -1, colDelta: 0 }, // 上
-        { rowDelta: -1, colDelta: 1 }, // 右上
-        { rowDelta: 0, colDelta: -1 }, // 左
-        { rowDelta: 0, colDelta: 1 }, // 右
-        { rowDelta: 1, colDelta: -1 }, // 左下
-        { rowDelta: 1, colDelta: 0 }, // 下
-        { rowDelta: 1, colDelta: 1 }, // 右下
-      ];
-
-      expectedDirections.forEach((direction) => {
-        expect(DIRECTIONS).toEqual(expect.arrayContaining([direction]));
-      });
+      // 上下左右斜めの8方向全てが定義されているか確認
+      expect(DIRECTIONS).toEqual(
+        expect.arrayContaining([
+          { rowDelta: -1, colDelta: -1 }, // 左上
+          { rowDelta: -1, colDelta: 0 }, // 上
+          { rowDelta: -1, colDelta: 1 }, // 右上
+          { rowDelta: 0, colDelta: -1 }, // 左
+          { rowDelta: 0, colDelta: 1 }, // 右
+          { rowDelta: 1, colDelta: -1 }, // 左下
+          { rowDelta: 1, colDelta: 0 }, // 下
+          { rowDelta: 1, colDelta: 1 }, // 右下
+        ]),
+      );
     });
   });
 });

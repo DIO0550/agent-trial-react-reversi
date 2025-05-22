@@ -93,190 +93,210 @@ export const useDiscs = () => {
     useFlipDiscQueue();
 
   /**
-   * 盤面の位置が有効かどうかを確認
-   * @param row 行番号
-   * @param col 列番号
-   * @returns 有効な位置ならtrue
-   */
-  const isValidPosition = useCallback((row: number, col: number): boolean => {
-    return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
-  }, []);
+ * 盤面の位置が有効かどうかを確認
+ * @param params 位置のパラメータ
+ * @returns 有効な位置ならtrue
+ */
+const isValidPosition = useCallback(({ row, col }: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+}): boolean => {
+  return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
+}, []);
 
-  /**
-   * 指定した方向に対する反転できる石の位置と方向情報を取得
-   * @param row 起点の行番号
-   * @param col 起点の列番号
-   * @param direction 方向
-   * @param turnColor 現在のターンの色
-   * @returns 反転できる石の情報の配列
-   */
-  const getFlippableDiscsInDirection = useCallback(
-    (
-      row: number,
-      col: number,
-      direction: Direction,
-      turnColor: DiscColor,
-    ): FlipDiscPosition[] => {
-      const flippableDiscs: FlipDiscPosition[] = [];
-      const opponentColor =
-        turnColor === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+/**
+ * 指定した方向に対する反転できる石の位置と方向情報を取得
+ * @param params パラメータオブジェクト
+ * @returns 反転できる石の情報の配列
+ */
+const getFlippableDiscsInDirection = useCallback(
+  ({
+    row,
+    col,
+    direction,
+    turnColor,
+  }: {
+    /** 行番号 */
+    row: number;
+    /** 列番号 */
+    col: number;
+    /** 方向 */
+    direction: Direction;
+    /** 現在のターンの色 */
+    turnColor: DiscColor;
+  }): FlipDiscPosition[] => {
+    const flippableDiscs: FlipDiscPosition[] = [];
+    const opponentColor =
+      turnColor === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
 
-      let currentRow = row + direction.rowDelta;
-      let currentCol = col + direction.colDelta;
+    let currentRow = row + direction.rowDelta;
+    let currentCol = col + direction.colDelta;
 
-      // 相手の石が続く間、位置を記録
-      while (
-        isValidPosition(currentRow, currentCol) &&
-        board[currentRow][currentCol].discColor === opponentColor
-      ) {
-        // 反転方向を計算
-        const flipDirection = getFlipDirection(direction);
+    // 相手の石が続く間、位置を記録
+    while (
+      isValidPosition({ row: currentRow, col: currentCol }) &&
+      board[currentRow][currentCol].discColor === opponentColor
+    ) {
+      // 反転方向を計算
+      const flipDirection = getFlipDirection(direction);
 
-        flippableDiscs.push({
-          position: { row: currentRow, col: currentCol },
-          direction: flipDirection,
-        });
-
-        currentRow += direction.rowDelta;
-        currentCol += direction.colDelta;
-      }
-
-      // 最後に自分の石があれば反転可能
-      if (
-        isValidPosition(currentRow, currentCol) &&
-        board[currentRow][currentCol].discColor === turnColor &&
-        flippableDiscs.length > 0
-      ) {
-        return flippableDiscs;
-      }
-
-      return [];
-    },
-    [board, isValidPosition],
-  );
-
-  /**
-   * すべての方向に対する反転できる石の位置と方向情報を取得
-   * @param row 起点の行番号
-   * @param col 起点の列番号
-   * @param turnColor 現在のターンの色
-   * @returns 反転できる石の情報の配列
-   */
-  const getAllFlippableDiscs = useCallback(
-    (row: number, col: number, turnColor: DiscColor): FlipDiscPosition[] => {
-      return DIRECTIONS.flatMap((direction) =>
-        getFlippableDiscsInDirection(row, col, direction, turnColor),
-      );
-    },
-    [getFlippableDiscsInDirection],
-  );
-
-  /**
-   * 盤面上で石を置ける位置をすべて取得
-   * @returns 石を置ける位置の配列
-   */
-  const placeablePositions = useCallback((): BoardPosition[] => {
-    const positions: BoardPosition[] = [];
-
-    for (let row = 0; row < BOARD_SIZE; row++) {
-      for (let col = 0; col < BOARD_SIZE; col++) {
-        // 空のセルで、かつ石を反転させられる場所を探す
-        if (
-          board[row][col].discColor === DiscColor.NONE &&
-          getAllFlippableDiscs(row, col, currentTurn).length > 0
-        ) {
-          positions.push({ row, col });
-        }
-      }
-    }
-
-    return positions;
-  }, [board, currentTurn, getAllFlippableDiscs]);
-
-  /**
-   * 盤面上の各マスに石が置けるかどうかの状態を更新する
-   * @param turnColor 評価するターンの色
-   */
-  const updatePlaceableState = useCallback(
-    (turnColor: DiscColor) => {
-      setBoard((prev) => {
-        const newBoard = prev.map((rowArr) => [...rowArr]);
-
-        // 全マスを確認して、石が置けるかどうかを判定
-        for (let row = 0; row < BOARD_SIZE; row++) {
-          for (let col = 0; col < BOARD_SIZE; col++) {
-            // 空のセルかつ、石を裏返せる位置かどうかを確認
-            const canPlaceHere =
-              newBoard[row][col].discColor === DiscColor.NONE &&
-              getAllFlippableDiscs(row, col, turnColor).length > 0;
-
-            // canPlace状態を更新（現在のターンの色に応じて適切なメソッドを使用）
-            const currentCanPlace = newBoard[row][col].canPlace;
-            const updatedCanPlace =
-              turnColor === DiscColor.BLACK
-                ? CanPlace.setBlackCanPlace(currentCanPlace, canPlaceHere)
-                : CanPlace.setWhiteCanPlace(currentCanPlace, canPlaceHere);
-
-            newBoard[row][col] = {
-              ...newBoard[row][col],
-              canPlace: updatedCanPlace,
-            };
-          }
-        }
-
-        return newBoard;
+      flippableDiscs.push({
+        position: { row: currentRow, col: currentCol },
+        direction: flipDirection,
       });
-    },
-    [getAllFlippableDiscs],
-  );
+
+      currentRow += direction.rowDelta;
+      currentCol += direction.colDelta;
+    }
+
+    // 最後に自分の石があれば反転可能
+    if (
+      isValidPosition({ row: currentRow, col: currentCol }) &&
+      board[currentRow][currentCol].discColor === turnColor &&
+      flippableDiscs.length > 0
+    ) {
+      return flippableDiscs;
+    }
+
+    return [];
+  },
+  [board, isValidPosition],
+);
+
+/**
+ * すべての方向に対する反転できる石の位置と方向情報を取得
+ * @param params パラメータオブジェクト
+ * @returns 反転できる石の情報の配列
+ */
+const getAllFlippableDiscs = useCallback(
+  ({ row, col, turnColor }: {
+    /** 行番号 */
+    row: number;
+    /** 列番号 */
+    col: number;
+    /** 現在のターンの色 */
+    turnColor: DiscColor;
+  }): FlipDiscPosition[] => {
+    return DIRECTIONS.flatMap((direction) =>
+      getFlippableDiscsInDirection({
+        row,
+        col,
+        direction,
+        turnColor,
+      }),
+    );
+  },
+  [getFlippableDiscsInDirection],
+);
 
   /**
-   * キューに登録された石の裏返しが全て終わったか判定して次のターンへ移行する
-   */
-  const processFlippingCompletion = useCallback(() => {
-    // フリッピング中でないか、ディスクが残っている場合は処理しない
-    if (!isFlipping || flippingDiscs.length > 0) {
-      return;
+ * 盤面上で石を置ける位置をすべて取得
+ * @returns 石を置ける位置の配列
+ */
+const placeablePositions = useCallback((): BoardPosition[] => {
+  const positions: BoardPosition[] = [];
+
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    for (let col = 0; col < BOARD_SIZE; col++) {
+      // 空のセルで、かつ石を反転させられる場所を探す
+      if (
+        board[row][col].discColor === DiscColor.NONE &&
+        getAllFlippableDiscs({ row, col, turnColor: currentTurn }).length > 0
+      ) {
+        positions.push({ row, col });
+      }
     }
+  }
 
-    setIsFlipping(false);
+  return positions;
+}, [board, currentTurn, getAllFlippableDiscs]);
 
-    // 反対の色を計算
-    const oppositeColor =
-      currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+  /**
+ * 盤面上の各マスに石が置けるかどうかの状態を更新する
+ * @param turnColor 評価するターンの色
+ */
+const updatePlaceableState = useCallback(
+  (turnColor: DiscColor) => {
+    setBoard((prev) => {
+      const newBoard = prev.map((rowArr) => [...rowArr]);
 
-    // 両方のプレイヤーが石を置ける位置があるかチェック
-    let currentPlayerCanPlace = false;
-    let oppositePlayerCanPlace = false;
+      // 全マスを確認して、石が置けるかどうかを判定
+      for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+          // 空のセルかつ、石を裏返せる位置かどうかを確認
+          const canPlaceHere =
+            newBoard[row][col].discColor === DiscColor.NONE &&
+            getAllFlippableDiscs({ row, col, turnColor }).length > 0;
 
-    // 盤面の全セルをチェック
-    for (let row = 0; row < BOARD_SIZE; row++) {
-      for (let col = 0; col < BOARD_SIZE; col++) {
-        if (board[row][col].discColor === DiscColor.NONE) {
-          // 現在のプレイヤーが置ける場所をチェック
-          if (
-            !currentPlayerCanPlace &&
-            getAllFlippableDiscs(row, col, currentTurn).length > 0
-          ) {
-            currentPlayerCanPlace = true;
-          }
-          // 相手プレイヤーが置ける場所をチェック
-          if (
-            !oppositePlayerCanPlace &&
-            getAllFlippableDiscs(row, col, oppositeColor).length > 0
-          ) {
-            oppositePlayerCanPlace = true;
-          }
-          // 両方のプレイヤーが置ける場所があれば早期リターン
-          if (currentPlayerCanPlace && oppositePlayerCanPlace) {
-            break;
-          }
+          // canPlace状態を更新（現在のターンの色に応じて適切なメソッドを使用）
+          const currentCanPlace = newBoard[row][col].canPlace;
+          const updatedCanPlace =
+            turnColor === DiscColor.BLACK
+              ? CanPlace.setBlackCanPlace(currentCanPlace, canPlaceHere)
+              : CanPlace.setWhiteCanPlace(currentCanPlace, canPlaceHere);
+
+          newBoard[row][col] = {
+            ...newBoard[row][col],
+            canPlace: updatedCanPlace,
+          };
         }
       }
-      if (currentPlayerCanPlace && oppositePlayerCanPlace) {
-        break;
+
+      return newBoard;
+    });
+  },
+  [getAllFlippableDiscs],
+);
+
+  /**
+ * キューに登録された石の裏返しが全て終わったか判定して次のターンへ移行する
+ */
+const processFlippingCompletion = useCallback(() => {
+  // フリッピング中でないか、ディスクが残っている場合は処理しない
+  if (!isFlipping || flippingDiscs.length > 0) {
+    return;
+  }
+
+  setIsFlipping(false);
+
+  // 反対の色を計算
+  const oppositeColor =
+    currentTurn === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
+
+  // 両方のプレイヤーが石を置ける位置があるかチェック
+  let currentPlayerCanPlace = false;
+  let oppositePlayerCanPlace = false;
+
+  // 盤面の全セルをチェック
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    for (let col = 0; col < BOARD_SIZE; col++) {
+      if (board[row][col].discColor === DiscColor.NONE) {
+        // 現在のプレイヤーが置ける場所をチェック
+        if (
+          !currentPlayerCanPlace &&
+          getAllFlippableDiscs({ row, col, turnColor: currentTurn }).length > 0
+        ) {
+          currentPlayerCanPlace = true;
+        }
+        // 相手プレイヤーが置ける場所をチェック
+        if (
+          !oppositePlayerCanPlace &&
+          getAllFlippableDiscs({ row, col, turnColor: oppositeColor }).length > 0
+        ) {
+          oppositePlayerCanPlace = true;
+        }
+        // 両方のプレイヤーが置ける場所があれば早期リターン
+        if (currentPlayerCanPlace && oppositePlayerCanPlace) {
+          break;
+        }
       }
     }
+    if (currentPlayerCanPlace && oppositePlayerCanPlace) {
+      break;
+    }
+  }
 
     // ゲーム終了判定（どちらのプレイヤーも置ける場所がない）
     if (!currentPlayerCanPlace && !oppositePlayerCanPlace) {
@@ -400,31 +420,31 @@ export const useDiscs = () => {
   }, []); // 依存配列を空にすることでマウント時のみ実行される
 
   /**
-   * 盤面に石を置く
-   * @param position 石を置く位置
-   * @throws 石を置けない位置の場合はエラー
-   */
-  const placeDisc = useCallback(
-    (position: BoardPosition) => {
-      // 裏返し処理中は新たに石を置けないようにする
-      if (isFlipping) {
-        return;
-      }
+ * 盤面に石を置く
+ * @param position 石を置く位置
+ * @throws 石を置けない位置の場合はエラー
+ */
+const placeDisc = useCallback(
+  (position: BoardPosition) => {
+    // 裏返し処理中は新たに石を置けないようにする
+    if (isFlipping) {
+      return;
+    }
 
-      const { row, col } = position;
+    const { row, col } = position;
 
-      // 空のセルかチェック
-      if (board[row][col].discColor !== DiscColor.NONE) {
-        throw new Error('この位置には既に石が置かれています');
-      }
+    // 空のセルかチェック
+    if (board[row][col].discColor !== DiscColor.NONE) {
+      throw new Error('この位置には既に石が置かれています');
+    }
 
-      // 反転できる石の情報を取得
-      const flippableDiscs = getAllFlippableDiscs(row, col, currentTurn);
+    // 反転できる石の情報を取得
+    const flippableDiscs = getAllFlippableDiscs({ row, col, turnColor: currentTurn });
 
-      // 反転できる石がない場合はエラー
-      if (flippableDiscs.length === 0) {
-        throw new Error('この位置には石を置けません');
-      }
+    // 反転できる石がない場合はエラー
+    if (flippableDiscs.length === 0) {
+      throw new Error('この位置には石を置けません');
+    }
 
       // 新しい石を置く
       setBoard((prev) => {
@@ -447,20 +467,24 @@ export const useDiscs = () => {
   );
 
   /**
-   * 指定したセルが置ける位置かどうかを判定
-   * @param row 行番号
-   * @param col 列番号
-   * @returns 置ける位置ならtrue、そうでなければfalse
-   */
-  const isPlaceablePosition = useCallback(
-    (row: number, col: number): boolean => {
-      return (
-        board[row][col].discColor === DiscColor.NONE &&
-        getAllFlippableDiscs(row, col, currentTurn).length > 0
-      );
-    },
-    [board, currentTurn, getAllFlippableDiscs],
-  );
+ * 指定したセルが置ける位置かどうかを判定
+ * @param params パラメータオブジェクト
+ * @returns 置ける位置ならtrue、そうでなければfalse
+ */
+const isPlaceablePosition = useCallback(
+  ({ row, col }: {
+    /** 行番号 */
+    row: number;
+    /** 列番号 */
+    col: number;
+  }): boolean => {
+    return (
+      board[row][col].discColor === DiscColor.NONE &&
+      getAllFlippableDiscs({ row, col, turnColor: currentTurn }).length > 0
+    );
+  },
+  [board, currentTurn, getAllFlippableDiscs],
+);
 
   /**
    * 石が反転し終えた時の通知を受け取る関数

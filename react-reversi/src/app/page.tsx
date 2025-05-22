@@ -12,7 +12,10 @@ export default function Home() {
    */
   const handleStart = (settings: StartMenuSettings) => {
     // ゲーム画面に遷移する
-    navigateToReversiGame(settings.cpuLevel, settings.playerColor);
+    navigateToReversiGame({
+      cpuLevel: settings.cpuLevel,
+      playerColor: settings.playerColor,
+    });
   };
 
   return (

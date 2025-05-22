@@ -8,11 +8,18 @@ import { DiscColor } from './disc-color';
 /**
  * 盤面内かどうかをチェックする関数
  */
-export const isWithinBoard = (
-  row: number,
-  col: number,
-  size: number,
-): boolean => {
+export const isWithinBoard = ({
+  row,
+  col,
+  size,
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** ボードのサイズ */
+  size: number;
+}): boolean => {
   return row >= 0 && row < size && col >= 0 && col < size;
 };
 
@@ -27,19 +34,29 @@ export const isValidDiscColor = (value: number): boolean => {
   );
 };
 
-// 変換関数は不要になったため削除
-// discColorToNumberとnumberToDiscColor関数を削除
+
 
 /**
  * 指定された位置から特定の方向にひっくり返せる石があるかチェックする関数
  */
-export const findFlippableDiscsInDirection = (
-  row: number,
-  col: number,
-  currentPlayer: DiscColor,
-  direction: Direction,
-  board: Board,
-): BoardPosition[] => {
+export const findFlippableDiscsInDirection = ({
+  row,
+  col,
+  currentPlayer,
+  direction,
+  board,
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** 現在のプレイヤーの色 */
+  currentPlayer: DiscColor;
+  /** 方向 */
+  direction: Direction;
+  /** 盤面 */
+  board: Board;
+}): BoardPosition[] => {
   const oppositePlayer =
     currentPlayer === DiscColor.BLACK ? DiscColor.WHITE : DiscColor.BLACK;
   const flippablePositions: BoardPosition[] = [];
@@ -48,7 +65,7 @@ export const findFlippableDiscsInDirection = (
 
   // 隣が相手の色である場合は進み続ける
   while (
-    isWithinBoard(currentRow, currentCol, board.length) &&
+    isWithinBoard({ row: currentRow, col: currentCol, size: board.length }) &&
     board[currentRow][currentCol].discColor === oppositePlayer
   ) {
     flippablePositions.push({ row: currentRow, col: currentCol });
@@ -58,7 +75,7 @@ export const findFlippableDiscsInDirection = (
 
   // 最後に自分の色があれば挟めると判断
   if (
-    isWithinBoard(currentRow, currentCol, board.length) &&
+    isWithinBoard({ row: currentRow, col: currentCol, size: board.length }) &&
     board[currentRow][currentCol].discColor === currentPlayer &&
     flippablePositions.length > 0
   ) {
@@ -68,15 +85,26 @@ export const findFlippableDiscsInDirection = (
   return [];
 };
 
+
+
 /**
  * 指定された位置に石を置いた場合にひっくり返せる石の位置を取得する関数
  */
-export const findFlippableDiscs = (
-  row: number,
-  col: number,
-  currentPlayer: DiscColor,
-  board: Board,
-): BoardPosition[] => {
+export const findFlippableDiscs = ({
+  row,
+  col,
+  currentPlayer,
+  board,
+}: {
+  /** 行番号 */
+  row: number;
+  /** 列番号 */
+  col: number;
+  /** 現在のプレイヤーの色 */
+  currentPlayer: DiscColor;
+  /** 盤面 */
+  board: Board;
+}): BoardPosition[] => {
   // すでに石がある場合は置けない
   if (board[row][col].discColor !== DiscColor.NONE) {
     return [];
@@ -84,17 +112,28 @@ export const findFlippableDiscs = (
 
   // 全方向をチェックして、ひっくり返せる石を集める
   return DIRECTIONS.flatMap((direction) =>
-    findFlippableDiscsInDirection(row, col, currentPlayer, direction, board),
+    findFlippableDiscsInDirection({
+      row,
+      col,
+      currentPlayer,
+      direction,
+      board,
+    }),
   );
 };
 
 /**
  * 盤面上で現在のプレイヤーが石を置ける位置をすべて取得する関数
  */
-export const getPlaceablePositions = (
-  board: Board,
-  currentPlayer: DiscColor,
-): BoardPosition[] => {
+export const getPlaceablePositions = ({
+  board,
+  currentPlayer,
+}: {
+  /** 盤面 */
+  board: Board;
+  /** 現在のプレイヤーの色 */
+  currentPlayer: DiscColor;
+}): BoardPosition[] => {
   const placeablePositions: BoardPosition[] = [];
   const size = board.length;
 
@@ -106,7 +145,12 @@ export const getPlaceablePositions = (
       }
 
       // ひっくり返せる石があるか確認
-      const flippableDiscs = findFlippableDiscs(row, col, currentPlayer, board);
+      const flippableDiscs = findFlippableDiscs({
+        row,
+        col,
+        currentPlayer,
+        board,
+      });
       if (flippableDiscs.length > 0) {
         placeablePositions.push({ row, col });
       }
