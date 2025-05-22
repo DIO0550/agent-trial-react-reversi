@@ -76,9 +76,25 @@ const PHASE_MULTIPLIERS = {
 };
 
 /**
+ * isCornerPosition function parameters type
+ */
+type IsCornerPositionParams = {
+  /** Row index */
+  row: number;
+  /** Column index */
+  col: number;
+  /** Board size */
+  size: number;
+};
+
+/**
  * マスの位置が角かどうか判定する関数
  */
-const isCornerPosition = (row: number, col: number, size: number): boolean => {
+const isCornerPosition = ({
+  row,
+  col,
+  size,
+}: IsCornerPositionParams): boolean => {
   return (
     (row === 0 && col === 0) ||
     (row === 0 && col === size - 1) ||
@@ -88,9 +104,25 @@ const isCornerPosition = (row: number, col: number, size: number): boolean => {
 };
 
 /**
+ * isXPointPosition function parameters type
+ */
+type IsXPointPositionParams = {
+  /** Row index */
+  row: number;
+  /** Column index */
+  col: number;
+  /** Board size */
+  size: number;
+};
+
+/**
  * マスの位置がX打点（角の隣）かどうか判定する関数
  */
-const isXPointPosition = (row: number, col: number, size: number): boolean => {
+const isXPointPosition = ({
+  row,
+  col,
+  size,
+}: IsXPointPositionParams): boolean => {
   return (
     (row === 0 && col === 1) ||
     (row === 1 && col === 0) ||
@@ -108,9 +140,25 @@ const isXPointPosition = (row: number, col: number, size: number): boolean => {
 };
 
 /**
+ * isCPointPosition function parameters type
+ */
+type IsCPointPositionParams = {
+  /** Row index */
+  row: number;
+  /** Column index */
+  col: number;
+  /** Board size */
+  size: number;
+};
+
+/**
  * マスの位置がC打点（角から斜めに2つ目）かどうか判定する関数
  */
-const isCPointPosition = (row: number, col: number, size: number): boolean => {
+const isCPointPosition = ({
+  row,
+  col,
+  size,
+}: IsCPointPositionParams): boolean => {
   return (
     (row === 0 && col === 2) ||
     (row === 2 && col === 0) ||
@@ -124,35 +172,61 @@ const isCPointPosition = (row: number, col: number, size: number): boolean => {
 };
 
 /**
+ * isEdgePosition function parameters type
+ */
+type IsEdgePositionParams = {
+  /** Row index */
+  row: number;
+  /** Column index */
+  col: number;
+  /** Board size */
+  size: number;
+};
+
+/**
  * マスの位置が端（角とX打点を除く）かどうか判定する関数
  */
-const isEdgePosition = (row: number, col: number, size: number): boolean => {
+const isEdgePosition = ({
+  row,
+  col,
+  size,
+}: IsEdgePositionParams): boolean => {
   return (
     (row === 0 || row === size - 1 || col === 0 || col === size - 1) &&
-    !isCornerPosition(row, col, size) &&
-    !isXPointPosition(row, col, size) &&
-    !isCPointPosition(row, col, size)
+    !isCornerPosition({ row, col, size }) &&
+    !isXPointPosition({ row, col, size }) &&
+    !isCPointPosition({ row, col, size })
   );
+};
+
+/**
+ * getPositionType function parameters type
+ */
+type GetPositionTypeParams = {
+  /** Position */
+  position: BoardPosition;
+  /** Board size */
+  boardSize: number;
 };
 
 /**
  * 位置の種類を判定する関数
  */
-const getPositionType = (
-  position: BoardPosition,
-  boardSize: number,
-): PositionType => {
+const getPositionType = ({
+  position,
+  boardSize,
+}: GetPositionTypeParams): PositionType => {
   const { row, col } = position;
-  if (isCornerPosition(row, col, boardSize)) {
+  if (isCornerPosition({ row, col, size: boardSize })) {
     return POSITION_TYPE.CORNER;
   }
-  if (isXPointPosition(row, col, boardSize)) {
+  if (isXPointPosition({ row, col, size: boardSize })) {
     return POSITION_TYPE.X_POINT;
   }
-  if (isCPointPosition(row, col, boardSize)) {
+  if (isCPointPosition({ row, col, size: boardSize })) {
     return POSITION_TYPE.C_POINT;
   }
-  if (isEdgePosition(row, col, boardSize)) {
+  if (isEdgePosition({ row, col, size: boardSize })) {
     return POSITION_TYPE.EDGE;
   }
   return POSITION_TYPE.OTHER;
@@ -196,16 +270,32 @@ const determineGamePhase = (board: Board): GamePhase => {
 };
 
 /**
+ * calculateStrategicValue function parameters type
+ */
+type CalculateStrategicValueParams = {
+  /** Position type */
+  posType: PositionType;
+  /** Number of flippable discs */
+  flippableCount: number;
+  /** Game phase */
+  gamePhase: GamePhase;
+  /** Position */
+  position: BoardPosition;
+  /** Board */
+  board: Board;
+};
+
+/**
  * 戦略的価値を計算する関数
  * 序盤・中盤では位置の価値を重視し、終盤では裏返せる石の数を重視
  */
-const calculateStrategicValue = (
-  posType: PositionType,
-  flippableCount: number,
-  gamePhase: GamePhase,
-  position: BoardPosition,
-  board: Board,
-): number => {
+const calculateStrategicValue = ({
+  posType,
+  flippableCount,
+  gamePhase,
+  position,
+  board,
+}: CalculateStrategicValueParams): number => {
   const positionValue = POSITION_VALUES[posType];
   const flipsValue = flippableCount * 5; // 石1つにつき5点
 
@@ -269,7 +359,10 @@ export const createSuperCpuPlayer = (): CpuPlayer => {
     board: Board,
     currentPlayer: number,
   ): BoardPosition => {
-    const availablePositions = getPlaceablePositions(board, currentPlayer);
+    const availablePositions = getPlaceablePositions({
+      board,
+      currentPlayer,
+    });
     if (availablePositions.length === 0) {
       throw new Error('No available positions');
     }
@@ -284,22 +377,25 @@ export const createSuperCpuPlayer = (): CpuPlayer => {
     const positionsWithEvaluation: PositionWithEvaluation[] =
       availablePositions.map((position) => {
         const { row, col } = position;
-        const type = getPositionType(position, boardSize);
-        const flippableDiscs = findFlippableDiscs(
+        const type = getPositionType({
+          position,
+          boardSize,
+        });
+        const flippableDiscs = findFlippableDiscs({
           row,
           col,
           currentPlayer,
           board,
-        );
+        });
 
         // 戦略的価値を計算
-        const strategicValue = calculateStrategicValue(
-          type,
-          flippableDiscs.length,
+        const strategicValue = calculateStrategicValue({
+          posType: type,
+          flippableCount: flippableDiscs.length,
           gamePhase,
           position,
           board,
-        );
+        });
 
         return {
           position,
