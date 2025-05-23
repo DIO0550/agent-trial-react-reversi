@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useNavigation } from '@/hooks/use-navigation';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 // useRouterとそのpushメソッドのモック
 const mockPush = vi.fn();
@@ -57,7 +58,7 @@ describe('useNavigation', () => {
 
     // テスト用のパラメータ
     const cpuLevel = 'hard';
-    const playerColor = 'black';
+    const playerColor = DiscColor.BLACK;
 
     // navigateToReversiGameを実行
     result.current.navigateToReversiGame({

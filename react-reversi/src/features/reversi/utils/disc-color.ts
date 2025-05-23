@@ -11,15 +11,20 @@ export enum DiscColor {
 }
 
 /**
+ * NONEを除いた石の色の型
+ */
+export type NonEmptyDiscColor = Exclude<DiscColor, DiscColor.NONE>;
+
+/**
  * 石の色を表す列挙型と関連する関数を提供する名前空間
  */
 export namespace DiscColor {
   /**
-   * PlayerColorからDiscColorを生成する
+   * PlayerColorからNonEmptyDiscColorを生成する
    * @param playerColor プレイヤーの色
-   * @returns 対応するDiscColor
+   * @returns 対応するNonEmptyDiscColor (NONEを除いたDiscColor)
    */
-  export function fromPlayerColor(playerColor: PlayerColor): DiscColor {
+  export function fromPlayerColor(playerColor: PlayerColor): NonEmptyDiscColor {
     // ランダムの場合は、ランダムに黒または白を返す
     if (playerColor === 'random') {
       return Math.random() < 0.5 ? DiscColor.BLACK : DiscColor.WHITE;
