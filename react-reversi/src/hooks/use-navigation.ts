@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { NonEmptyDiscColor } from '@/features/reversi/utils/disc-color';
 
 /**
  * アプリケーション全体で使用するナビゲーション機能を提供するカスタムフック
@@ -24,7 +25,7 @@ const navigateToReversiGame = useCallback(
     /** CPUレベル */
     cpuLevel: string;
     /** プレイヤーの色 */
-    playerColor: string;
+    playerColor: NonEmptyDiscColor;
   }) => {
     router.push(
       `/games/reversi?cpuLevel=${cpuLevel}&playerColor=${playerColor}`,

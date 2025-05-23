@@ -2,6 +2,7 @@
 import { StartMenu } from '../features/start-menu/components/start-menu';
 import { StartMenuSettings } from '../features/start-menu/types/start-menu-types';
 import { useNavigation } from '@/hooks/use-navigation';
+import { DiscColor } from '@/features/reversi/utils/disc-color';
 
 export default function Home() {
   const { navigateToReversiGame } = useNavigation();
@@ -14,7 +15,7 @@ export default function Home() {
     // ゲーム画面に遷移する
     navigateToReversiGame({
       cpuLevel: settings.cpuLevel,
-      playerColor: settings.playerColor,
+      playerColor: DiscColor.fromPlayerColor(settings.playerColor),
     });
   };
 
